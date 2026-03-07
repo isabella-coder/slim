@@ -1,0 +1,24 @@
+.line-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12rpx;
+}
+
+.item-title {
+  font-weight: 600;
+  color: #111827;
+}
+
+.form-item {
+  margin-bottom: 16rpx;
+}
+
+.delete-btn {
+  margin: 0;
+  background: #fee2e2;
+  color: #991b1b;
+  border: none;
+  border-radius: 999rpx;
+  padding: 0 20rpx;
+}

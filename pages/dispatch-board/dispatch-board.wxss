@@ -1,0 +1,152 @@
+.top-card {
+  background: linear-gradient(140deg, #0f172a, #1e293b);
+  color: #f8fafc;
+}
+
+.top-card .hint {
+  color: #cbd5e1;
+  margin-bottom: 16rpx;
+}
+
+.form-item {
+  margin-top: 12rpx;
+}
+
+.stats-card {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12rpx;
+}
+
+.stat-item {
+  border: 2rpx solid #e2e8f0;
+  border-radius: 14rpx;
+  padding: 14rpx;
+  background: #f8fafc;
+}
+
+.stat-label {
+  color: #64748b;
+  font-size: 24rpx;
+}
+
+.stat-value {
+  display: block;
+  margin-top: 8rpx;
+  color: #0f172a;
+  font-size: 34rpx;
+  font-weight: 700;
+}
+
+.stat-value.success {
+  color: #166534;
+}
+
+.stat-value.warning {
+  color: #92400e;
+}
+
+.stat-value.danger {
+  color: #991b1b;
+}
+
+.empty-card {
+  text-align: center;
+  padding-top: 52rpx;
+  padding-bottom: 52rpx;
+}
+
+.empty-title {
+  font-size: 32rpx;
+  font-weight: 600;
+}
+
+.empty-subtitle {
+  margin-top: 10rpx;
+  color: #64748b;
+}
+
+.conflict-card {
+  border: 2rpx solid #fecaca;
+  background: #fff1f2;
+}
+
+.conflict-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10rpx;
+  margin-bottom: 12rpx;
+}
+
+.conflict-item:last-child {
+  margin-bottom: 0;
+}
+
+.conflict-text {
+  color: #7f1d1d;
+  flex: 1;
+}
+
+.group-block {
+  margin-bottom: 16rpx;
+}
+
+.group-block:last-child {
+  margin-bottom: 0;
+}
+
+.group-title {
+  margin-bottom: 10rpx;
+  color: #0f172a;
+  font-weight: 600;
+}
+
+.entry-item {
+  border: 2rpx solid #e2e8f0;
+  border-radius: 12rpx;
+  padding: 14rpx;
+  margin-bottom: 10rpx;
+  background: #f8fafc;
+}
+
+.entry-item:last-child {
+  margin-bottom: 0;
+}
+
+.entry-item-conflict {
+  border-color: #fca5a5;
+  background: #fff1f2;
+}
+
+.entry-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10rpx;
+}
+
+.entry-tag {
+  padding: 2rpx 10rpx;
+  border-radius: 999rpx;
+  background: #e2e8f0;
+  color: #1e293b;
+  font-size: 20rpx;
+}
+
+.entry-line {
+  margin-top: 8rpx;
+  color: #334155;
+  font-size: 24rpx;
+}
+
+.mini-btn {
+  margin-top: 10rpx;
+  margin-left: 0;
+  line-height: 1.8;
+  border: none;
+  border-radius: 999rpx;
+  background: #0f172a;
+  color: #ffffff;
+  padding: 0 18rpx;
+}

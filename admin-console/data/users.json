@@ -1,0 +1,122 @@
+[
+  {
+    "username": "tech_wangao",
+    "password": "0000",
+    "name": "王澳",
+    "role": "technician"
+  },
+  {
+    "username": "tech_wangdi",
+    "password": "0000",
+    "name": "王迪",
+    "role": "technician"
+  },
+  {
+    "username": "tech_zhanglin",
+    "password": "0000",
+    "name": "张霖",
+    "role": "technician"
+  },
+  {
+    "username": "tech_yangzhendong",
+    "password": "0000",
+    "name": "杨振东",
+    "role": "technician"
+  },
+  {
+    "username": "tech_zhangfaqiang",
+    "password": "0000",
+    "name": "张发强",
+    "role": "technician"
+  },
+  {
+    "username": "tech_linruihao",
+    "password": "0000",
+    "name": "林睿豪",
+    "role": "technician"
+  },
+  {
+    "username": "tech_fangyuan",
+    "password": "0000",
+    "name": "方圆",
+    "role": "technician"
+  },
+  {
+    "username": "tech_fanxiangyang",
+    "password": "0000",
+    "name": "范向阳",
+    "role": "technician"
+  },
+  {
+    "username": "tech_fengguohao",
+    "password": "0000",
+    "name": "冯国豪",
+    "role": "technician"
+  },
+  {
+    "username": "tech_yaozunyi",
+    "password": "0000",
+    "name": "姚遵义",
+    "role": "technician"
+  },
+  {
+    "username": "tech_zhangyongzhi",
+    "password": "0000",
+    "name": "张永志",
+    "role": "technician"
+  },
+  {
+    "username": "sales_mengao",
+    "password": "0000",
+    "name": "孟傲",
+    "role": "sales"
+  },
+  {
+    "username": "sales_tianjiajia",
+    "password": "0000",
+    "name": "田佳佳",
+    "role": "sales"
+  },
+  {
+    "username": "sales_zhoushilei",
+    "password": "0000",
+    "name": "周石磊",
+    "role": "sales"
+  },
+  {
+    "username": "sales_cuitingting",
+    "password": "0000",
+    "name": "崔庭廷",
+    "role": "sales"
+  },
+  {
+    "username": "sales_weipeng",
+    "password": "0000",
+    "name": "魏鹏",
+    "role": "sales"
+  },
+  {
+    "username": "sales_libochao",
+    "password": "0000",
+    "name": "李博超",
+    "role": "sales"
+  },
+  {
+    "username": "finance_huangyanting",
+    "password": "0000",
+    "name": "黄艳婷",
+    "role": "finance"
+  },
+  {
+    "username": "manager_wujiabin",
+    "password": "0000",
+    "name": "吴佳彬",
+    "role": "manager"
+  },
+  {
+    "username": "manager_yushuai",
+    "password": "0000",
+    "name": "余帅",
+    "role": "manager"
+  }
+]

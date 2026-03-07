@@ -1,0 +1,73 @@
+<view class="container">
+  <view class="card top-card">
+    <view class="section-title">贴膜销售业绩看板</view>
+    <view class="hint">按天/周/月查看业绩叠加，并自动计算平均客单价。</view>
+
+    <view class="date-filter">
+      <text class="date-label">统计日期</text>
+      <picker mode="date" value="{{anchorDate}}" bindchange="onAnchorDateChange">
+        <view class="date-picker">{{anchorDate || '请选择日期'}}</view>
+      </picker>
+    </view>
+
+    <view class="tabs">
+      <view
+        wx:for="{{dimensionTabs}}"
+        wx:key="value"
+        class="tab-item {{currentDimension === item.value ? 'active' : ''}}"
+        data-value="{{item.value}}"
+        bindtap="onDimensionChange"
+      >
+        {{item.label}}
+      </view>
+    </view>
+  </view>
+
+  <view class="card summary-card">
+    <view class="section-title">当前周期：{{selectedPeriodLabel || '暂无数据'}}</view>
+    <view class="summary-grid">
+      <view class="summary-item">
+        <text class="summary-label">订单数</text>
+        <text class="summary-value">{{summary.orderCount}}</text>
+      </view>
+      <view class="summary-item">
+        <text class="summary-label">销售额</text>
+        <text class="summary-value">¥{{summary.totalAmount}}</text>
+      </view>
+      <view class="summary-item">
+        <text class="summary-label">平均客单价</text>
+        <text class="summary-value">¥{{summary.avgTicket}}</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="card" wx:if="{{periodRecords.length > 0}}">
+    <view class="section-title">周期汇总</view>
+    <view
+      wx:for="{{periodRecords}}"
+      wx:key="key"
+      class="period-row {{selectedPeriodKey === item.key ? 'period-row-active' : ''}}"
+      data-key="{{item.key}}"
+      bindtap="onPeriodChange"
+    >
+      <view class="period-line">{{item.label}}</view>
+      <view class="period-line">订单 {{item.orderCount}} 单 · 销售额 ¥{{item.totalAmount}} · 客单价 ¥{{item.avgTicket}}</view>
+    </view>
+  </view>
+
+  <view class="card" wx:if="{{periodRecords.length === 0}}">
+    <view class="empty-title">暂无贴膜业绩数据</view>
+    <view class="empty-subtitle">先创建贴膜订单后，再查看销售趋势。</view>
+  </view>
+
+  <view class="card" wx:if="{{salesRecords.length > 0}}">
+    <view class="section-title">销售排行（当前周期）</view>
+    <view wx:for="{{salesRecords}}" wx:key="salesName" class="sales-row">
+      <view class="sales-line sales-name">{{index + 1}}. {{item.salesName}}</view>
+      <view class="sales-line">订单 {{item.orderCount}} 单 · 销售额 ¥{{item.totalAmount}} · 客单价 ¥{{item.avgTicket}}</view>
+    </view>
+  </view>
+
+  <button class="button-secondary" bindtap="goFilmOrder">去贴膜下单</button>
+  <button class="button-secondary" bindtap="goOrderList">查看全部订单</button>
+</view>

@@ -1,0 +1,43 @@
+<view class="container">
+  <view class="hero card">
+    <view class="hero-title">蔚蓝工单管理</view>
+    <view class="hero-subtitle">请选择链路进入独立流程</view>
+  </view>
+
+  <view class="card account-card">
+    <view class="account-title">当前账号：{{currentAccountLabel}}</view>
+    <view class="account-subtitle">切换到员工账号后会自动应用对应权限：店长最高权限，销售可看全部/我的订单，施工仅操作自己的施工记录。</view>
+    <view wx:if="{{!canCreateOrder}}" class="account-subtitle">当前账号无下单权限，可进入“全部订单”处理施工记录。</view>
+    <picker mode="selector" range="{{accountOptions}}" value="{{accountIndex}}" bindchange="onAccountChange">
+      <view class="account-picker">切换使用账号</view>
+    </picker>
+  </view>
+
+  <view class="card entry-card film-entry {{canCreateOrder ? '' : 'entry-card-disabled'}}" bindtap="goFilmOrder">
+    <view class="entry-top">
+      <view class="entry-title">贴膜链路</view>
+      <view class="entry-type">FILM</view>
+    </view>
+    <view class="entry-subtitle">贴膜下单、派工、提成、回访、销售业绩</view>
+    <view class="entry-action">进入贴膜链路 <text class="entry-arrow">></text></view>
+  </view>
+
+  <view class="card entry-card wash-entry {{canCreateOrder ? '' : 'entry-card-disabled'}}" bindtap="goWashOrder">
+    <view class="entry-top">
+      <view class="entry-title">洗车链路</view>
+      <view class="entry-type">WASH</view>
+    </view>
+    <view class="entry-subtitle">整点预约、洗车派工、施工图片、固定提成</view>
+    <view class="entry-action">进入洗车链路 <text class="entry-arrow">></text></view>
+  </view>
+
+  <view class="card quick-card">
+    <view class="section-title">常用入口</view>
+    <view class="quick-grid">
+      <view class="quick-item" bindtap="goOrderList">全部订单</view>
+      <view class="quick-item" bindtap="goFilmDispatchBoard">贴膜派工看板</view>
+      <view class="quick-item" bindtap="goWashDispatchBoard">洗车派工看板</view>
+      <view class="quick-item {{canViewSalesBoard ? '' : 'quick-item-disabled'}}" bindtap="goSalesPerformance">销售业绩看板</view>
+    </view>
+  </view>
+</view>

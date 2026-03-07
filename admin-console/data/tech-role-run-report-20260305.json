@@ -1,0 +1,170 @@
+{
+  "summary": {
+    "technicianTotal": 11,
+    "loginPassCount": 11,
+    "allForbiddenCount": 11,
+    "mineAccessibleCount": 11,
+    "coveredByTestOrderCount": 11,
+    "notCoveredNames": []
+  },
+  "rows": [
+    {
+      "username": "tech_wangao",
+      "name": "王澳",
+      "loginCode": 200,
+      "loginOk": true,
+      "ordersAllCode": 403,
+      "ordersMineCode": 200,
+      "mineOrderCount": 6,
+      "mineTestOrderCount": 5,
+      "mineTestOrderIds": [
+        "TEST20260305013",
+        "TEST20260305012",
+        "TEST20260305007",
+        "TEST20260305006",
+        "TEST20260305001"
+      ]
+    },
+    {
+      "username": "tech_wangdi",
+      "name": "王迪",
+      "loginCode": 200,
+      "loginOk": true,
+      "ordersAllCode": 403,
+      "ordersMineCode": 200,
+      "mineOrderCount": 4,
+      "mineTestOrderCount": 3,
+      "mineTestOrderIds": [
+        "TEST20260305013",
+        "TEST20260305007",
+        "TEST20260305001"
+      ]
+    },
+    {
+      "username": "tech_zhanglin",
+      "name": "张霖",
+      "loginCode": 200,
+      "loginOk": true,
+      "ordersAllCode": 403,
+      "ordersMineCode": 200,
+      "mineOrderCount": 3,
+      "mineTestOrderCount": 3,
+      "mineTestOrderIds": [
+        "TEST20260305014",
+        "TEST20260305008",
+        "TEST20260305002"
+      ]
+    },
+    {
+      "username": "tech_yangzhendong",
+      "name": "杨振东",
+      "loginCode": 200,
+      "loginOk": true,
+      "ordersAllCode": 403,
+      "ordersMineCode": 200,
+      "mineOrderCount": 2,
+      "mineTestOrderCount": 2,
+      "mineTestOrderIds": [
+        "TEST20260305008",
+        "TEST20260305002"
+      ]
+    },
+    {
+      "username": "tech_zhangfaqiang",
+      "name": "张发强",
+      "loginCode": 200,
+      "loginOk": true,
+      "ordersAllCode": 403,
+      "ordersMineCode": 200,
+      "mineOrderCount": 3,
+      "mineTestOrderCount": 3,
+      "mineTestOrderIds": [
+        "TEST20260305015",
+        "TEST20260305009",
+        "TEST20260305003"
+      ]
+    },
+    {
+      "username": "tech_linruihao",
+      "name": "林睿豪",
+      "loginCode": 200,
+      "loginOk": true,
+      "ordersAllCode": 403,
+      "ordersMineCode": 200,
+      "mineOrderCount": 2,
+      "mineTestOrderCount": 2,
+      "mineTestOrderIds": [
+        "TEST20260305015",
+        "TEST20260305009"
+      ]
+    },
+    {
+      "username": "tech_fangyuan",
+      "name": "方圆",
+      "loginCode": 200,
+      "loginOk": true,
+      "ordersAllCode": 403,
+      "ordersMineCode": 200,
+      "mineOrderCount": 2,
+      "mineTestOrderCount": 2,
+      "mineTestOrderIds": [
+        "TEST20260305010",
+        "TEST20260305004"
+      ]
+    },
+    {
+      "username": "tech_fanxiangyang",
+      "name": "范向阳",
+      "loginCode": 200,
+      "loginOk": true,
+      "ordersAllCode": 403,
+      "ordersMineCode": 200,
+      "mineOrderCount": 2,
+      "mineTestOrderCount": 2,
+      "mineTestOrderIds": [
+        "TEST20260305010",
+        "TEST20260305004"
+      ]
+    },
+    {
+      "username": "tech_fengguohao",
+      "name": "冯国豪",
+      "loginCode": 200,
+      "loginOk": true,
+      "ordersAllCode": 403,
+      "ordersMineCode": 200,
+      "mineOrderCount": 1,
+      "mineTestOrderCount": 1,
+      "mineTestOrderIds": [
+        "TEST20260305005"
+      ]
+    },
+    {
+      "username": "tech_yaozunyi",
+      "name": "姚遵义",
+      "loginCode": 200,
+      "loginOk": true,
+      "ordersAllCode": 403,
+      "ordersMineCode": 200,
+      "mineOrderCount": 1,
+      "mineTestOrderCount": 1,
+      "mineTestOrderIds": [
+        "TEST20260305005"
+      ]
+    },
+    {
+      "username": "tech_zhangyongzhi",
+      "name": "张永志",
+      "loginCode": 200,
+      "loginOk": true,
+      "ordersAllCode": 403,
+      "ordersMineCode": 200,
+      "mineOrderCount": 2,
+      "mineTestOrderCount": 2,
+      "mineTestOrderIds": [
+        "TEST20260305012",
+        "TEST20260305006"
+      ]
+    }
+  ]
+}

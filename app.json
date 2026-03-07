@@ -1,0 +1,41 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/film-order/film-order",
+    "pages/wash-order/wash-order",
+    "pages/wash-order-detail/wash-order-detail",
+    "pages/product-config/product-config",
+    "pages/order-list/order-list",
+    "pages/order-edit/order-edit",
+    "pages/order-detail/order-detail",
+    "pages/dispatch-board/dispatch-board",
+    "pages/wash-dispatch-board/wash-dispatch-board",
+    "pages/sales-performance/sales-performance",
+    "pages/followup-reminder/followup-reminder"
+  ],
+  "window": {
+    "navigationBarTitleText": "蔚蓝工单管理",
+    "navigationBarBackgroundColor": "#0f172a",
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#f5f7fb",
+    "backgroundTextStyle": "light"
+  },
+  "tabBar": {
+    "color": "#6b7280",
+    "selectedColor": "#0f172a",
+    "borderStyle": "black",
+    "backgroundColor": "#ffffff",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "下单入口"
+      },
+      {
+        "pagePath": "pages/order-list/order-list",
+        "text": "全部订单"
+      }
+    ]
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}

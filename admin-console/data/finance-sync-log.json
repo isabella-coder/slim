@@ -1,0 +1,1335 @@
+[
+  {
+    "id": "94bdfd497fcc47a09496aadf52b4bcec",
+    "receivedAt": "2026-03-05 15:44",
+    "eventType": "ORDER_FINAL_PAYMENT_UPLOADED",
+    "source": "MINIPROGRAM_ORDER_DETAIL",
+    "orderId": "TM20260305022653439",
+    "serviceType": "FILM",
+    "orderStatus": "已完工",
+    "totalPrice": 9600,
+    "externalId": "FIN-20260305-22653439",
+    "result": "SUCCESS",
+    "payload": {
+      "eventType": "ORDER_FINAL_PAYMENT_UPLOADED",
+      "source": "MINIPROGRAM_ORDER_DETAIL",
+      "syncedAt": "2026-03-05T07:44:04.522Z",
+      "order": {
+        "id": "TM20260305022653439",
+        "serviceType": "FILM",
+        "serviceTypeLabel": "贴膜",
+        "status": "已完工",
+        "customerName": "余先生",
+        "phone": "13003103126",
+        "carModel": "极氪 009",
+        "plateNumber": "沪ABV2012",
+        "vinPhoto": "http://tmp/qEFvnya1LINJ2c2de38c0a91ace33584fe27aebde222.png",
+        "sourceChannel": "抖音",
+        "store": "BOP 保镖上海工厂店",
+        "salesOwner": "孟傲",
+        "packageModel": "龙膜 畅悦 80 + 龙膜 畅悦 35/15 + BOP风狂者",
+        "packageArea": "前档 + 侧后 + 整车",
+        "packageCodes": [
+          "SIDE_REAR",
+          "FULL",
+          "FRONT"
+        ],
+        "packageItems": [
+          {
+            "value": "SIDE_REAR",
+            "label": "龙膜 畅悦 80",
+            "desc": "前档",
+            "basePrice": 1800
+          },
+          {
+            "value": "FULL",
+            "label": "龙膜 畅悦 35/15",
+            "desc": "侧后",
+            "basePrice": 1000
+          },
+          {
+            "value": "FRONT",
+            "label": "BOP风狂者",
+            "desc": "整车",
+            "basePrice": 6800
+          }
+        ],
+        "appointmentDate": "2026-03-12",
+        "appointmentTime": "09:00",
+        "dispatchInfo": {
+          "date": "2026-03-12",
+          "time": "09:00",
+          "workBay": "1号工位",
+          "technicianName": "王澳",
+          "remark": "不拆字标 后盖机裁",
+          "updatedAt": "2026-03-05 15:43"
+        },
+        "depositAmount": 500,
+        "depositProofPhotos": [
+          "http://tmp/cvo8m74ia8f_2c2de38c0a91ace33584fe27aebde222.png"
+        ],
+        "finalPaymentPhotos": [
+          "http://tmp/rpGp64RtvNTC2c2de38c0a91ace33584fe27aebde222.png"
+        ],
+        "finalPaymentUploadedAt": "2026-03-05 15:44",
+        "technicianName": "王澳",
+        "constructionPhotos": [
+          "http://tmp/7lzV1w8U8Wkn2c2de38c0a91ace33584fe27aebde222.png"
+        ],
+        "damagePhotos": [],
+        "workPartRecords": [
+          {
+            "id": "WPR17726490122799406",
+            "partType": "FULL_CAR",
+            "partTypeLabel": "整车提成",
+            "partCode": "FULL_FRONT_HOOD",
+            "partLabel": "前杠机盖",
+            "technicianName": "王",
+            "amount": 200,
+            "submittedAt": "2026-03-05 02:30",
+            "photos": [
+              "http://tmp/wkaTGnt2h1BE2c2de38c0a91ace33584fe27aebde222.png"
+            ]
+          }
+        ],
+        "deliveryStatus": "交车通过",
+        "deliveryPassedAt": "2026-03-05 14:29",
+        "commissionStatus": "已生成",
+        "commissionGeneratedAt": "2026-03-05 14:29",
+        "commissionTotal": 200,
+        "commissionRecords": [
+          {
+            "id": "WPR17726490122799406",
+            "partType": "FULL_CAR",
+            "partTypeLabel": "整车提成",
+            "partCode": "FULL_FRONT_HOOD",
+            "partLabel": "前杠机盖",
+            "technicianName": "王",
+            "amount": 200,
+            "submittedAt": "2026-03-05 02:30"
+          }
+        ],
+        "followupRecords": [],
+        "followupLastUpdatedAt": "",
+        "createdAt": "2026-03-05 02:26",
+        "updatedAt": "2026-03-05 15:44",
+        "remark": "3.11 号下午 2 点松江手拉手交付中心验车",
+        "priceSummary": {
+          "packagePrice": 9600,
+          "addOnFee": 0,
+          "totalPrice": 9600,
+          "deposit": 500
+        }
+      }
+    }
+  },
+  {
+    "id": "f5b9d022ab9b4ad7a3c941be2c785e9c",
+    "receivedAt": "2026-03-05 15:43",
+    "eventType": "ORDER_DISPATCH_UPDATED",
+    "source": "MINIPROGRAM_ORDER_DETAIL",
+    "orderId": "TM20260305022653439",
+    "serviceType": "FILM",
+    "orderStatus": "未完工",
+    "totalPrice": 9600,
+    "externalId": "FIN-20260305-22653439",
+    "result": "SUCCESS",
+    "payload": {
+      "eventType": "ORDER_DISPATCH_UPDATED",
+      "source": "MINIPROGRAM_ORDER_DETAIL",
+      "syncedAt": "2026-03-05T07:43:40.742Z",
+      "order": {
+        "id": "TM20260305022653439",
+        "serviceType": "FILM",
+        "serviceTypeLabel": "贴膜",
+        "status": "未完工",
+        "customerName": "余先生",
+        "phone": "13003103126",
+        "carModel": "极氪 009",
+        "plateNumber": "沪ABV2012",
+        "vinPhoto": "http://tmp/qEFvnya1LINJ2c2de38c0a91ace33584fe27aebde222.png",
+        "sourceChannel": "抖音",
+        "store": "BOP 保镖上海工厂店",
+        "salesOwner": "孟傲",
+        "packageModel": "龙膜 畅悦 80 + 龙膜 畅悦 35/15 + BOP风狂者",
+        "packageArea": "前档 + 侧后 + 整车",
+        "packageCodes": [
+          "SIDE_REAR",
+          "FULL",
+          "FRONT"
+        ],
+        "packageItems": [
+          {
+            "value": "SIDE_REAR",
+            "label": "龙膜 畅悦 80",
+            "desc": "前档",
+            "basePrice": 1800
+          },
+          {
+            "value": "FULL",
+            "label": "龙膜 畅悦 35/15",
+            "desc": "侧后",
+            "basePrice": 1000
+          },
+          {
+            "value": "FRONT",
+            "label": "BOP风狂者",
+            "desc": "整车",
+            "basePrice": 6800
+          }
+        ],
+        "appointmentDate": "2026-03-12",
+        "appointmentTime": "09:00",
+        "dispatchInfo": {
+          "date": "2026-03-12",
+          "time": "09:00",
+          "workBay": "1号工位",
+          "technicianName": "王澳",
+          "remark": "不拆字标 后盖机裁",
+          "updatedAt": "2026-03-05 15:43"
+        },
+        "depositAmount": 500,
+        "depositProofPhotos": [
+          "http://tmp/cvo8m74ia8f_2c2de38c0a91ace33584fe27aebde222.png"
+        ],
+        "finalPaymentPhotos": [],
+        "finalPaymentUploadedAt": "",
+        "technicianName": "王澳",
+        "constructionPhotos": [
+          "http://tmp/7lzV1w8U8Wkn2c2de38c0a91ace33584fe27aebde222.png"
+        ],
+        "damagePhotos": [],
+        "workPartRecords": [
+          {
+            "id": "WPR17726490122799406",
+            "partType": "FULL_CAR",
+            "partTypeLabel": "整车提成",
+            "partCode": "FULL_FRONT_HOOD",
+            "partLabel": "前杠机盖",
+            "technicianName": "王",
+            "amount": 200,
+            "submittedAt": "2026-03-05 02:30",
+            "photos": [
+              "http://tmp/wkaTGnt2h1BE2c2de38c0a91ace33584fe27aebde222.png"
+            ]
+          }
+        ],
+        "deliveryStatus": "交车通过",
+        "deliveryPassedAt": "2026-03-05 14:29",
+        "commissionStatus": "已生成",
+        "commissionGeneratedAt": "2026-03-05 14:29",
+        "commissionTotal": 200,
+        "commissionRecords": [
+          {
+            "id": "WPR17726490122799406",
+            "partType": "FULL_CAR",
+            "partTypeLabel": "整车提成",
+            "partCode": "FULL_FRONT_HOOD",
+            "partLabel": "前杠机盖",
+            "technicianName": "王",
+            "amount": 200,
+            "submittedAt": "2026-03-05 02:30"
+          }
+        ],
+        "followupRecords": [],
+        "followupLastUpdatedAt": "",
+        "createdAt": "2026-03-05 02:26",
+        "updatedAt": "2026-03-05 15:43",
+        "remark": "3.11 号下午 2 点松江手拉手交付中心验车",
+        "priceSummary": {
+          "packagePrice": 9600,
+          "addOnFee": 0,
+          "totalPrice": 9600,
+          "deposit": 500
+        }
+      }
+    }
+  },
+  {
+    "id": "9eb8ac070549458a8eda0957a8bab037",
+    "receivedAt": "2026-03-05 14:29",
+    "eventType": "ORDER_DELIVERY_CONFIRMED",
+    "source": "MINIPROGRAM_ORDER_DETAIL",
+    "orderId": "TM20260305022653439",
+    "serviceType": "FILM",
+    "orderStatus": "待确认",
+    "totalPrice": 9600,
+    "externalId": "FIN-20260305-22653439",
+    "result": "SUCCESS",
+    "payload": {
+      "eventType": "ORDER_DELIVERY_CONFIRMED",
+      "source": "MINIPROGRAM_ORDER_DETAIL",
+      "syncedAt": "2026-03-05T06:29:31.272Z",
+      "order": {
+        "id": "TM20260305022653439",
+        "serviceType": "FILM",
+        "serviceTypeLabel": "贴膜",
+        "status": "待确认",
+        "customerName": "余先生",
+        "phone": "13003103126",
+        "carModel": "极氪 009",
+        "plateNumber": "沪ABV2012",
+        "vinPhoto": "http://tmp/qEFvnya1LINJ2c2de38c0a91ace33584fe27aebde222.png",
+        "sourceChannel": "抖音",
+        "store": "BOP 保镖上海工厂店",
+        "salesOwner": "孟傲",
+        "packageModel": "龙膜 畅悦 80 + 龙膜 畅悦 35/15 + BOP风狂者",
+        "packageArea": "前档 + 侧后 + 整车",
+        "packageCodes": [
+          "SIDE_REAR",
+          "FULL",
+          "FRONT"
+        ],
+        "packageItems": [
+          {
+            "value": "SIDE_REAR",
+            "label": "龙膜 畅悦 80",
+            "desc": "前档",
+            "basePrice": 1800
+          },
+          {
+            "value": "FULL",
+            "label": "龙膜 畅悦 35/15",
+            "desc": "侧后",
+            "basePrice": 1000
+          },
+          {
+            "value": "FRONT",
+            "label": "BOP风狂者",
+            "desc": "整车",
+            "basePrice": 6800
+          }
+        ],
+        "appointmentDate": "2026-03-12",
+        "appointmentTime": "09:00",
+        "dispatchInfo": {
+          "date": "2026-03-12",
+          "time": "09:00",
+          "workBay": "1号工位",
+          "technicianName": "王澳",
+          "remark": "不拆字标 后盖机裁",
+          "updatedAt": "2026-03-05 14:16"
+        },
+        "depositAmount": 500,
+        "depositProofPhotos": [
+          "http://tmp/cvo8m74ia8f_2c2de38c0a91ace33584fe27aebde222.png"
+        ],
+        "finalPaymentPhotos": [],
+        "finalPaymentUploadedAt": "",
+        "technicianName": "",
+        "constructionPhotos": [
+          "http://tmp/7lzV1w8U8Wkn2c2de38c0a91ace33584fe27aebde222.png"
+        ],
+        "damagePhotos": [],
+        "workPartRecords": [
+          {
+            "id": "WPR17726490122799406",
+            "partType": "FULL_CAR",
+            "partTypeLabel": "整车提成",
+            "partCode": "FULL_FRONT_HOOD",
+            "partLabel": "前杠机盖",
+            "technicianName": "王",
+            "amount": 200,
+            "submittedAt": "2026-03-05 02:30",
+            "photos": [
+              "http://tmp/wkaTGnt2h1BE2c2de38c0a91ace33584fe27aebde222.png"
+            ]
+          }
+        ],
+        "deliveryStatus": "交车通过",
+        "deliveryPassedAt": "2026-03-05 14:29",
+        "commissionStatus": "已生成",
+        "commissionGeneratedAt": "2026-03-05 14:29",
+        "commissionTotal": 200,
+        "commissionRecords": [
+          {
+            "id": "WPR17726490122799406",
+            "partType": "FULL_CAR",
+            "partTypeLabel": "整车提成",
+            "partCode": "FULL_FRONT_HOOD",
+            "partLabel": "前杠机盖",
+            "technicianName": "王",
+            "amount": 200,
+            "submittedAt": "2026-03-05 02:30"
+          }
+        ],
+        "followupRecords": [],
+        "followupLastUpdatedAt": "",
+        "createdAt": "2026-03-05 02:26",
+        "updatedAt": "2026-03-05 14:29",
+        "remark": "3.11 号下午 2 点松江手拉手交付中心验车",
+        "priceSummary": {
+          "packagePrice": 9600,
+          "addOnFee": 0,
+          "totalPrice": 9600,
+          "deposit": 500
+        }
+      }
+    }
+  },
+  {
+    "id": "141a9306a264474e80d437ceb0eb305a",
+    "receivedAt": "2026-03-05 14:28",
+    "eventType": "ORDER_DELIVERY_CONFIRMED",
+    "source": "MINIPROGRAM_ORDER_DETAIL",
+    "orderId": "TM20260305022653439",
+    "serviceType": "FILM",
+    "orderStatus": "待确认",
+    "totalPrice": 9600,
+    "externalId": "FIN-20260305-22653439",
+    "result": "SUCCESS",
+    "payload": {
+      "eventType": "ORDER_DELIVERY_CONFIRMED",
+      "source": "MINIPROGRAM_ORDER_DETAIL",
+      "syncedAt": "2026-03-05T06:28:53.885Z",
+      "order": {
+        "id": "TM20260305022653439",
+        "serviceType": "FILM",
+        "serviceTypeLabel": "贴膜",
+        "status": "待确认",
+        "customerName": "余先生",
+        "phone": "13003103126",
+        "carModel": "极氪 009",
+        "plateNumber": "沪ABV2012",
+        "vinPhoto": "http://tmp/qEFvnya1LINJ2c2de38c0a91ace33584fe27aebde222.png",
+        "sourceChannel": "抖音",
+        "store": "BOP 保镖上海工厂店",
+        "salesOwner": "孟傲",
+        "packageModel": "龙膜 畅悦 80 + 龙膜 畅悦 35/15 + BOP风狂者",
+        "packageArea": "前档 + 侧后 + 整车",
+        "packageCodes": [
+          "SIDE_REAR",
+          "FULL",
+          "FRONT"
+        ],
+        "packageItems": [
+          {
+            "value": "SIDE_REAR",
+            "label": "龙膜 畅悦 80",
+            "desc": "前档",
+            "basePrice": 1800
+          },
+          {
+            "value": "FULL",
+            "label": "龙膜 畅悦 35/15",
+            "desc": "侧后",
+            "basePrice": 1000
+          },
+          {
+            "value": "FRONT",
+            "label": "BOP风狂者",
+            "desc": "整车",
+            "basePrice": 6800
+          }
+        ],
+        "appointmentDate": "2026-03-12",
+        "appointmentTime": "09:00",
+        "dispatchInfo": {
+          "date": "2026-03-12",
+          "time": "09:00",
+          "workBay": "1号工位",
+          "technicianName": "王澳",
+          "remark": "不拆字标 后盖机裁",
+          "updatedAt": "2026-03-05 14:16"
+        },
+        "depositAmount": 500,
+        "depositProofPhotos": [
+          "http://tmp/cvo8m74ia8f_2c2de38c0a91ace33584fe27aebde222.png"
+        ],
+        "finalPaymentPhotos": [],
+        "finalPaymentUploadedAt": "",
+        "technicianName": "",
+        "constructionPhotos": [
+          "http://tmp/7lzV1w8U8Wkn2c2de38c0a91ace33584fe27aebde222.png"
+        ],
+        "damagePhotos": [],
+        "workPartRecords": [
+          {
+            "id": "WPR17726490122799406",
+            "partType": "FULL_CAR",
+            "partTypeLabel": "整车提成",
+            "partCode": "FULL_FRONT_HOOD",
+            "partLabel": "前杠机盖",
+            "technicianName": "王",
+            "amount": 200,
+            "submittedAt": "2026-03-05 02:30",
+            "photos": [
+              "http://tmp/wkaTGnt2h1BE2c2de38c0a91ace33584fe27aebde222.png"
+            ]
+          }
+        ],
+        "deliveryStatus": "交车通过",
+        "deliveryPassedAt": "2026-03-05 14:28",
+        "commissionStatus": "已生成",
+        "commissionGeneratedAt": "2026-03-05 14:28",
+        "commissionTotal": 200,
+        "commissionRecords": [
+          {
+            "id": "WPR17726490122799406",
+            "partType": "FULL_CAR",
+            "partTypeLabel": "整车提成",
+            "partCode": "FULL_FRONT_HOOD",
+            "partLabel": "前杠机盖",
+            "technicianName": "王",
+            "amount": 200,
+            "submittedAt": "2026-03-05 02:30"
+          }
+        ],
+        "followupRecords": [],
+        "followupLastUpdatedAt": "",
+        "createdAt": "2026-03-05 02:26",
+        "updatedAt": "2026-03-05 14:28",
+        "remark": "3.11 号下午 2 点松江手拉手交付中心验车",
+        "priceSummary": {
+          "packagePrice": 9600,
+          "addOnFee": 0,
+          "totalPrice": 9600,
+          "deposit": 500
+        }
+      }
+    }
+  },
+  {
+    "id": "201585f09b6a4b8fbabc8369fe289012",
+    "receivedAt": "2026-03-05 14:17",
+    "eventType": "ORDER_DELIVERY_CONFIRMED",
+    "source": "MINIPROGRAM_ORDER_DETAIL",
+    "orderId": "TM20260305022653439",
+    "serviceType": "FILM",
+    "orderStatus": "待确认",
+    "totalPrice": 9600,
+    "externalId": "FIN-20260305-22653439",
+    "result": "SUCCESS",
+    "payload": {
+      "eventType": "ORDER_DELIVERY_CONFIRMED",
+      "source": "MINIPROGRAM_ORDER_DETAIL",
+      "syncedAt": "2026-03-05T06:17:27.865Z",
+      "order": {
+        "id": "TM20260305022653439",
+        "serviceType": "FILM",
+        "serviceTypeLabel": "贴膜",
+        "status": "待确认",
+        "customerName": "余先生",
+        "phone": "13003103126",
+        "carModel": "极氪 009",
+        "plateNumber": "沪ABV2012",
+        "vinPhoto": "http://tmp/qEFvnya1LINJ2c2de38c0a91ace33584fe27aebde222.png",
+        "sourceChannel": "抖音",
+        "store": "BOP 保镖上海工厂店",
+        "salesOwner": "孟傲",
+        "packageModel": "龙膜 畅悦 80 + 龙膜 畅悦 35/15 + BOP风狂者",
+        "packageArea": "前档 + 侧后 + 整车",
+        "packageCodes": [
+          "SIDE_REAR",
+          "FULL",
+          "FRONT"
+        ],
+        "packageItems": [
+          {
+            "value": "SIDE_REAR",
+            "label": "龙膜 畅悦 80",
+            "desc": "前档",
+            "basePrice": 1800
+          },
+          {
+            "value": "FULL",
+            "label": "龙膜 畅悦 35/15",
+            "desc": "侧后",
+            "basePrice": 1000
+          },
+          {
+            "value": "FRONT",
+            "label": "BOP风狂者",
+            "desc": "整车",
+            "basePrice": 6800
+          }
+        ],
+        "appointmentDate": "2026-03-12",
+        "appointmentTime": "09:00",
+        "dispatchInfo": {
+          "date": "2026-03-12",
+          "time": "09:00",
+          "workBay": "1号工位",
+          "technicianName": "王澳",
+          "remark": "不拆字标 后盖机裁",
+          "updatedAt": "2026-03-05 14:16"
+        },
+        "depositAmount": 500,
+        "depositProofPhotos": [
+          "http://tmp/cvo8m74ia8f_2c2de38c0a91ace33584fe27aebde222.png"
+        ],
+        "finalPaymentPhotos": [],
+        "finalPaymentUploadedAt": "",
+        "technicianName": "",
+        "constructionPhotos": [
+          "http://tmp/7lzV1w8U8Wkn2c2de38c0a91ace33584fe27aebde222.png"
+        ],
+        "damagePhotos": [],
+        "workPartRecords": [
+          {
+            "id": "WPR17726490122799406",
+            "partType": "FULL_CAR",
+            "partTypeLabel": "整车提成",
+            "partCode": "FULL_FRONT_HOOD",
+            "partLabel": "前杠机盖",
+            "technicianName": "王",
+            "amount": 200,
+            "submittedAt": "2026-03-05 02:30",
+            "photos": [
+              "http://tmp/wkaTGnt2h1BE2c2de38c0a91ace33584fe27aebde222.png"
+            ]
+          }
+        ],
+        "deliveryStatus": "交车通过",
+        "deliveryPassedAt": "2026-03-05 14:17",
+        "commissionStatus": "已生成",
+        "commissionGeneratedAt": "2026-03-05 14:17",
+        "commissionTotal": 200,
+        "commissionRecords": [
+          {
+            "id": "WPR17726490122799406",
+            "partType": "FULL_CAR",
+            "partTypeLabel": "整车提成",
+            "partCode": "FULL_FRONT_HOOD",
+            "partLabel": "前杠机盖",
+            "technicianName": "王",
+            "amount": 200,
+            "submittedAt": "2026-03-05 02:30"
+          }
+        ],
+        "followupRecords": [],
+        "followupLastUpdatedAt": "",
+        "createdAt": "2026-03-05 02:26",
+        "updatedAt": "2026-03-05 14:17",
+        "remark": "3.11 号下午 2 点松江手拉手交付中心验车",
+        "priceSummary": {
+          "packagePrice": 9600,
+          "addOnFee": 0,
+          "totalPrice": 9600,
+          "deposit": 500
+        }
+      }
+    }
+  },
+  {
+    "id": "bce6e35f1ae540a9a9857f53a00236f2",
+    "receivedAt": "2026-03-05 14:17",
+    "eventType": "ORDER_UPDATED",
+    "source": "MINIPROGRAM_ORDER_EDIT",
+    "orderId": "TM20260305022653439",
+    "serviceType": "FILM",
+    "orderStatus": "待确认",
+    "totalPrice": 9600,
+    "externalId": "FIN-20260305-22653439",
+    "result": "SUCCESS",
+    "payload": {
+      "eventType": "ORDER_UPDATED",
+      "source": "MINIPROGRAM_ORDER_EDIT",
+      "syncedAt": "2026-03-05T06:17:23.038Z",
+      "order": {
+        "id": "TM20260305022653439",
+        "serviceType": "FILM",
+        "serviceTypeLabel": "贴膜",
+        "status": "待确认",
+        "customerName": "余先生",
+        "phone": "13003103126",
+        "carModel": "极氪 009",
+        "plateNumber": "沪ABV2012",
+        "vinPhoto": "http://tmp/qEFvnya1LINJ2c2de38c0a91ace33584fe27aebde222.png",
+        "sourceChannel": "抖音",
+        "store": "BOP 保镖上海工厂店",
+        "salesOwner": "孟傲",
+        "packageModel": "龙膜 畅悦 80 + 龙膜 畅悦 35/15 + BOP风狂者",
+        "packageArea": "前档 + 侧后 + 整车",
+        "packageCodes": [
+          "SIDE_REAR",
+          "FULL",
+          "FRONT"
+        ],
+        "packageItems": [
+          {
+            "value": "SIDE_REAR",
+            "label": "龙膜 畅悦 80",
+            "desc": "前档",
+            "basePrice": 1800
+          },
+          {
+            "value": "FULL",
+            "label": "龙膜 畅悦 35/15",
+            "desc": "侧后",
+            "basePrice": 1000
+          },
+          {
+            "value": "FRONT",
+            "label": "BOP风狂者",
+            "desc": "整车",
+            "basePrice": 6800
+          }
+        ],
+        "appointmentDate": "2026-03-12",
+        "appointmentTime": "09:00",
+        "dispatchInfo": {
+          "date": "2026-03-12",
+          "time": "09:00",
+          "workBay": "1号工位",
+          "technicianName": "王澳",
+          "remark": "不拆字标 后盖机裁",
+          "updatedAt": "2026-03-05 14:16"
+        },
+        "depositAmount": 500,
+        "depositProofPhotos": [
+          "http://tmp/cvo8m74ia8f_2c2de38c0a91ace33584fe27aebde222.png"
+        ],
+        "finalPaymentPhotos": [],
+        "finalPaymentUploadedAt": "",
+        "technicianName": "",
+        "constructionPhotos": [
+          "http://tmp/7lzV1w8U8Wkn2c2de38c0a91ace33584fe27aebde222.png"
+        ],
+        "damagePhotos": [],
+        "workPartRecords": [
+          {
+            "id": "WPR17726490122799406",
+            "partType": "FULL_CAR",
+            "partTypeLabel": "整车提成",
+            "partCode": "FULL_FRONT_HOOD",
+            "partLabel": "前杠机盖",
+            "technicianName": "王",
+            "amount": 200,
+            "submittedAt": "2026-03-05 02:30",
+            "photos": [
+              "http://tmp/wkaTGnt2h1BE2c2de38c0a91ace33584fe27aebde222.png"
+            ]
+          }
+        ],
+        "deliveryStatus": "待交车验收",
+        "deliveryPassedAt": "",
+        "commissionStatus": "未生成",
+        "commissionGeneratedAt": "",
+        "commissionTotal": 0,
+        "commissionRecords": [],
+        "followupRecords": [],
+        "followupLastUpdatedAt": "",
+        "createdAt": "2026-03-05 02:26",
+        "updatedAt": "2026-03-05 14:17",
+        "remark": "3.11 号下午 2 点松江手拉手交付中心验车",
+        "priceSummary": {
+          "packagePrice": 9600,
+          "addOnFee": 0,
+          "totalPrice": 9600,
+          "deposit": 500
+        }
+      }
+    }
+  },
+  {
+    "id": "036c3495712148a0882bdd5cbccee475",
+    "receivedAt": "2026-03-05 14:16",
+    "eventType": "ORDER_DELIVERY_CONFIRMED",
+    "source": "MINIPROGRAM_ORDER_DETAIL",
+    "orderId": "TM20260305022653439",
+    "serviceType": "FILM",
+    "orderStatus": "待确认",
+    "totalPrice": 9600,
+    "externalId": "FIN-20260305-22653439",
+    "result": "SUCCESS",
+    "payload": {
+      "eventType": "ORDER_DELIVERY_CONFIRMED",
+      "source": "MINIPROGRAM_ORDER_DETAIL",
+      "syncedAt": "2026-03-05T06:16:38.408Z",
+      "order": {
+        "id": "TM20260305022653439",
+        "serviceType": "FILM",
+        "serviceTypeLabel": "贴膜",
+        "status": "待确认",
+        "customerName": "余先生",
+        "phone": "13003103126",
+        "carModel": "极氪 009",
+        "plateNumber": "沪ABV2012",
+        "vinPhoto": "http://tmp/qEFvnya1LINJ2c2de38c0a91ace33584fe27aebde222.png",
+        "sourceChannel": "抖音",
+        "store": "BOP 保镖上海工厂店",
+        "salesOwner": "余帅",
+        "packageModel": "龙膜 畅悦 80 + 龙膜 畅悦 35/15 + BOP风狂者",
+        "packageArea": "前档 + 侧后 + 整车",
+        "packageCodes": [
+          "SIDE_REAR",
+          "FULL",
+          "FRONT"
+        ],
+        "packageItems": [
+          {
+            "value": "SIDE_REAR",
+            "label": "龙膜 畅悦 80",
+            "desc": "前档",
+            "basePrice": 1800
+          },
+          {
+            "value": "FULL",
+            "label": "龙膜 畅悦 35/15",
+            "desc": "侧后",
+            "basePrice": 1000
+          },
+          {
+            "value": "FRONT",
+            "label": "BOP风狂者",
+            "desc": "整车",
+            "basePrice": 6800
+          }
+        ],
+        "appointmentDate": "2026-03-12",
+        "appointmentTime": "09:00",
+        "dispatchInfo": {
+          "date": "2026-03-12",
+          "time": "09:00",
+          "workBay": "1号工位",
+          "technicianName": "王澳",
+          "remark": "不拆字标 后盖机裁",
+          "updatedAt": "2026-03-05 14:16"
+        },
+        "depositAmount": 500,
+        "depositProofPhotos": [
+          "http://tmp/cvo8m74ia8f_2c2de38c0a91ace33584fe27aebde222.png"
+        ],
+        "finalPaymentPhotos": [],
+        "finalPaymentUploadedAt": "",
+        "technicianName": "",
+        "constructionPhotos": [
+          "http://tmp/7lzV1w8U8Wkn2c2de38c0a91ace33584fe27aebde222.png"
+        ],
+        "damagePhotos": [],
+        "workPartRecords": [
+          {
+            "id": "WPR17726490122799406",
+            "partType": "FULL_CAR",
+            "partTypeLabel": "整车提成",
+            "partCode": "FULL_FRONT_HOOD",
+            "partLabel": "前杠机盖",
+            "technicianName": "王",
+            "amount": 200,
+            "submittedAt": "2026-03-05 02:30",
+            "photos": [
+              "http://tmp/wkaTGnt2h1BE2c2de38c0a91ace33584fe27aebde222.png"
+            ]
+          }
+        ],
+        "deliveryStatus": "交车通过",
+        "deliveryPassedAt": "2026-03-05 14:16",
+        "commissionStatus": "已生成",
+        "commissionGeneratedAt": "2026-03-05 14:16",
+        "commissionTotal": 200,
+        "commissionRecords": [
+          {
+            "id": "WPR17726490122799406",
+            "partType": "FULL_CAR",
+            "partTypeLabel": "整车提成",
+            "partCode": "FULL_FRONT_HOOD",
+            "partLabel": "前杠机盖",
+            "technicianName": "王",
+            "amount": 200,
+            "submittedAt": "2026-03-05 02:30"
+          }
+        ],
+        "followupRecords": [],
+        "followupLastUpdatedAt": "",
+        "createdAt": "2026-03-05 02:26",
+        "updatedAt": "2026-03-05 14:16",
+        "remark": "3.11 号下午 2 点松江手拉手交付中心验车",
+        "priceSummary": {
+          "packagePrice": 9600,
+          "addOnFee": 0,
+          "totalPrice": 9600,
+          "deposit": 500
+        }
+      }
+    }
+  },
+  {
+    "id": "ec38cb60cd044c729d5c7192582939e3",
+    "receivedAt": "2026-03-05 14:16",
+    "eventType": "ORDER_DISPATCH_UPDATED",
+    "source": "MINIPROGRAM_ORDER_DETAIL",
+    "orderId": "TM20260305022653439",
+    "serviceType": "FILM",
+    "orderStatus": "待确认",
+    "totalPrice": 9600,
+    "externalId": "FIN-20260305-22653439",
+    "result": "SUCCESS",
+    "payload": {
+      "eventType": "ORDER_DISPATCH_UPDATED",
+      "source": "MINIPROGRAM_ORDER_DETAIL",
+      "syncedAt": "2026-03-05T06:16:20.477Z",
+      "order": {
+        "id": "TM20260305022653439",
+        "serviceType": "FILM",
+        "serviceTypeLabel": "贴膜",
+        "status": "待确认",
+        "customerName": "余先生",
+        "phone": "13003103126",
+        "carModel": "极氪 009",
+        "plateNumber": "沪ABV2012",
+        "vinPhoto": "http://tmp/qEFvnya1LINJ2c2de38c0a91ace33584fe27aebde222.png",
+        "sourceChannel": "抖音",
+        "store": "BOP 保镖上海工厂店",
+        "salesOwner": "余帅",
+        "packageModel": "龙膜 畅悦 80 + 龙膜 畅悦 35/15 + BOP风狂者",
+        "packageArea": "前档 + 侧后 + 整车",
+        "packageCodes": [
+          "SIDE_REAR",
+          "FULL",
+          "FRONT"
+        ],
+        "packageItems": [
+          {
+            "value": "SIDE_REAR",
+            "label": "龙膜 畅悦 80",
+            "desc": "前档",
+            "basePrice": 1800
+          },
+          {
+            "value": "FULL",
+            "label": "龙膜 畅悦 35/15",
+            "desc": "侧后",
+            "basePrice": 1000
+          },
+          {
+            "value": "FRONT",
+            "label": "BOP风狂者",
+            "desc": "整车",
+            "basePrice": 6800
+          }
+        ],
+        "appointmentDate": "2026-03-12",
+        "appointmentTime": "09:00",
+        "dispatchInfo": {
+          "date": "2026-03-12",
+          "time": "09:00",
+          "workBay": "1号工位",
+          "technicianName": "王澳",
+          "remark": "不拆字标 后盖机裁",
+          "updatedAt": "2026-03-05 14:16"
+        },
+        "depositAmount": 500,
+        "depositProofPhotos": [
+          "http://tmp/cvo8m74ia8f_2c2de38c0a91ace33584fe27aebde222.png"
+        ],
+        "finalPaymentPhotos": [],
+        "finalPaymentUploadedAt": "",
+        "technicianName": "",
+        "constructionPhotos": [
+          "http://tmp/7lzV1w8U8Wkn2c2de38c0a91ace33584fe27aebde222.png"
+        ],
+        "damagePhotos": [],
+        "workPartRecords": [
+          {
+            "id": "WPR17726490122799406",
+            "partType": "FULL_CAR",
+            "partTypeLabel": "整车提成",
+            "partCode": "FULL_FRONT_HOOD",
+            "partLabel": "前杠机盖",
+            "technicianName": "王",
+            "amount": 200,
+            "submittedAt": "2026-03-05 02:30",
+            "photos": [
+              "http://tmp/wkaTGnt2h1BE2c2de38c0a91ace33584fe27aebde222.png"
+            ]
+          }
+        ],
+        "deliveryStatus": "交车通过",
+        "deliveryPassedAt": "2026-03-05 14:15",
+        "commissionStatus": "已生成",
+        "commissionGeneratedAt": "2026-03-05 14:15",
+        "commissionTotal": 200,
+        "commissionRecords": [
+          {
+            "id": "WPR17726490122799406",
+            "partType": "FULL_CAR",
+            "partTypeLabel": "整车提成",
+            "partCode": "FULL_FRONT_HOOD",
+            "partLabel": "前杠机盖",
+            "technicianName": "王",
+            "amount": 200,
+            "submittedAt": "2026-03-05 02:30"
+          }
+        ],
+        "followupRecords": [],
+        "followupLastUpdatedAt": "",
+        "createdAt": "2026-03-05 02:26",
+        "updatedAt": "2026-03-05 14:16",
+        "remark": "3.11 号下午 2 点松江手拉手交付中心验车",
+        "priceSummary": {
+          "packagePrice": 9600,
+          "addOnFee": 0,
+          "totalPrice": 9600,
+          "deposit": 500
+        }
+      }
+    }
+  },
+  {
+    "id": "29ec37cd361045a183165e6671791b17",
+    "receivedAt": "2026-03-05 14:15",
+    "eventType": "ORDER_DELIVERY_CONFIRMED",
+    "source": "MINIPROGRAM_ORDER_DETAIL",
+    "orderId": "TM20260305022653439",
+    "serviceType": "FILM",
+    "orderStatus": "待确认",
+    "totalPrice": 9600,
+    "externalId": "FIN-20260305-22653439",
+    "result": "SUCCESS",
+    "payload": {
+      "eventType": "ORDER_DELIVERY_CONFIRMED",
+      "source": "MINIPROGRAM_ORDER_DETAIL",
+      "syncedAt": "2026-03-05T06:15:59.379Z",
+      "order": {
+        "id": "TM20260305022653439",
+        "serviceType": "FILM",
+        "serviceTypeLabel": "贴膜",
+        "status": "待确认",
+        "customerName": "余先生",
+        "phone": "13003103126",
+        "carModel": "极氪 009",
+        "plateNumber": "沪ABV2012",
+        "vinPhoto": "http://tmp/qEFvnya1LINJ2c2de38c0a91ace33584fe27aebde222.png",
+        "sourceChannel": "抖音",
+        "store": "BOP 保镖上海工厂店",
+        "salesOwner": "余帅",
+        "packageModel": "龙膜 畅悦 80 + 龙膜 畅悦 35/15 + BOP风狂者",
+        "packageArea": "前档 + 侧后 + 整车",
+        "packageCodes": [
+          "SIDE_REAR",
+          "FULL",
+          "FRONT"
+        ],
+        "packageItems": [
+          {
+            "value": "SIDE_REAR",
+            "label": "龙膜 畅悦 80",
+            "desc": "前档",
+            "basePrice": 1800
+          },
+          {
+            "value": "FULL",
+            "label": "龙膜 畅悦 35/15",
+            "desc": "侧后",
+            "basePrice": 1000
+          },
+          {
+            "value": "FRONT",
+            "label": "BOP风狂者",
+            "desc": "整车",
+            "basePrice": 6800
+          }
+        ],
+        "appointmentDate": "2026-03-12",
+        "appointmentTime": "09:00",
+        "dispatchInfo": {
+          "date": "2026-03-12",
+          "time": "09:00",
+          "workBay": "1号工位",
+          "technicianName": "王澳 在这一步可添加技师",
+          "remark": "不拆字标 后盖机裁",
+          "updatedAt": "2026-03-05 02:29"
+        },
+        "depositAmount": 500,
+        "depositProofPhotos": [
+          "http://tmp/cvo8m74ia8f_2c2de38c0a91ace33584fe27aebde222.png"
+        ],
+        "finalPaymentPhotos": [],
+        "finalPaymentUploadedAt": "",
+        "technicianName": "",
+        "constructionPhotos": [
+          "http://tmp/7lzV1w8U8Wkn2c2de38c0a91ace33584fe27aebde222.png"
+        ],
+        "damagePhotos": [],
+        "workPartRecords": [
+          {
+            "id": "WPR17726490122799406",
+            "partType": "FULL_CAR",
+            "partTypeLabel": "整车提成",
+            "partCode": "FULL_FRONT_HOOD",
+            "partLabel": "前杠机盖",
+            "technicianName": "王",
+            "amount": 200,
+            "submittedAt": "2026-03-05 02:30",
+            "photos": [
+              "http://tmp/wkaTGnt2h1BE2c2de38c0a91ace33584fe27aebde222.png"
+            ]
+          }
+        ],
+        "deliveryStatus": "交车通过",
+        "deliveryPassedAt": "2026-03-05 14:15",
+        "commissionStatus": "已生成",
+        "commissionGeneratedAt": "2026-03-05 14:15",
+        "commissionTotal": 200,
+        "commissionRecords": [
+          {
+            "id": "WPR17726490122799406",
+            "partType": "FULL_CAR",
+            "partTypeLabel": "整车提成",
+            "partCode": "FULL_FRONT_HOOD",
+            "partLabel": "前杠机盖",
+            "technicianName": "王",
+            "amount": 200,
+            "submittedAt": "2026-03-05 02:30"
+          }
+        ],
+        "followupRecords": [],
+        "followupLastUpdatedAt": "",
+        "createdAt": "2026-03-05 02:26",
+        "updatedAt": "2026-03-05 14:15",
+        "remark": "3.11 号下午 2 点松江手拉手交付中心验车",
+        "priceSummary": {
+          "packagePrice": 9600,
+          "addOnFee": 0,
+          "totalPrice": 9600,
+          "deposit": 500
+        }
+      }
+    }
+  },
+  {
+    "id": "0b140d183bb24432952756aa73798261",
+    "receivedAt": "2026-03-05 14:15",
+    "eventType": "MANUAL_RETRY",
+    "source": "MINIPROGRAM_ORDER_DETAIL",
+    "orderId": "TM20260305022653439",
+    "serviceType": "FILM",
+    "orderStatus": "待确认",
+    "totalPrice": 9600,
+    "externalId": "FIN-20260305-22653439",
+    "result": "SUCCESS",
+    "payload": {
+      "eventType": "MANUAL_RETRY",
+      "source": "MINIPROGRAM_ORDER_DETAIL",
+      "syncedAt": "2026-03-05T06:15:50.873Z",
+      "order": {
+        "id": "TM20260305022653439",
+        "serviceType": "FILM",
+        "serviceTypeLabel": "贴膜",
+        "status": "待确认",
+        "customerName": "余先生",
+        "phone": "13003103126",
+        "carModel": "极氪 009",
+        "plateNumber": "沪ABV2012",
+        "vinPhoto": "http://tmp/qEFvnya1LINJ2c2de38c0a91ace33584fe27aebde222.png",
+        "sourceChannel": "抖音",
+        "store": "BOP 保镖上海工厂店",
+        "salesOwner": "余帅",
+        "packageModel": "龙膜 畅悦 80 + 龙膜 畅悦 35/15 + BOP风狂者",
+        "packageArea": "前档 + 侧后 + 整车",
+        "packageCodes": [
+          "SIDE_REAR",
+          "FULL",
+          "FRONT"
+        ],
+        "packageItems": [
+          {
+            "value": "SIDE_REAR",
+            "label": "龙膜 畅悦 80",
+            "desc": "前档",
+            "basePrice": 1800
+          },
+          {
+            "value": "FULL",
+            "label": "龙膜 畅悦 35/15",
+            "desc": "侧后",
+            "basePrice": 1000
+          },
+          {
+            "value": "FRONT",
+            "label": "BOP风狂者",
+            "desc": "整车",
+            "basePrice": 6800
+          }
+        ],
+        "appointmentDate": "2026-03-12",
+        "appointmentTime": "09:00",
+        "dispatchInfo": {
+          "date": "2026-03-12",
+          "time": "09:00",
+          "workBay": "1号工位",
+          "technicianName": "王澳 在这一步可添加技师",
+          "remark": "不拆字标 后盖机裁",
+          "updatedAt": "2026-03-05 02:29"
+        },
+        "depositAmount": 500,
+        "depositProofPhotos": [
+          "http://tmp/cvo8m74ia8f_2c2de38c0a91ace33584fe27aebde222.png"
+        ],
+        "finalPaymentPhotos": [],
+        "finalPaymentUploadedAt": "",
+        "technicianName": "",
+        "constructionPhotos": [
+          "http://tmp/7lzV1w8U8Wkn2c2de38c0a91ace33584fe27aebde222.png"
+        ],
+        "damagePhotos": [],
+        "workPartRecords": [
+          {
+            "id": "WPR17726490122799406",
+            "partType": "FULL_CAR",
+            "partTypeLabel": "整车提成",
+            "partCode": "FULL_FRONT_HOOD",
+            "partLabel": "前杠机盖",
+            "technicianName": "王",
+            "amount": 200,
+            "submittedAt": "2026-03-05 02:30",
+            "photos": [
+              "http://tmp/wkaTGnt2h1BE2c2de38c0a91ace33584fe27aebde222.png"
+            ]
+          }
+        ],
+        "deliveryStatus": "待交车验收",
+        "deliveryPassedAt": "",
+        "commissionStatus": "未生成",
+        "commissionGeneratedAt": "",
+        "commissionTotal": 0,
+        "commissionRecords": [],
+        "followupRecords": [],
+        "followupLastUpdatedAt": "",
+        "createdAt": "2026-03-05 02:26",
+        "updatedAt": "2026-03-05 14:15",
+        "remark": "3.11 号下午 2 点松江手拉手交付中心验车",
+        "priceSummary": {
+          "packagePrice": 9600,
+          "addOnFee": 0,
+          "totalPrice": 9600,
+          "deposit": 500
+        }
+      }
+    }
+  },
+  {
+    "id": "065deb2fbf5948eab39669cd04c6e184",
+    "receivedAt": "2026-03-05 14:15",
+    "eventType": "ORDER_COMPLETION_PHOTOS_UPLOADED",
+    "source": "MINIPROGRAM_ORDER_DETAIL",
+    "orderId": "TM20260305022653439",
+    "serviceType": "FILM",
+    "orderStatus": "待确认",
+    "totalPrice": 9600,
+    "externalId": "FIN-20260305-22653439",
+    "result": "SUCCESS",
+    "payload": {
+      "eventType": "ORDER_COMPLETION_PHOTOS_UPLOADED",
+      "source": "MINIPROGRAM_ORDER_DETAIL",
+      "syncedAt": "2026-03-05T06:15:21.510Z",
+      "order": {
+        "id": "TM20260305022653439",
+        "serviceType": "FILM",
+        "serviceTypeLabel": "贴膜",
+        "status": "待确认",
+        "customerName": "余先生",
+        "phone": "13003103126",
+        "carModel": "极氪 009",
+        "plateNumber": "沪ABV2012",
+        "vinPhoto": "http://tmp/qEFvnya1LINJ2c2de38c0a91ace33584fe27aebde222.png",
+        "sourceChannel": "抖音",
+        "store": "BOP 保镖上海工厂店",
+        "salesOwner": "余帅",
+        "packageModel": "龙膜 畅悦 80 + 龙膜 畅悦 35/15 + BOP风狂者",
+        "packageArea": "前档 + 侧后 + 整车",
+        "packageCodes": [
+          "SIDE_REAR",
+          "FULL",
+          "FRONT"
+        ],
+        "packageItems": [
+          {
+            "value": "SIDE_REAR",
+            "label": "龙膜 畅悦 80",
+            "desc": "前档",
+            "basePrice": 1800
+          },
+          {
+            "value": "FULL",
+            "label": "龙膜 畅悦 35/15",
+            "desc": "侧后",
+            "basePrice": 1000
+          },
+          {
+            "value": "FRONT",
+            "label": "BOP风狂者",
+            "desc": "整车",
+            "basePrice": 6800
+          }
+        ],
+        "appointmentDate": "2026-03-12",
+        "appointmentTime": "09:00",
+        "dispatchInfo": {
+          "date": "2026-03-12",
+          "time": "09:00",
+          "workBay": "1号工位",
+          "technicianName": "王澳 在这一步可添加技师",
+          "remark": "不拆字标 后盖机裁",
+          "updatedAt": "2026-03-05 02:29"
+        },
+        "depositAmount": 500,
+        "depositProofPhotos": [
+          "http://tmp/cvo8m74ia8f_2c2de38c0a91ace33584fe27aebde222.png"
+        ],
+        "finalPaymentPhotos": [],
+        "finalPaymentUploadedAt": "",
+        "technicianName": "",
+        "constructionPhotos": [
+          "http://tmp/7lzV1w8U8Wkn2c2de38c0a91ace33584fe27aebde222.png"
+        ],
+        "damagePhotos": [],
+        "workPartRecords": [
+          {
+            "id": "WPR17726490122799406",
+            "partType": "FULL_CAR",
+            "partTypeLabel": "整车提成",
+            "partCode": "FULL_FRONT_HOOD",
+            "partLabel": "前杠机盖",
+            "technicianName": "王",
+            "amount": 200,
+            "submittedAt": "2026-03-05 02:30",
+            "photos": [
+              "http://tmp/wkaTGnt2h1BE2c2de38c0a91ace33584fe27aebde222.png"
+            ]
+          }
+        ],
+        "deliveryStatus": "待交车验收",
+        "deliveryPassedAt": "",
+        "commissionStatus": "未生成",
+        "commissionGeneratedAt": "",
+        "commissionTotal": 0,
+        "commissionRecords": [],
+        "followupRecords": [],
+        "followupLastUpdatedAt": "",
+        "createdAt": "2026-03-05 02:26",
+        "updatedAt": "2026-03-05 14:15",
+        "remark": "3.11 号下午 2 点松江手拉手交付中心验车",
+        "priceSummary": {
+          "packagePrice": 9600,
+          "addOnFee": 0,
+          "totalPrice": 9600,
+          "deposit": 500
+        }
+      }
+    }
+  },
+  {
+    "id": "234302b39f8b4787896154304083514d",
+    "receivedAt": "2026-03-05 13:53",
+    "eventType": "ORDER_CREATED",
+    "source": "MINIPROGRAM_TEST",
+    "orderId": "TMTEST202603051337",
+    "serviceType": "FILM",
+    "orderStatus": "待确认",
+    "totalPrice": 6800,
+    "payload": {
+      "eventType": "ORDER_CREATED",
+      "source": "MINIPROGRAM_TEST",
+      "order": {
+        "id": "TMTEST202603051337",
+        "serviceType": "FILM",
+        "status": "待确认",
+        "priceSummary": {
+          "totalPrice": 6800
+        }
+      }
+    }
+  }
+]

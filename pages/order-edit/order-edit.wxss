@@ -1,0 +1,13 @@
+@import "../film-order/film-order.wxss";
+
+.empty-card {
+  text-align: center;
+  padding-top: 60rpx;
+  padding-bottom: 60rpx;
+}
+
+.empty-title {
+  margin-bottom: 20rpx;
+  font-size: 32rpx;
+  font-weight: 600;
+}

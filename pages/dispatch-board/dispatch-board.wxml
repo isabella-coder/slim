@@ -1,0 +1,77 @@
+<view class="container">
+  <view class="card top-card">
+    <view class="section-title">贴膜派工看板</view>
+    <view class="hint">仅展示贴膜订单，按日期查看工位/技师排班，冲突会自动高亮。</view>
+    <view class="form-item">
+      <text class="label">排班日期</text>
+      <picker mode="date" value="{{selectedDate}}" bindchange="onDateChange">
+        <view class="picker">{{selectedDate}}</view>
+      </picker>
+    </view>
+  </view>
+
+  <view class="card stats-card">
+    <view class="stat-item">
+      <text class="stat-label">总工单</text>
+      <text class="stat-value">{{stats.total}}</text>
+    </view>
+    <view class="stat-item">
+      <text class="stat-label">已派工</text>
+      <text class="stat-value success">{{stats.assigned}}</text>
+    </view>
+    <view class="stat-item">
+      <text class="stat-label">未派工</text>
+      <text class="stat-value warning">{{stats.unassigned}}</text>
+    </view>
+    <view class="stat-item">
+      <text class="stat-label">冲突</text>
+      <text class="stat-value danger">{{stats.conflict}}</text>
+    </view>
+  </view>
+
+  <view wx:if="{{entries.length === 0}}" class="card empty-card">
+    <view class="empty-title">该日期暂无工单</view>
+    <view class="empty-subtitle">可先去下单，或切换日期查看。</view>
+    <button class="button-secondary" bindtap="goCreateOrder">去下单</button>
+  </view>
+
+  <view wx:if="{{conflictEntries.length > 0}}" class="card conflict-card">
+    <view class="section-title">冲突提醒</view>
+    <view wx:for="{{conflictEntries}}" wx:key="id" class="conflict-item">
+      <text class="conflict-text">{{item.time}} {{item.id}} {{item.customerName}} · {{item.conflictText}}</text>
+      <button class="mini-btn" size="mini" data-id="{{item.id}}" bindtap="viewOrderDetail">查看</button>
+    </view>
+  </view>
+
+  <view wx:if="{{bayGroups.length > 0}}" class="card">
+    <view class="section-title">工位排班</view>
+    <view wx:for="{{bayGroups}}" wx:key="name" class="group-block">
+      <view class="group-title">{{item.name}}（{{item.items.length}}）</view>
+      <view wx:for="{{item.items}}" wx:key="id" class="entry-item {{item.conflicts.length > 0 ? 'entry-item-conflict' : ''}}">
+        <view class="entry-head">
+          <text>{{item.time || '--:--'}} · {{item.id}}</text>
+          <text class="entry-tag">{{item.conflicts.length > 0 ? '冲突' : '正常'}}</text>
+        </view>
+        <view class="entry-line">{{item.customerName}} · {{item.carModel}} {{item.plateNumber}}</view>
+        <view class="entry-line">技师：{{item.technicianDisplay}} · 销售：{{item.salesOwner || '未填写'}}</view>
+        <button class="mini-btn" size="mini" data-id="{{item.id}}" bindtap="viewOrderDetail">查看订单</button>
+      </view>
+    </view>
+  </view>
+
+  <view wx:if="{{technicianGroups.length > 0}}" class="card">
+    <view class="section-title">技师排班</view>
+    <view wx:for="{{technicianGroups}}" wx:key="name" class="group-block">
+      <view class="group-title">{{item.name}}（{{item.items.length}}）</view>
+      <view wx:for="{{item.items}}" wx:key="id" class="entry-item {{item.conflicts.length > 0 ? 'entry-item-conflict' : ''}}">
+        <view class="entry-head">
+          <text>{{item.time || '--:--'}} · {{item.id}}</text>
+          <text class="entry-tag">{{item.workBayDisplay}}</text>
+        </view>
+        <view class="entry-line">{{item.customerName}} · {{item.carModel}} {{item.plateNumber}}</view>
+        <view class="entry-line">门店：{{item.store || '未填写'}}</view>
+        <button class="mini-btn" size="mini" data-id="{{item.id}}" bindtap="viewOrderDetail">查看订单</button>
+      </view>
+    </view>
+  </view>
+</view>

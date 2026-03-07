@@ -1,0 +1,105 @@
+<view class="container">
+  <view class="hero card">
+    <view class="hero-title">洗车内部工单</view>
+    <view class="hero-subtitle">预约工位 + 固定提成（总价 × 8%）</view>
+  </view>
+
+  <view class="card chain-card">
+    <view class="chain-item chain-item-muted" bindtap="goFilmOrder">贴膜链路</view>
+    <view class="chain-item chain-item-active">洗车链路</view>
+  </view>
+
+  <view class="card">
+    <view class="section-title">客户信息</view>
+    <view class="form-item">
+      <text class="label">姓名</text>
+      <input class="input" placeholder="请输入姓名" value="{{formData.customerName}}" data-field="customerName" bindinput="onInputChange" />
+    </view>
+    <view class="form-item">
+      <text class="label">电话</text>
+      <input class="input" type="number" maxlength="11" placeholder="请输入手机号" value="{{formData.phone}}" data-field="phone" bindinput="onInputChange" />
+    </view>
+  </view>
+
+  <view class="card">
+    <view class="section-title">预约信息</view>
+    <view class="hint">洗车营业时间 09:00-19:00，每小时仅可预约 1 台车（19:00 收工）。</view>
+
+    <view class="form-item">
+      <text class="label">门店</text>
+      <picker mode="selector" range="{{storeOptions}}" value="{{storeIndex}}" bindchange="onStoreChange">
+        <view class="picker">{{storeOptions[storeIndex]}}</view>
+      </picker>
+    </view>
+
+    <view class="row">
+      <view class="row-item">
+        <text class="label">日期</text>
+        <picker mode="date" value="{{formData.appointmentDate}}" bindchange="onDateChange">
+          <view class="picker">{{formData.appointmentDate}}</view>
+        </picker>
+      </view>
+      <view class="row-item">
+        <text class="label">时段</text>
+        <picker mode="selector" range="{{timeSlotOptions}}" value="{{timeSlotIndex}}" bindchange="onTimeSlotChange">
+          <view class="picker">{{formData.appointmentTime}}</view>
+        </picker>
+      </view>
+    </view>
+
+    <view class="form-item">
+      <text class="label">预约工位</text>
+      <picker mode="selector" range="{{workBayOptions}}" value="{{workBayIndex}}" bindchange="onWorkBayChange">
+        <view class="picker">{{formData.workBay}}</view>
+      </picker>
+    </view>
+
+    <view class="form-item">
+      <text class="label">施工人员</text>
+      <picker mode="selector" range="{{technicianOptions}}" value="{{technicianIndex >= 0 ? technicianIndex : 0}}" bindchange="onTechnicianChange">
+        <view class="picker">{{technicianIndex >= 0 ? technicianOptions[technicianIndex] : '请选择施工人员'}}</view>
+      </picker>
+    </view>
+  </view>
+
+  <view class="card">
+    <view class="section-title">价格与提成</view>
+    <view class="form-item">
+      <text class="label">总价格</text>
+      <input class="input" type="digit" placeholder="请输入总价格" value="{{formData.totalPrice}}" bindinput="onTotalPriceInput" />
+    </view>
+    <view class="line">
+      <text>固定提成比例</text>
+      <text>8%</text>
+    </view>
+    <view class="line total">
+      <text>施工提成</text>
+      <text>¥{{summary.commissionTotal}}</text>
+    </view>
+  </view>
+
+  <view class="card">
+    <view class="section-title">施工图片</view>
+    <view class="photo-header">
+      <text class="label">施工图片（必传）</text>
+      <button class="upload-btn" size="mini" bindtap="chooseConstructionPhotos">上传图片</button>
+    </view>
+    <view wx:if="{{formData.constructionPhotos.length === 0}}" class="photo-empty">请上传施工图片</view>
+    <view class="photo-grid">
+      <view wx:for="{{formData.constructionPhotos}}" wx:key="*this" class="photo-card">
+        <image class="photo-image" src="{{item}}" mode="aspectFill" data-index="{{index}}" bindtap="previewConstructionPhoto" />
+        <view class="photo-remove" data-index="{{index}}" bindtap="removeConstructionPhoto">删除</view>
+      </view>
+    </view>
+
+    <view class="form-item">
+      <text class="label">备注（选填）</text>
+      <textarea class="textarea" placeholder="如：重点清洁内饰、玻璃除渍" value="{{formData.remark}}" data-field="remark" bindinput="onInputChange" maxlength="200" />
+    </view>
+  </view>
+
+  <button class="button-primary" loading="{{saving}}" bindtap="submitOrder">{{isEdit ? '保存洗车订单' : '提交洗车订单'}}</button>
+  <button class="button-secondary" bindtap="goWashDispatchBoard">洗车派工看板</button>
+  <button class="button-secondary" bindtap="goFilmOrder">返回贴膜链路</button>
+  <button class="button-secondary" bindtap="goOrderList">查看全部订单</button>
+</view>

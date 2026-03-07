@@ -1,0 +1,40 @@
+@import "../film-order/film-order.wxss";
+
+.chain-card {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12rpx;
+}
+
+.chain-item {
+  border-radius: 12rpx;
+  padding: 18rpx;
+  text-align: center;
+  border: 2rpx solid #d1d5db;
+}
+
+.chain-item-muted {
+  background: #f8fafc;
+  color: #334155;
+}
+
+.chain-item-active {
+  background: #0f172a;
+  color: #ffffff;
+  border-color: #0f172a;
+  font-weight: 600;
+}
+
+.line {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10rpx;
+}
+
+.line.total {
+  margin-top: 10rpx;
+  padding-top: 10rpx;
+  border-top: 2rpx dashed #d1d5db;
+  font-size: 32rpx;
+  font-weight: 600;
+}

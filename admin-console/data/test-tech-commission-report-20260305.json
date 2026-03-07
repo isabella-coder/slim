@@ -1,0 +1,97 @@
+{
+  "summary": {
+    "testOrderTotal": 15,
+    "statusBreakdown": {
+      "未完工": 9,
+      "已完工": 5,
+      "已取消": 1
+    },
+    "technicianCovered": 5,
+    "commissionTotal": 900.0,
+    "workRecordTotal": 1900.0
+  },
+  "rows": [
+    {
+      "technician": "张霖",
+      "testOrderCount": 3,
+      "completedOrderCount": 1,
+      "commissionRecordCount": 1,
+      "commissionAmount": 200.0,
+      "workRecordCount": 3,
+      "workRecordAmount": 500.0,
+      "orderIds": [
+        "TEST20260305002",
+        "TEST20260305008",
+        "TEST20260305014"
+      ],
+      "completedOrderIds": [
+        "TEST20260305002"
+      ]
+    },
+    {
+      "technician": "王澳",
+      "testOrderCount": 3,
+      "completedOrderCount": 1,
+      "commissionRecordCount": 1,
+      "commissionAmount": 200.0,
+      "workRecordCount": 3,
+      "workRecordAmount": 500.0,
+      "orderIds": [
+        "TEST20260305001",
+        "TEST20260305007",
+        "TEST20260305013"
+      ],
+      "completedOrderIds": [
+        "TEST20260305013"
+      ]
+    },
+    {
+      "technician": "张发强",
+      "testOrderCount": 2,
+      "completedOrderCount": 1,
+      "commissionRecordCount": 1,
+      "commissionAmount": 200.0,
+      "workRecordCount": 2,
+      "workRecordAmount": 300.0,
+      "orderIds": [
+        "TEST20260305003",
+        "TEST20260305009"
+      ],
+      "completedOrderIds": [
+        "TEST20260305009"
+      ]
+    },
+    {
+      "technician": "张永志",
+      "testOrderCount": 2,
+      "completedOrderCount": 1,
+      "commissionRecordCount": 1,
+      "commissionAmount": 200.0,
+      "workRecordCount": 2,
+      "workRecordAmount": 300.0,
+      "orderIds": [
+        "TEST20260305006",
+        "TEST20260305012"
+      ],
+      "completedOrderIds": [
+        "TEST20260305006"
+      ]
+    },
+    {
+      "technician": "方圆",
+      "testOrderCount": 2,
+      "completedOrderCount": 1,
+      "commissionRecordCount": 1,
+      "commissionAmount": 100.0,
+      "workRecordCount": 2,
+      "workRecordAmount": 300.0,
+      "orderIds": [
+        "TEST20260305004",
+        "TEST20260305010"
+      ],
+      "completedOrderIds": [
+        "TEST20260305004"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>贴膜门店电脑后台</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="layout">
+      <header class="topbar">
+        <div>
+          <h1>贴膜门店电脑后台</h1>
+          <p>内部订单管理、派工排班、回访提醒</p>
+        </div>
+        <div id="userBadge" class="user-badge hidden"></div>
+      </header>
+
+      <section id="loginPanel" class="panel">
+        <h2>登录后台</h2>
+        <form id="loginForm" class="form-grid">
+          <label>
+            账号
+            <input id="usernameInput" required placeholder="请输入账号" />
+          </label>
+          <label>
+            密码
+            <input id="passwordInput" required type="password" placeholder="请输入密码" />
+          </label>
+          <button type="submit" class="btn btn-primary">登录</button>
+        </form>
+        <p class="error-text" id="loginError"></p>
+        <div class="hint-card">
+          <div>默认测试账号：</div>
+          <div>`manager_wujiabin / 0000`（店长）</div>
+          <div>`sales_mengao / 0000`（销售）</div>
+          <div>`tech_wangao / 0000`（施工）</div>
+        </div>
+      </section>
+
+      <section id="appPanel" class="panel hidden">
+        <div class="toolbar">
+          <div class="toolbar-left">
+            <strong id="welcomeText"></strong>
+            <span class="subtle-text">视图权限按角色自动控制</span>
+          </div>
+          <button id="logoutBtn" class="btn">退出登录</button>
+        </div>
+
+        <div class="tabbar">
+          <button class="tab-btn active" data-tab="orders">订单管理</button>
+          <button class="tab-btn" data-tab="dispatch">派工看板</button>
+          <button class="tab-btn" data-tab="followups">回访看板</button>
+          <button class="tab-btn" data-tab="finance">财务同步</button>
+          <button class="tab-btn" data-tab="security">账号安全</button>
+        </div>
+
+        <section id="ordersTab" class="tab-panel">
+          <div class="filters">
+            <label>
+              订单范围
+              <select id="ordersViewSelect"></select>
+            </label>
+            <label>
+              订单状态
+              <select id="ordersStatusSelect">
+                <option value="ALL">全部</option>
+                <option value="未完工">未完工</option>
+                <option value="已完工">已完工</option>
+                <option value="已取消">已取消</option>
+              </select>
+            </label>
+            <label>
+              销售负责人筛选
+              <input id="ordersSalesInput" placeholder="可选：如 销售A" />
+            </label>
+            <label>
+              关键词
+              <input id="ordersKeywordInput" placeholder="订单号/车型/车牌/称呼" />
+            </label>
+            <button id="ordersRefreshBtn" class="btn btn-primary">刷新订单</button>
+          </div>
+
+          <div class="cards" id="ordersStats"></div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>订单号</th>
+                  <th>状态</th>
+                  <th>客户</th>
+                  <th>车型/车牌</th>
+                  <th>销售</th>
+                  <th>门店</th>
+                  <th>预约</th>
+                  <th>金额</th>
+                  <th>交车状态</th>
+                </tr>
+              </thead>
+              <tbody id="ordersTbody"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="dispatchTab" class="tab-panel hidden">
+          <div class="filters">
+            <label>
+              排班日期
+              <input id="dispatchDateInput" type="date" />
+            </label>
+            <label>
+              订单范围
+              <select id="dispatchViewSelect"></select>
+            </label>
+            <button id="dispatchRefreshBtn" class="btn btn-primary">刷新看板</button>
+          </div>
+
+          <div class="cards" id="dispatchStats"></div>
+          <div class="cards" id="dispatchCapacity"></div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>时间</th>
+                  <th>工位</th>
+                  <th>技师</th>
+                  <th>订单号</th>
+                  <th>客户</th>
+                  <th>车型/车牌</th>
+                  <th>冲突</th>
+                </tr>
+              </thead>
+              <tbody id="dispatchTbody"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="followupsTab" class="tab-panel hidden">
+          <div class="filters">
+            <label>
+              回访范围
+              <select id="followupsViewSelect"></select>
+            </label>
+            <label>
+              回访状态
+              <select id="followupsStatusSelect">
+                <option value="ALL">全部</option>
+                <option value="PENDING">待处理</option>
+                <option value="DUE_TODAY">今日到期</option>
+                <option value="OVERDUE">已逾期</option>
+                <option value="DONE">已完成</option>
+              </select>
+            </label>
+            <button id="followupsRefreshBtn" class="btn btn-primary">刷新回访</button>
+          </div>
+
+          <div class="cards" id="followupsStats"></div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>节点</th>
+                  <th>到期日</th>
+                  <th>状态</th>
+                  <th>订单号</th>
+                  <th>客户</th>
+                  <th>销售</th>
+                  <th>操作</th>
+                </tr>
+              </thead>
+              <tbody id="followupsTbody"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="financeTab" class="tab-panel hidden">
+          <div class="filters">
+            <label>
+              事件类型
+              <select id="financeEventTypeSelect">
+                <option value="ALL">全部</option>
+                <option value="ORDER_CREATED">新建订单</option>
+                <option value="ORDER_UPDATED">编辑订单</option>
+                <option value="ORDER_CANCELLED">取消订单</option>
+                <option value="ORDER_DELIVERY_CONFIRMED">交车通过</option>
+                <option value="ORDER_FOLLOWUP_UPDATED">回访更新</option>
+                <option value="MANUAL_RETRY">手动重试</option>
+              </select>
+            </label>
+            <label>
+              业务类型
+              <select id="financeServiceTypeSelect">
+                <option value="ALL">全部</option>
+                <option value="FILM">贴膜</option>
+                <option value="WASH">洗车</option>
+              </select>
+            </label>
+            <label>
+              关键词
+              <input id="financeKeywordInput" placeholder="订单号/事件/业务类型" />
+            </label>
+            <label>
+              加载数量
+              <select id="financeLimitSelect">
+                <option value="100">100</option>
+                <option value="200" selected>200</option>
+                <option value="500">500</option>
+              </select>
+            </label>
+            <button id="financeRefreshBtn" class="btn btn-primary">刷新财务日志</button>
+          </div>
+
+          <div class="cards" id="financeStats"></div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>接收时间</th>
+                  <th>订单号</th>
+                  <th>事件</th>
+                  <th>来源</th>
+                  <th>业务类型</th>
+                  <th>订单状态</th>
+                  <th>金额</th>
+                  <th>财务单号</th>
+                  <th>结果</th>
+                </tr>
+              </thead>
+              <tbody id="financeTbody"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="securityTab" class="tab-panel hidden">
+          <div class="security-grid">
+            <div class="security-card">
+              <h3>修改我的密码</h3>
+              <form id="changePasswordForm" class="form-grid">
+                <label>
+                  当前密码
+                  <input id="currentPasswordInput" required type="password" placeholder="请输入当前密码" />
+                </label>
+                <label>
+                  新密码
+                  <input id="newPasswordInput" required type="password" placeholder="至少 4 位" />
+                </label>
+                <label>
+                  确认新密码
+                  <input id="confirmPasswordInput" required type="password" placeholder="请再次输入新密码" />
+                </label>
+                <button type="submit" class="btn btn-primary">保存新密码</button>
+              </form>
+              <p id="changePasswordMessage" class="message-text"></p>
+            </div>
+
+            <div id="resetPasswordPanel" class="security-card hidden">
+              <h3>店长重置员工密码</h3>
+              <form id="resetPasswordForm" class="form-grid">
+                <label>
+                  员工账号
+                  <select id="resetUserSelect"></select>
+                </label>
+                <label>
+                  新密码
+                  <input id="resetNewPasswordInput" required type="password" placeholder="至少 4 位" />
+                </label>
+                <button type="submit" class="btn btn-primary">重置密码</button>
+              </form>
+              <p id="resetPasswordMessage" class="message-text"></p>
+            </div>
+          </div>
+        </section>
+      </section>
+    </div>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
