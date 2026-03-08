@@ -3,10 +3,18 @@
 ## 1. Document Info
 
 - Project: car-film-mini-program
-- Version: v1.0 (Spec-Driven baseline)
+- Version: v1.1 (Spec-Driven baseline, risk-closed)
 - Date: 2026-03-08
 - Scope: Mini Program + Admin Console + Backend + Data Layer + Release process
 - Goal: Move the project to strict spec-driven delivery with PostgreSQL as the single source of truth (SSOT)
+
+Revision focus in v1.1:
+
+1. Add media/object-storage architecture and attachment domain model.
+2. Add optimistic-lock conflict UX strategy and weak-network offline queue.
+3. Replace ambiguous JSON fallback with explicit dual-write transition policy.
+4. Clarify idempotency and token/session strategy at API/security layer.
+5. Split rollout timeline into two milestones to reduce delivery risk.
 
 ## 2. Objectives and Constraints
 
@@ -25,6 +33,7 @@
    - PostgreSQL mode via `ENABLE_DB_STORAGE=1`
 3. Internal sync APIs now require `INTERNAL_API_TOKEN`.
 4. Existing DB migration and schema files are present but not yet fully aligned with runtime repository implementation.
+5. Media files (construction photos/payment proofs) are not yet modeled as first-class storage entities.
 
 ## 3. Current System (As-Is)
 
@@ -83,7 +92,21 @@
 5. Security by default: internal endpoints require token; passwords stored hashed.
 6. Observable behavior: health checks, latency/error metrics, audit logs.
 
-### 4.2 Target Logical Architecture
+### 4.2 Critical Design Supplements
+
+1. Media storage:
+   - Use object storage (OSS/S3/COS) + CDN for photos/files.
+   - Backend only stores attachment metadata and URLs.
+2. Conflict handling UX:
+   - `409 ORDER_VERSION_CONFLICT` must not drop user input.
+   - Client keeps local draft, fetches latest server snapshot, and guides merge/re-apply.
+3. Weak-network support:
+   - Introduce client offline queue for non-destructive operations.
+   - Retry with backoff and dead-letter behavior for repeated failures.
+4. Migration safety:
+   - Use time-boxed dual-write and reconciliation instead of uncontrolled JSON fallback.
+
+### 4.3 Target Logical Architecture
 
 1. Client Layer:
    - Mini Program
@@ -98,6 +121,7 @@
    - DB repository as primary implementation
 4. Data Layer:
    - PostgreSQL normalized schema (`users`, `orders`, `order_dispatches`, `order_work_parts`, `followups`, `finance_sync_logs`, `audit_logs`)
+   - Object storage bucket for media assets + CDN distribution
 5. Operations Layer:
    - Health/metrics/logging
    - Migration/validation jobs
@@ -120,6 +144,8 @@
    - inbound/outbound integration status
 7. Audit Log
    - who changed what and when
+8. Media Attachment
+   - `attachment_id`, `order_id`, `kind`, `object_key`, `cdn_url`, `mime_type`, `size_bytes`, `uploaded_by`, `created_at`
 
 ### 5.2 Invariants
 
@@ -128,6 +154,7 @@
 3. Version mismatch must return `409 ORDER_VERSION_CONFLICT`.
 4. Canceled orders must not consume scheduling capacity.
 5. Followup nodes are unique per `(order_id, node_type)`.
+6. Attachment writes must be append-only or explicitly versioned (no silent overwrite).
 
 ## 6. Contract and Spec Baseline
 
@@ -172,7 +199,9 @@ No code merge to `main` unless related spec is at least `APPROVED`.
    - Must return explicit 401/503 error model
 2. Auth:
    - Replace plaintext password compare with hash verify
-   - Session token must be persisted or replaced with signed JWT
+   - Token model must be explicitly selected:
+   - `Option A`: stateful session in Redis/DB with server-side revocation
+   - `Option B`: short-lived JWT + refresh token + denylist for forced logout
 3. Data:
    - Sensitive configuration from env only
    - DB least privilege account
@@ -192,6 +221,8 @@ No code merge to `main` unless related spec is at least `APPROVED`.
    - Rollback drill within 15 minutes
 5. Observability:
    - Structured logs for request id, endpoint, latency, result
+6. Client resilience:
+   - Sync flow should tolerate intermittent connectivity without data loss.
 
 ## 9. Gap Analysis (As-Is vs To-Be)
 
@@ -205,6 +236,10 @@ No code merge to `main` unless related spec is at least `APPROVED`.
    - Specs and acceptance gates are not yet repository-first and mandatory.
 5. Test gap:
    - Contract and migration verification automation is missing.
+6. Media gap:
+   - No object storage lifecycle and attachment metadata model.
+7. Migration gap:
+   - JSON fallback alone is not a safe rollback path after normalized DB writes.
 
 ## 10. Task Breakdown (WBS)
 
@@ -233,6 +268,8 @@ Acceptance:
 - [ ] B-03 Define canonical field dictionary for orders and child tables.
 - [ ] B-04 Define index strategy and query plans for hot endpoints.
 - [ ] B-05 Define retention and archive rules for logs/audit.
+- [ ] B-06 Add `attachments` table and storage metadata dictionary.
+- [ ] B-07 Define object key naming, retention, and deletion policy for media.
 
 Deliverables:
 
@@ -248,14 +285,15 @@ Acceptance:
 
 - [ ] C-01 Introduce repository interfaces in `server.py` split by domain.
 - [ ] C-02 Implement DB repositories against normalized tables.
-- [ ] C-03 Keep JSON repository only for fallback and rollback mode.
+- [ ] C-03 Replace open-ended JSON fallback with explicit dual-write transition mode.
 - [ ] C-04 Add transaction boundaries for multi-table order write.
 - [ ] C-05 Add idempotent upsert strategy per entity.
+- [ ] C-06 Add attachment repository (metadata only) and signed upload flow hooks.
 
 Deliverables:
 
 1. Repository layer design spec.
-2. Runtime switch policy (`DB primary`, `JSON fallback optional`).
+2. Runtime switch policy (`DB primary`, `dual-write transition`, `JSON snapshot readonly`).
 
 Acceptance:
 
@@ -269,6 +307,8 @@ Acceptance:
 - [ ] D-03 Ensure `PATCH /api/v1/orders/{id}` contract includes version and error model.
 - [ ] D-04 Align admin `PUT /api/orders/{id}` with same optimistic lock semantics.
 - [ ] D-05 Add standard error codes and message catalog.
+- [ ] D-06 Add `Idempotency-Key` contract for side-effecting `POST` APIs.
+- [ ] D-07 Define attachment upload contract (init upload, commit metadata, revoke).
 
 Deliverables:
 
@@ -287,6 +327,8 @@ Acceptance:
 - [ ] E-03 Run dry-run full migration and capture report.
 - [ ] E-04 Run incremental migration rehearsal (`--since`).
 - [ ] E-05 Build reconciliation script (count, sum, sampled field diff).
+- [ ] E-06 Run dual-write shadow period with hourly reconciliation.
+- [ ] E-07 Freeze JSON as readonly snapshot before final cutover.
 
 Deliverables:
 
@@ -306,16 +348,20 @@ Acceptance:
 - [ ] F-03 Add conflict handling UI for `ORDER_VERSION_CONFLICT`.
 - [ ] F-04 Ensure all order mutation requests include `version`.
 - [ ] F-05 Add telemetry for sync success/failure and retry counts.
+- [ ] F-06 Add offline operation queue for weak-network environments.
+- [ ] F-07 Add local storage eviction policy (recent N days + active orders only).
 
 Deliverables:
 
 1. Updated sync design spec for `utils/order.js`.
 2. E2E scenarios for offline/online reconciliation.
+3. Conflict-resolution UX spec (draft preservation, diff, retry path).
 
 Acceptance:
 
 1. No full-order-list push in normal flow.
 2. Conflicts are user-visible and recoverable.
+3. Client storage does not exceed Mini Program local storage budget.
 
 ### Phase G: Admin Console Hardening
 
@@ -324,6 +370,8 @@ Acceptance:
 - [ ] G-03 Upgrade password handling to hash-based auth.
 - [ ] G-04 Add role-based guard audit for finance/security actions.
 - [ ] G-05 Add session expiration and invalidation strategy.
+- [ ] G-06 Implement token revocation flow for role change and forced logout.
+- [ ] G-07 Add conflict diff UI for 409 responses on order edits.
 
 Deliverables:
 
@@ -342,6 +390,7 @@ Acceptance:
 - [ ] H-03 Add periodic consistency job for DB vs snapshot comparison.
 - [ ] H-04 Define alert thresholds for 5xx, sync failure, conflict rate.
 - [ ] H-05 Add runbook for incidents and rollback.
+- [ ] H-06 Define offline queue stuck-rate and retry saturation alerts.
 
 Deliverables:
 
@@ -360,6 +409,7 @@ Acceptance:
 - [ ] I-03 Build role/permission integration tests.
 - [ ] I-04 Build core E2E tests (create -> dispatch -> delivery -> followup -> finance sync).
 - [ ] I-05 Define Go/No-Go gate checklist for release.
+- [ ] I-06 Add resilience tests (weak network, duplicate submits, conflict merge, offline replay).
 
 Deliverables:
 
@@ -373,16 +423,14 @@ Acceptance:
 
 ## 11. Milestones and Timeline (Recommended)
 
-1. Week 1:
-   - Complete Phase A + B
-   - Start Phase C/D design freeze
-2. Week 2:
-   - Execute Phase C + D + E rehearsal
-3. Week 3:
-   - Execute Phase F + G
-4. Week 4:
-   - Execute Phase H + I
-   - Production cutover and rollback drill
+1. Milestone 1 (implicit migration, 4-6 weeks):
+   - Complete Phase A + B + C + D + E + H (backend/data/ops readiness)
+   - Keep legacy client behavior compatible via adapter layer
+   - Run dual-write + reconciliation + shadow verification
+2. Milestone 2 (full client cutover, 2-4 weeks):
+   - Complete Phase F + G + I
+   - Switch Mini Program/Admin to incremental sync + conflict UX
+   - Perform production cutover and rollback drill
 
 ## 12. RACI (Suggested)
 
@@ -415,4 +463,3 @@ Acceptance:
 3. Freeze DB schema and runtime repository mapping strategy.
 4. Run migration dry-run and generate first reconciliation report.
 5. Plan first implementation PR as `SPEC-001 DB SSOT foundation`.
-
