@@ -1,0 +1,647 @@
+openapi: 3.1.0
+info:
+  title: Car Film Admin API Baseline
+  version: 0.1.0
+  description: |
+    Baseline API contract frozen from current server implementation (`admin-console/server.py`).
+
+    Notes:
+    - Internal APIs accept either `X-Api-Token` or `Authorization: Bearer <INTERNAL_API_TOKEN>`.
+    - Admin APIs use login token (`Authorization: Bearer <session_token>`).
+servers:
+  - url: http://127.0.0.1:8080
+tags:
+  - name: Health
+  - name: InternalSync
+  - name: Order
+  - name: Auth
+paths:
+  /api/health:
+    get:
+      tags: [Health]
+      summary: Service health check
+      operationId: getHealth
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+
+  /api/health/db:
+    get:
+      tags: [Health]
+      summary: Database health check
+      operationId: getDbHealth
+      responses:
+        '200':
+          description: DB disabled or healthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DbHealthResponse'
+        '500':
+          description: DB enabled but unhealthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorOkStyle'
+
+  /api/v1/internal/orders:
+    get:
+      tags: [InternalSync]
+      summary: Pull full order list (legacy sync endpoint)
+      operationId: getInternalOrders
+      security:
+        - internalApiToken: []
+        - internalBearer: []
+      responses:
+        '200':
+          description: Full order snapshot
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalOrdersResponse'
+        '401':
+          $ref: '#/components/responses/InternalAuthFailed'
+        '503':
+          $ref: '#/components/responses/InternalTokenMissing'
+
+  /api/v1/internal/orders/sync:
+    post:
+      tags: [InternalSync]
+      summary: Push full order list (legacy sync endpoint)
+      operationId: postInternalOrdersSync
+      security:
+        - internalApiToken: []
+        - internalBearer: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InternalOrdersSyncRequest'
+      responses:
+        '200':
+          description: Sync success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalOrdersSyncResponse'
+        '400':
+          description: Invalid request body
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorSuccessStyle'
+        '401':
+          $ref: '#/components/responses/InternalAuthFailed'
+        '503':
+          $ref: '#/components/responses/InternalTokenMissing'
+
+  /api/v1/orders:
+    get:
+      tags: [Order]
+      summary: Incremental order pull
+      operationId: getOrdersIncremental
+      security:
+        - internalApiToken: []
+        - internalBearer: []
+      parameters:
+        - in: query
+          name: updatedAfter
+          required: false
+          schema:
+            type: string
+          description: Datetime string, for example `2026-03-01 00:00`
+      responses:
+        '200':
+          description: Incremental order list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderListSuccessResponse'
+        '500':
+          description: DB read failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorSuccessStyle'
+        '401':
+          $ref: '#/components/responses/InternalAuthFailed'
+        '503':
+          $ref: '#/components/responses/InternalTokenMissing'
+
+  /api/v1/orders/{orderId}:
+    patch:
+      tags: [Order]
+      summary: Incremental order update with optimistic lock
+      operationId: patchOrderById
+      security:
+        - internalApiToken: []
+        - internalBearer: []
+      parameters:
+        - in: path
+          name: orderId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderPatchRequest'
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderPatchSuccessResponse'
+        '400':
+          description: Invalid body
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorSuccessStyle'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorSuccessStyle'
+        '409':
+          description: Version conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderConflictResponse'
+        '401':
+          $ref: '#/components/responses/InternalAuthFailed'
+        '503':
+          $ref: '#/components/responses/InternalTokenMissing'
+
+  /api/v1/internal/work-orders/sync:
+    post:
+      tags: [InternalSync]
+      summary: Finance bridge sync endpoint
+      operationId: postWorkOrdersSync
+      security:
+        - internalApiToken: []
+        - internalBearer: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WorkOrdersSyncRequest'
+      responses:
+        '200':
+          description: Accepted and logged
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkOrdersSyncSuccessResponse'
+        '400':
+          description: Missing order id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorSuccessStyle'
+        '401':
+          $ref: '#/components/responses/InternalAuthFailed'
+        '503':
+          $ref: '#/components/responses/InternalTokenMissing'
+
+  /api/login:
+    post:
+      tags: [Auth]
+      summary: Login to admin APIs
+      operationId: postLogin
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Login success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginSuccessResponse'
+        '401':
+          description: Invalid username/password
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorOkStyle'
+
+  /api/me:
+    get:
+      tags: [Auth]
+      summary: Current authenticated user
+      operationId: getMe
+      security:
+        - adminBearer: []
+      responses:
+        '200':
+          description: Current user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MeResponse'
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorOkStyle'
+
+  /api/logout:
+    post:
+      tags: [Auth]
+      summary: Logout current token
+      operationId: postLogout
+      security:
+        - adminBearer: []
+      responses:
+        '200':
+          description: Logout success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OkOnlyResponse'
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorOkStyle'
+
+  /api/orders/{orderId}:
+    put:
+      tags: [Order]
+      summary: Admin order update with optimistic lock
+      operationId: putOrderById
+      security:
+        - adminBearer: []
+      parameters:
+        - in: path
+          name: orderId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderPatchRequest'
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminOrderPutSuccessResponse'
+        '400':
+          description: Invalid body
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorOkStyle'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorOkStyle'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorOkStyle'
+        '409':
+          description: Version conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderConflictResponseOkStyle'
+
+components:
+  securitySchemes:
+    adminBearer:
+      type: http
+      scheme: bearer
+      bearerFormat: token
+      description: Session token returned by `/api/login`.
+    internalBearer:
+      type: http
+      scheme: bearer
+      bearerFormat: internal-token
+      description: INTERNAL_API_TOKEN passed as Bearer token.
+    internalApiToken:
+      type: apiKey
+      in: header
+      name: X-Api-Token
+      description: INTERNAL_API_TOKEN header.
+
+  responses:
+    InternalAuthFailed:
+      description: Internal auth failed
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorSuccessStyle'
+          example:
+            success: false
+            message: 内部接口鉴权失败
+            code: 401
+    InternalTokenMissing:
+      description: Internal token not configured
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorSuccessStyle'
+          example:
+            success: false
+            message: 内部接口令牌未配置
+            code: 503
+
+  schemas:
+    GenericObject:
+      type: object
+      additionalProperties: true
+
+    Order:
+      type: object
+      additionalProperties: true
+      properties:
+        id:
+          type: string
+        status:
+          type: string
+        version:
+          type: integer
+          minimum: 0
+
+    UserSafe:
+      type: object
+      additionalProperties: true
+      properties:
+        username:
+          type: string
+        name:
+          type: string
+        role:
+          type: string
+        permissions:
+          $ref: '#/components/schemas/GenericObject'
+
+    HealthResponse:
+      type: object
+      additionalProperties: true
+      properties:
+        ok:
+          type: boolean
+        time:
+          type: string
+      required: [ok, time]
+
+    DbHealthResponse:
+      type: object
+      additionalProperties: true
+      properties:
+        ok:
+          type: boolean
+        dbEnabled:
+          type: boolean
+        latencyMs:
+          type: number
+        message:
+          type: string
+      required: [ok, dbEnabled]
+
+    InternalOrdersResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        success:
+          type: boolean
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Order'
+        updatedAt:
+          type: string
+      required: [success, items, updatedAt]
+
+    InternalOrdersSyncRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        orders:
+          type: array
+          items:
+            $ref: '#/components/schemas/Order'
+      required: [orders]
+
+    InternalOrdersSyncResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        success:
+          type: boolean
+        code:
+          type: integer
+        message:
+          type: string
+        count:
+          type: integer
+        updatedAt:
+          type: string
+      required: [success, code, message, count, updatedAt]
+
+    OrderListSuccessResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        success:
+          type: boolean
+        code:
+          type: integer
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Order'
+        count:
+          type: integer
+      required: [success, code, items, count]
+
+    OrderPatchRequest:
+      type: object
+      additionalProperties: true
+      properties:
+        version:
+          type: integer
+          minimum: 0
+      required: [version]
+      description: |
+        `version` is required. Patchable fields are currently controlled server-side
+        (`status`, `salesBrandText`, `store`, `appointmentDate`, `appointmentTime`,
+        `dispatchInfo`, `remark`, `deliveryStatus`, `deliveryPassedAt`,
+        `commissionStatus`, `commissionTotal`, `followupRecords`, `followupLastUpdatedAt`).
+
+    OrderPatchSuccessResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        success:
+          type: boolean
+        code:
+          type: integer
+        item:
+          $ref: '#/components/schemas/Order'
+      required: [success, code, item]
+
+    AdminOrderPutSuccessResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        ok:
+          type: boolean
+        item:
+          $ref: '#/components/schemas/Order'
+      required: [ok, item]
+
+    OrderConflictResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        success:
+          type: boolean
+        code:
+          type: string
+          enum: [ORDER_VERSION_CONFLICT]
+        message:
+          type: string
+        currentVersion:
+          type: integer
+          minimum: 0
+      required: [success, code, message, currentVersion]
+
+    OrderConflictResponseOkStyle:
+      type: object
+      additionalProperties: false
+      properties:
+        ok:
+          type: boolean
+        code:
+          type: string
+          enum: [ORDER_VERSION_CONFLICT]
+        message:
+          type: string
+        currentVersion:
+          type: integer
+          minimum: 0
+      required: [ok, code, message, currentVersion]
+
+    WorkOrdersSyncRequest:
+      type: object
+      additionalProperties: true
+      properties:
+        eventType:
+          type: string
+        source:
+          type: string
+        order:
+          type: object
+          additionalProperties: true
+      required: [order]
+
+    WorkOrdersSyncSuccessResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        success:
+          type: boolean
+        code:
+          type: integer
+        message:
+          type: string
+        data:
+          type: object
+          additionalProperties: true
+          properties:
+            externalId:
+              type: string
+            orderId:
+              type: string
+            receivedAt:
+              type: string
+      required: [success, code, message, data]
+
+    LoginRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+      required: [username, password]
+
+    LoginSuccessResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        ok:
+          type: boolean
+        token:
+          type: string
+        user:
+          $ref: '#/components/schemas/UserSafe'
+      required: [ok, token, user]
+
+    MeResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        ok:
+          type: boolean
+        user:
+          $ref: '#/components/schemas/UserSafe'
+      required: [ok, user]
+
+    OkOnlyResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        ok:
+          type: boolean
+      required: [ok]
+
+    ErrorOkStyle:
+      type: object
+      additionalProperties: true
+      properties:
+        ok:
+          type: boolean
+        message:
+          type: string
+
+    ErrorSuccessStyle:
+      type: object
+      additionalProperties: true
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        code:
+          type: integer
