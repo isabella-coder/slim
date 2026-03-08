@@ -41,6 +41,45 @@
   background: #f9fafb;
 }
 
+.sync-card .section-title {
+  margin-bottom: 12rpx;
+}
+
+.sync-status {
+  display: inline-block;
+  border-radius: 999rpx;
+  padding: 6rpx 18rpx;
+  font-size: 22rpx;
+  margin-bottom: 12rpx;
+}
+
+.sync-ok {
+  background: #e6f9ee;
+  color: #106a3d;
+}
+
+.sync-warning {
+  background: #fff7e8;
+  color: #9a6700;
+}
+
+.sync-error {
+  background: #ffecec;
+  color: #b42318;
+}
+
+.sync-actions {
+  display: flex;
+  gap: 12rpx;
+  margin-top: 12rpx;
+}
+
+.sync-btn {
+  margin-top: 0;
+  width: auto;
+  flex: 1;
+}
+
 .entry-card {
   border: 2rpx solid #d1d5db;
   box-shadow: 0 8rpx 18rpx rgba(17, 17, 17, 0.05);

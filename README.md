@@ -2,6 +2,13 @@
 
 一个用于门店内部下单与工单跟踪的小程序示例，支持产品价格自定义、订单跟踪和财务系统同步。
 
+## 系统配套清单（先看）
+
+- 全栈组件清单与项目现状：`docs/小程序全栈配套清单与现状.md`
+- 统一发布流程（唯一标准）：`docs/统一发布流程.md`
+- 系统设计与任务拆解：`SYSTEM_DESIGN_TASK_BREAKDOWN_SPEC.md`
+- 快速启动与检查：`QUICK_START.md`、`scripts/smoke_api.sh`、`scripts/release_preflight.sh`
+
 ## 功能
 
 - 首页入口页

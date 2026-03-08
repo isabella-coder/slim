@@ -13,6 +13,22 @@
     </picker>
   </view>
 
+  <view class="card sync-card">
+    <view class="section-title">订单同步配置</view>
+    <view class="sync-status {{syncStatusClass}}">{{syncStatusLabel}}</view>
+    <view class="account-subtitle">{{syncStatusHint}}</view>
+    <view wx:if="{{syncLastSuccessAt}}" class="account-subtitle">最近成功：{{syncLastSuccessAt}}</view>
+    <view class="label">同步地址（Base URL）</view>
+    <input class="input" placeholder="https://api.example.com" value="{{syncBaseUrlInput}}" bindinput="onSyncBaseUrlInput" />
+    <view class="label">同步令牌（API Token，仅保存在本机）</view>
+    <input class="input" password="true" placeholder="{{syncTokenReady ? '已配置，可留空不改' : '请输入API Token'}}" value="{{syncApiTokenInput}}" bindinput="onSyncApiTokenInput" />
+    <view class="sync-actions">
+      <button class="button-secondary sync-btn" bindtap="saveSyncSettings">保存配置</button>
+      <button class="button-secondary sync-btn" bindtap="clearSyncToken">清除Token</button>
+    </view>
+    <button class="button-primary" bindtap="triggerManualSync">立即同步订单</button>
+  </view>
+
   <view class="card entry-card film-entry {{canCreateOrder ? '' : 'entry-card-disabled'}}" bindtap="goFilmOrder">
     <view class="entry-top">
       <view class="entry-title">贴膜链路</view>

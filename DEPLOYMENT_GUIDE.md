@@ -100,6 +100,8 @@ const ENV_BASE_URL = {
 
 ## 生产部署
 
+> 标准发布入口请优先参考：`docs/统一发布流程.md`
+
 ### 前置条件
 
 1. **云服务器** (推荐阿里云、腾讯云)
@@ -146,6 +148,19 @@ bash DEPLOY_PRODUCTION.sh --bootstrap-db
 - 脚本会先检查本地代码并 `git push origin main`（可用 `--no-push` 跳过）。
 - 远端会自动 `git pull`、启动/检查 PostgreSQL 容器、写入 `systemd`、重启服务并做 API 验活。
 - 若远端仓库目录有未提交改动，脚本会停止，避免覆盖线上手工改动。
+
+#### 发布前一键检查（建议先执行）
+
+```bash
+cd /Users/yushuai/Documents/Playground/car-film-mini-program
+export INTERNAL_API_TOKEN="<YOUR_INTERNAL_API_TOKEN>"
+export BASE_URL="http://127.0.0.1:8080"
+MODE=release bash scripts/release_preflight.sh
+```
+
+说明：
+- 该脚本会自动执行接口连通检查与 `scripts/smoke_api.sh`。
+- 通过后再执行 `DEPLOY_PRODUCTION.sh`，可降低发布失败风险。
 
 #### Step 1: 上传项目
 ```bash

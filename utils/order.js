@@ -4,9 +4,20 @@ const ORDER_STORAGE_KEY = 'filmOrders';
 const ORDER_DIRTY_IDS_KEY = 'filmOrderDirtyIds';
 const ORDER_SYNC_CURSOR_KEY = 'filmOrderSyncCursor';
 const ORDER_SYNC_CONFLICTS_KEY = 'filmOrderSyncConflicts';
+const ORDER_SYNC_STATE_KEY = 'filmOrderSyncState';
 const ORDER_SYNC_PULL_PATH = '/api/v1/internal/orders';
 const ORDER_SYNC_PUSH_PATH = '/api/v1/internal/orders/sync';
 let orderSyncPromise = null;
+let lastSyncToastAt = 0;
+
+const ORDER_SYNC_STATUS = {
+  IDLE: 'IDLE',
+  BLOCKED: 'BLOCKED',
+  SYNCING: 'SYNCING',
+  SUCCESS: 'SUCCESS',
+  ERROR: 'ERROR',
+  CONFLICT: 'CONFLICT'
+};
 
 const PRICE_RULES = {
   packageBase: {
@@ -277,8 +288,21 @@ function syncOrdersWithServer(localOrders) {
   const config = getOrderSyncConfig();
   const source = normalizeOrderList(localOrders);
   if (!config.enabled) {
+    if (config.blockedReason) {
+      setOrderSyncState({
+        status: ORDER_SYNC_STATUS.BLOCKED,
+        lastError: config.blockedReason,
+        lastAttemptAt: Date.now()
+      });
+    }
     return Promise.resolve(source);
   }
+
+  setOrderSyncState({
+    status: ORDER_SYNC_STATUS.SYNCING,
+    lastError: '',
+    lastAttemptAt: Date.now()
+  });
 
   const cursor = getSyncCursor();
   return requestRemoteOrders(config, cursor)
@@ -293,6 +317,11 @@ function syncOrdersWithServer(localOrders) {
 
       const dirtyOrders = pickDirtyOrders(mergedOrders);
       if (dirtyOrders.length === 0) {
+        setOrderSyncState({
+          status: ORDER_SYNC_STATUS.SUCCESS,
+          lastError: '',
+          lastSuccessAt: Date.now()
+        });
         return mergedOrders;
       }
 
@@ -306,27 +335,48 @@ function syncOrdersWithServer(localOrders) {
           const conflicts = Array.isArray(payload.conflicts) ? payload.conflicts : [];
           if (conflicts.length === 0) {
             clearSyncConflictCache();
+            setOrderSyncState({
+              status: ORDER_SYNC_STATUS.SUCCESS,
+              lastError: '',
+              lastSuccessAt: Date.now()
+            });
             return mergedOrders;
           }
           return resolveSyncConflicts(mergedOrders, conflicts);
         })
-        .catch(() => mergedOrders);
+        .catch((error) => {
+          handleSyncError(error, '订单推送失败');
+          return mergedOrders;
+        });
     })
-    .catch(() => source);
+    .catch((error) => {
+      handleSyncError(error, '订单拉取失败');
+      return source;
+    });
 }
 
 function getOrderSyncConfig() {
   const financeConfig = getFinanceConfig();
   const baseUrl = normalizeBaseUrl(financeConfig && financeConfig.baseUrl);
+  const apiToken = String(financeConfig && financeConfig.apiToken ? financeConfig.apiToken : '').trim();
   const syncEnabled = Boolean(financeConfig && financeConfig.enabled);
   const timeoutValue = Number(financeConfig && financeConfig.timeout);
+  const envVersion = String(financeConfig && financeConfig.envVersion ? financeConfig.envVersion : '').trim() || 'develop';
+  const hasBaseUrl = Boolean(baseUrl);
+  const hasApiToken = Boolean(apiToken);
+  const blockedReason = resolveSyncBlockedReason(syncEnabled, hasBaseUrl, hasApiToken);
   if (syncEnabled && !baseUrl && financeConfig && financeConfig.envVersion && financeConfig.envVersion !== 'develop') {
     console.warn(`[order-sync] 缺少公网同步地址，当前环境：${financeConfig.envVersion}`);
   }
   return {
-    enabled: Boolean(syncEnabled && baseUrl),
+    enabled: Boolean(!blockedReason),
+    syncEnabled,
+    hasBaseUrl,
+    hasApiToken,
+    blockedReason,
+    envVersion,
     baseUrl,
-    apiToken: String(financeConfig && financeConfig.apiToken ? financeConfig.apiToken : '').trim(),
+    apiToken,
     timeout: Number.isFinite(timeoutValue) && timeoutValue > 0 ? timeoutValue : 10000,
     extraHeaders: financeConfig && typeof financeConfig.extraHeaders === 'object'
       ? financeConfig.extraHeaders
@@ -387,13 +437,22 @@ function requestWithConfig(options) {
       success: (res) => {
         const statusCode = Number(res.statusCode);
         if (!(statusCode >= 200 && statusCode < 300)) {
-          reject(new Error(`请求失败：${statusCode}`));
+          const payload = res && res.data && typeof res.data === 'object' ? res.data : {};
+          const message = resolveRemoteErrorMessage(payload) || `请求失败：${statusCode}`;
+          const error = new Error(message);
+          error.statusCode = statusCode;
+          error.code = String(payload.code || '').trim();
+          error.responsePayload = payload;
+          reject(error);
           return;
         }
         resolve(res);
       },
       fail: (error) => {
-        reject(error || new Error('网络请求失败'));
+        const message = normalizeSyncMessage(error && error.errMsg ? error.errMsg : '') || '网络请求失败';
+        const requestError = new Error(message);
+        requestError.code = 'NETWORK_ERROR';
+        reject(requestError);
       }
     });
   });
@@ -660,9 +719,19 @@ function resolveSyncConflicts(orders, conflicts) {
       saveOrders(nextOrders);
       clearDirtyOrders(conflictIds);
       clearSyncConflictCache();
+      setOrderSyncState({
+        status: ORDER_SYNC_STATUS.SUCCESS,
+        lastError: '',
+        lastSuccessAt: Date.now()
+      });
       showSyncToast('已采用服务器最新数据');
       return nextOrders;
     }
+    setOrderSyncState({
+      status: ORDER_SYNC_STATUS.CONFLICT,
+      lastError: `有 ${conflictIds.length} 条订单冲突，请手动重试`,
+      lastAttemptAt: Date.now()
+    });
     showSyncToast('已保留本地修改，请手动重试');
     return source;
   });
@@ -690,6 +759,11 @@ function showSyncConflictDialog(conflictCount) {
 }
 
 function showSyncToast(title) {
+  const now = Date.now();
+  if (now - lastSyncToastAt < 5000) {
+    return;
+  }
+  lastSyncToastAt = now;
   if (typeof wx === 'undefined' || !wx || typeof wx.showToast !== 'function') {
     return;
   }
@@ -697,6 +771,104 @@ function showSyncToast(title) {
     title: String(title || '').slice(0, 20),
     icon: 'none'
   });
+}
+
+function resolveSyncBlockedReason(syncEnabled, hasBaseUrl, hasApiToken) {
+  if (!syncEnabled) {
+    return '订单同步未启用';
+  }
+  if (!hasBaseUrl) {
+    return '缺少同步地址，请先配置 Base URL';
+  }
+  if (!hasApiToken) {
+    return '缺少同步令牌，请先配置 API Token';
+  }
+  return '';
+}
+
+function resolveRemoteErrorMessage(payload) {
+  if (!payload || typeof payload !== 'object') {
+    return '';
+  }
+  const fields = ['message', 'error', 'msg'];
+  for (let i = 0; i < fields.length; i += 1) {
+    const value = normalizeSyncMessage(payload[fields[i]]);
+    if (value) {
+      return value;
+    }
+  }
+  return '';
+}
+
+function normalizeSyncMessage(value) {
+  return String(value || '').trim();
+}
+
+function handleSyncError(error, fallbackMessage) {
+  const message = normalizeSyncMessage(error && error.message)
+    || normalizeSyncMessage(fallbackMessage)
+    || '订单同步失败';
+  setOrderSyncState({
+    status: ORDER_SYNC_STATUS.ERROR,
+    lastError: message,
+    lastAttemptAt: Date.now()
+  });
+  showSyncToast(message);
+}
+
+function getDefaultOrderSyncState() {
+  return {
+    status: ORDER_SYNC_STATUS.IDLE,
+    lastAttemptAt: 0,
+    lastSuccessAt: 0,
+    lastError: ''
+  };
+}
+
+function readOrderSyncState() {
+  if (typeof wx === 'undefined' || !wx || typeof wx.getStorageSync !== 'function') {
+    return getDefaultOrderSyncState();
+  }
+  const source = wx.getStorageSync(ORDER_SYNC_STATE_KEY);
+  if (!source || typeof source !== 'object') {
+    return getDefaultOrderSyncState();
+  }
+  return {
+    status: String(source.status || ORDER_SYNC_STATUS.IDLE).trim() || ORDER_SYNC_STATUS.IDLE,
+    lastAttemptAt: Number.isFinite(Number(source.lastAttemptAt)) ? Number(source.lastAttemptAt) : 0,
+    lastSuccessAt: Number.isFinite(Number(source.lastSuccessAt)) ? Number(source.lastSuccessAt) : 0,
+    lastError: normalizeSyncMessage(source.lastError)
+  };
+}
+
+function setOrderSyncState(patch) {
+  const current = readOrderSyncState();
+  const next = {
+    ...current,
+    ...(patch && typeof patch === 'object' ? patch : {})
+  };
+  if (!next.status) {
+    next.status = ORDER_SYNC_STATUS.IDLE;
+  }
+  if (typeof wx !== 'undefined' && wx && typeof wx.setStorageSync === 'function') {
+    wx.setStorageSync(ORDER_SYNC_STATE_KEY, next);
+  }
+  return next;
+}
+
+function getOrderSyncStatus() {
+  const config = getOrderSyncConfig();
+  const state = readOrderSyncState();
+  return {
+    ...state,
+    enabled: config.enabled,
+    syncEnabled: config.syncEnabled,
+    hasBaseUrl: config.hasBaseUrl,
+    hasApiToken: config.hasApiToken,
+    blockedReason: config.blockedReason,
+    baseUrl: config.baseUrl,
+    envVersion: config.envVersion
+  };
 }
 
 function cacheSyncConflicts(conflicts) {
@@ -759,6 +931,7 @@ module.exports = {
   createOrderId,
   formatDateTime,
   getOrderById,
+  getOrderSyncStatus,
   getOrders,
   syncOrdersNow,
   updateOrder,

@@ -90,6 +90,19 @@ curl -X GET "http://127.0.0.1:8080/api/v1/internal/orders" \
   -H "Content-Type: application/json"
 ```
 
+### 运行最小冒烟测试
+```bash
+export INTERNAL_API_TOKEN="<YOUR_INTERNAL_API_TOKEN>"
+BASE_URL="http://127.0.0.1:8080" bash scripts/smoke_api.sh
+```
+
+### 运行发布前一键检查
+```bash
+export INTERNAL_API_TOKEN="<YOUR_INTERNAL_API_TOKEN>"
+export BASE_URL="http://127.0.0.1:8080"
+MODE=release bash scripts/release_preflight.sh
+```
+
 ### 数据库备份
 ```bash
 bash BACKUP_DATABASE.sh
