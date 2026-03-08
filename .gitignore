@@ -1,2 +1,7 @@
 .DS_Store
 artifacts/
+migration_all_data_*.log
+admin-console/scripts/migrate/reports/*.json
+admin-console/sql/migrations/delivery/migration_all_data_*.log
+admin-console/data/idempotency-cache.json
+admin-console/data/session-cache.json

@@ -42,11 +42,13 @@ function syncOrderToFinance(params) {
 
   const url = buildUrl(config.baseUrl, config.syncPath);
   const requestPayload = buildSyncPayload(order, eventType, source);
+  const idempotencyKey = buildIdempotencyKey(order, eventType);
 
   return requestJSON({
     url,
     data: requestPayload,
     timeout: config.timeout,
+    idempotencyKey,
     apiToken: config.apiToken,
     extraHeaders: config.extraHeaders
   });
@@ -116,6 +118,9 @@ function requestJSON(params) {
       headers.Authorization = `Bearer ${params.apiToken}`;
       headers['X-Api-Token'] = params.apiToken;
     }
+    if (params.idempotencyKey) {
+      headers['Idempotency-Key'] = params.idempotencyKey;
+    }
 
     if (params.extraHeaders && typeof params.extraHeaders === 'object') {
       Object.keys(params.extraHeaders).forEach((key) => {
@@ -167,6 +172,16 @@ function requestJSON(params) {
       }
     });
   });
+}
+
+function buildIdempotencyKey(order, eventType) {
+  const source = order && typeof order === 'object' ? order : {};
+  const orderId = String(source.id || '').trim();
+  const version = Number.isFinite(Number(source.version)) ? Number(source.version) : 0;
+  const updatedAt = String(source.updatedAt || source.createdAt || '').trim();
+  const raw = `${eventType || 'ORDER_UPDATED'}:${orderId}:${version}:${updatedAt}`;
+  const normalized = raw.replace(/[^a-zA-Z0-9:_-]/g, '_');
+  return `finance-sync:${normalized.slice(0, 180)}`;
 }
 
 function parseBusinessResult(responseData) {

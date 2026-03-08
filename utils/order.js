@@ -1,6 +1,9 @@
 const { getFinanceConfig } = require('../config/finance.config');
 
 const ORDER_STORAGE_KEY = 'filmOrders';
+const ORDER_DIRTY_IDS_KEY = 'filmOrderDirtyIds';
+const ORDER_SYNC_CURSOR_KEY = 'filmOrderSyncCursor';
+const ORDER_SYNC_CONFLICTS_KEY = 'filmOrderSyncConflicts';
 const ORDER_SYNC_PULL_PATH = '/api/v1/internal/orders';
 const ORDER_SYNC_PUSH_PATH = '/api/v1/internal/orders/sync';
 let orderSyncPromise = null;
@@ -46,8 +49,12 @@ function saveOrders(orders) {
 
 function addOrder(order) {
   const orders = getOrders();
-  orders.unshift(normalizeOrderRecord(order));
+  const normalizedOrder = normalizeOrderRecord(order);
+  orders.unshift(normalizedOrder);
   saveOrders(orders);
+  if (normalizedOrder && normalizedOrder.id) {
+    markOrdersDirty([normalizedOrder.id]);
+  }
   triggerOrderSync(orders);
 }
 
@@ -75,12 +82,16 @@ function updateOrder(orderId, patch) {
     matchedOrder = {
       ...item,
       ...safePatch,
-      updatedAt: formatDateTime(new Date())
+      updatedAt: formatDateTime(new Date()),
+      version: normalizeVersion(item.version) + 1
     };
     return normalizeOrderRecord(matchedOrder);
   });
 
   saveOrders(updated);
+  if (matchedOrder && matchedOrder.id) {
+    markOrdersDirty([matchedOrder.id]);
+  }
   triggerOrderSync(updated);
   return matchedOrder;
 }
@@ -235,9 +246,14 @@ function normalizeOrderRecord(order) {
     return null;
   }
 
+  const createdAt = normalizeDateTimeText(order.createdAt) || formatDateTime(new Date());
+  const updatedAt = normalizeDateTimeText(order.updatedAt) || createdAt;
   return {
     ...order,
-    status: normalizeStatusValue(order.status)
+    status: normalizeStatusValue(order.status),
+    createdAt,
+    updatedAt,
+    version: normalizeVersion(order.version)
   };
 }
 
@@ -264,12 +280,36 @@ function syncOrdersWithServer(localOrders) {
     return Promise.resolve(source);
   }
 
-  return requestRemoteOrders(config)
-    .then((remoteOrders) => {
+  const cursor = getSyncCursor();
+  return requestRemoteOrders(config, cursor)
+    .then((result) => {
+      const remoteOrders = normalizeOrderList(result.items);
       const mergedOrders = mergeOrders(source, remoteOrders);
       saveOrders(mergedOrders);
-      return pushOrdersToRemote(config, mergedOrders)
-        .then(() => mergedOrders)
+      const latestUpdatedAt = findLatestUpdatedAt(mergedOrders, normalizeDateTimeText(result.updatedAt));
+      if (latestUpdatedAt) {
+        setSyncCursor(latestUpdatedAt);
+      }
+
+      const dirtyOrders = pickDirtyOrders(mergedOrders);
+      if (dirtyOrders.length === 0) {
+        return mergedOrders;
+      }
+
+      return pushOrdersToRemote(config, dirtyOrders)
+        .then((pushResult) => {
+          const payload = pushResult && pushResult.data && typeof pushResult.data === 'object' ? pushResult.data : {};
+          const acceptedIds = Array.isArray(payload.acceptedIds) ? payload.acceptedIds : [];
+          if (acceptedIds.length > 0) {
+            clearDirtyOrders(acceptedIds);
+          }
+          const conflicts = Array.isArray(payload.conflicts) ? payload.conflicts : [];
+          if (conflicts.length === 0) {
+            clearSyncConflictCache();
+            return mergedOrders;
+          }
+          return resolveSyncConflicts(mergedOrders, conflicts);
+        })
         .catch(() => mergedOrders);
     })
     .catch(() => source);
@@ -294,37 +334,47 @@ function getOrderSyncConfig() {
   };
 }
 
-function requestRemoteOrders(config) {
+function requestRemoteOrders(config, updatedAfter) {
+  const path = buildOrderPullPath(updatedAfter);
   return requestWithConfig({
     config,
-    path: ORDER_SYNC_PULL_PATH,
+    path,
     method: 'GET'
   }).then((result) => {
-    const payload = result && result.data ? result.data : {};
+    const payload = result && result.data && typeof result.data === 'object' ? result.data : {};
     const items = Array.isArray(payload.items)
       ? payload.items
       : (Array.isArray(payload.orders) ? payload.orders : []);
-    return normalizeOrderList(items);
+    return {
+      items,
+      updatedAt: normalizeDateTimeText(payload.updatedAt)
+    };
   });
 }
 
 function pushOrdersToRemote(config, orders) {
   const source = normalizeOrderList(orders);
+  if (source.length === 0) {
+    return Promise.resolve({ data: { acceptedIds: [], conflicts: [] } });
+  }
   return requestWithConfig({
     config,
     path: ORDER_SYNC_PUSH_PATH,
     method: 'POST',
+    headers: {
+      'Idempotency-Key': buildOrderSyncIdempotencyKey(source)
+    },
     data: {
       orders: source
     }
-  }).then(() => source);
+  });
 }
 
 function requestWithConfig(options) {
   const requestOptions = options && typeof options === 'object' ? options : {};
   const config = requestOptions.config || {};
   const url = `${String(config.baseUrl || '').replace(/\/+$/, '')}${String(requestOptions.path || '')}`;
-  const headers = buildSyncHeaders(config);
+  const headers = buildSyncHeaders(config, requestOptions.headers);
   const timeout = Number(config.timeout) > 0 ? Number(config.timeout) : 10000;
 
   return new Promise((resolve, reject) => {
@@ -349,7 +399,7 @@ function requestWithConfig(options) {
   });
 }
 
-function buildSyncHeaders(config) {
+function buildSyncHeaders(config, requestHeaders) {
   const baseHeaders = {
     'content-type': 'application/json'
   };
@@ -362,7 +412,8 @@ function buildSyncHeaders(config) {
   const extraHeaders = config && typeof config.extraHeaders === 'object' ? config.extraHeaders : {};
   return {
     ...baseHeaders,
-    ...extraHeaders
+    ...extraHeaders,
+    ...(requestHeaders && typeof requestHeaders === 'object' ? requestHeaders : {})
   };
 }
 
@@ -389,9 +440,7 @@ function mergeOrders(localOrders, remoteOrders) {
       return;
     }
 
-    const localVersion = getOrderVersion(item);
-    const remoteVersion = getOrderVersion(remote);
-    orderMap[item.id] = localVersion >= remoteVersion ? item : remote;
+    orderMap[item.id] = compareOrderPriority(item, remote) >= 0 ? item : remote;
   });
 
   const merged = Object.keys(orderMap).map((key) => orderMap[key]);
@@ -410,11 +459,24 @@ function getOrderVersion(order) {
   if (!order || typeof order !== 'object') {
     return 0;
   }
+  const version = normalizeVersion(order.version);
+  if (version > 0) {
+    return version;
+  }
   const updated = parseDateText(order.updatedAt);
   if (updated > 0) {
     return updated;
   }
   return parseDateText(order.createdAt);
+}
+
+function compareOrderPriority(left, right) {
+  const leftVersion = normalizeVersion(left && left.version);
+  const rightVersion = normalizeVersion(right && right.version);
+  if (leftVersion !== rightVersion) {
+    return leftVersion - rightVersion;
+  }
+  return parseDateText(left && left.updatedAt) - parseDateText(right && right.updatedAt);
 }
 
 function getOrderSortScore(order) {
@@ -444,6 +506,250 @@ function normalizeBaseUrl(value) {
     return '';
   }
   return text.replace(/\/+$/, '');
+}
+
+function normalizeVersion(value) {
+  const parsed = Number.parseInt(value, 10);
+  if (!Number.isFinite(parsed) || parsed < 0) {
+    return 0;
+  }
+  return parsed;
+}
+
+function normalizeDateTimeText(value) {
+  const text = String(value || '').trim();
+  if (!text) {
+    return '';
+  }
+  return parseDateText(text) > 0 ? text : '';
+}
+
+function getDirtyOrderIds() {
+  const source = wx.getStorageSync(ORDER_DIRTY_IDS_KEY);
+  if (!Array.isArray(source)) {
+    return [];
+  }
+  return source.map((item) => String(item || '').trim()).filter((item) => item);
+}
+
+function setDirtyOrderIds(ids) {
+  const unique = [];
+  const idSet = new Set();
+  (Array.isArray(ids) ? ids : []).forEach((id) => {
+    const text = String(id || '').trim();
+    if (!text || idSet.has(text)) {
+      return;
+    }
+    idSet.add(text);
+    unique.push(text);
+  });
+  wx.setStorageSync(ORDER_DIRTY_IDS_KEY, unique);
+  return unique;
+}
+
+function markOrdersDirty(ids) {
+  const current = getDirtyOrderIds();
+  setDirtyOrderIds([...current, ...(Array.isArray(ids) ? ids : [])]);
+}
+
+function clearDirtyOrders(ids) {
+  const removeSet = new Set((Array.isArray(ids) ? ids : []).map((item) => String(item || '').trim()).filter((item) => item));
+  if (removeSet.size === 0) {
+    return;
+  }
+  const current = getDirtyOrderIds();
+  const next = current.filter((id) => !removeSet.has(id));
+  setDirtyOrderIds(next);
+}
+
+function getSyncCursor() {
+  return normalizeDateTimeText(wx.getStorageSync(ORDER_SYNC_CURSOR_KEY));
+}
+
+function setSyncCursor(value) {
+  const normalized = normalizeDateTimeText(value);
+  if (!normalized) {
+    return '';
+  }
+  wx.setStorageSync(ORDER_SYNC_CURSOR_KEY, normalized);
+  return normalized;
+}
+
+function buildOrderPullPath(updatedAfter) {
+  const cursor = normalizeDateTimeText(updatedAfter);
+  if (!cursor) {
+    return ORDER_SYNC_PULL_PATH;
+  }
+  return `${ORDER_SYNC_PULL_PATH}?updatedAfter=${encodeURIComponent(cursor)}`;
+}
+
+function findLatestUpdatedAt(orders, fallback) {
+  const list = Array.isArray(orders) ? orders : [];
+  let best = parseDateText(fallback);
+  let bestText = normalizeDateTimeText(fallback);
+  list.forEach((item) => {
+    const currentText = normalizeDateTimeText(item && item.updatedAt);
+    const score = parseDateText(currentText);
+    if (score > best) {
+      best = score;
+      bestText = currentText;
+    }
+  });
+  return bestText;
+}
+
+function pickDirtyOrders(orders) {
+  const list = normalizeOrderList(orders);
+  const dirtyIds = getDirtyOrderIds();
+  if (dirtyIds.length === 0) {
+    return [];
+  }
+  const orderMap = {};
+  list.forEach((item) => {
+    if (item && item.id) {
+      orderMap[item.id] = item;
+    }
+  });
+  return dirtyIds.map((id) => orderMap[id]).filter((item) => Boolean(item));
+}
+
+function applyConflictServerItems(orders, conflicts) {
+  const source = normalizeOrderList(orders);
+  const conflictList = Array.isArray(conflicts) ? conflicts : [];
+  if (conflictList.length === 0) {
+    return source;
+  }
+  const conflictMap = {};
+  conflictList.forEach((item) => {
+    const id = String(item && item.id ? item.id : '').trim();
+    const currentItem = item && item.currentItem && typeof item.currentItem === 'object' ? normalizeOrderRecord(item.currentItem) : null;
+    if (!id || !currentItem) {
+      return;
+    }
+    conflictMap[id] = currentItem;
+  });
+  if (Object.keys(conflictMap).length === 0) {
+    return source;
+  }
+  const next = source.map((item) => {
+    if (!item || !item.id) {
+      return item;
+    }
+    return conflictMap[item.id] || item;
+  });
+  next.sort((a, b) => getOrderSortScore(b) - getOrderSortScore(a));
+  return next;
+}
+
+function resolveSyncConflicts(orders, conflicts) {
+  const source = normalizeOrderList(orders);
+  const conflictList = Array.isArray(conflicts) ? conflicts : [];
+  if (conflictList.length === 0) {
+    return Promise.resolve(source);
+  }
+  cacheSyncConflicts(conflictList);
+  const conflictIds = Array.from(new Set(conflictList
+    .map((item) => String(item && item.id ? item.id : '').trim())
+    .filter((item) => item)));
+  if (conflictIds.length === 0) {
+    return Promise.resolve(source);
+  }
+  return showSyncConflictDialog(conflictIds.length).then((strategy) => {
+    if (strategy === 'server') {
+      const nextOrders = applyConflictServerItems(source, conflictList);
+      saveOrders(nextOrders);
+      clearDirtyOrders(conflictIds);
+      clearSyncConflictCache();
+      showSyncToast('已采用服务器最新数据');
+      return nextOrders;
+    }
+    showSyncToast('已保留本地修改，请手动重试');
+    return source;
+  });
+}
+
+function showSyncConflictDialog(conflictCount) {
+  const count = Number.isFinite(Number(conflictCount)) ? Number(conflictCount) : 0;
+  if (typeof wx === 'undefined' || !wx || typeof wx.showModal !== 'function') {
+    return Promise.resolve('server');
+  }
+  return new Promise((resolve) => {
+    wx.showModal({
+      title: '订单同步冲突',
+      content: `有 ${count} 条订单已被其他端更新。确定“以服务器为准”？点击“取消”可手动重试。`,
+      confirmText: '服务器为准',
+      cancelText: '手动重试',
+      success: (res) => {
+        resolve(res && res.confirm ? 'server' : 'retry');
+      },
+      fail: () => {
+        resolve('retry');
+      }
+    });
+  });
+}
+
+function showSyncToast(title) {
+  if (typeof wx === 'undefined' || !wx || typeof wx.showToast !== 'function') {
+    return;
+  }
+  wx.showToast({
+    title: String(title || '').slice(0, 20),
+    icon: 'none'
+  });
+}
+
+function cacheSyncConflicts(conflicts) {
+  const source = Array.isArray(conflicts) ? conflicts : [];
+  const payload = source
+    .map((item) => {
+      if (!item || typeof item !== 'object') {
+        return null;
+      }
+      const id = String(item.id || '').trim();
+      if (!id) {
+        return null;
+      }
+      return {
+        id,
+        reason: String(item.reason || '').trim(),
+        currentVersion: Number.isFinite(Number(item.currentVersion)) ? Number(item.currentVersion) : 0,
+        incomingVersion: Number.isFinite(Number(item.incomingVersion)) ? Number(item.incomingVersion) : 0,
+        conflictAt: Date.now()
+      };
+    })
+    .filter((item) => Boolean(item));
+  if (payload.length === 0 || typeof wx === 'undefined' || !wx || typeof wx.setStorageSync !== 'function') {
+    return;
+  }
+  wx.setStorageSync(ORDER_SYNC_CONFLICTS_KEY, payload);
+}
+
+function clearSyncConflictCache() {
+  if (typeof wx === 'undefined' || !wx || typeof wx.removeStorageSync !== 'function') {
+    return;
+  }
+  wx.removeStorageSync(ORDER_SYNC_CONFLICTS_KEY);
+}
+
+function buildOrderSyncIdempotencyKey(orders) {
+  const list = normalizeOrderList(orders);
+  const fingerprint = list
+    .map((item) => `${item.id}:${normalizeVersion(item.version)}`)
+    .sort()
+    .join('|');
+  const checksum = buildStableChecksum(fingerprint);
+  return `order-sync:${checksum}:${fingerprint.slice(0, 400)}`;
+}
+
+function buildStableChecksum(text) {
+  const source = String(text || '');
+  let hash = 2166136261;
+  for (let i = 0; i < source.length; i += 1) {
+    hash ^= source.charCodeAt(i);
+    hash = Math.imul(hash, 16777619);
+  }
+  return (hash >>> 0).toString(36);
 }
 
 module.exports = {

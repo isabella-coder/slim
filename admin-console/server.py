@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
+import hashlib
+import hmac
 import json
 import os
 import re
+import secrets
 import time
 import uuid
 from datetime import date, datetime, timedelta
@@ -20,16 +23,39 @@ WEB_DIR = BASE_DIR / "web"
 ORDERS_FILE = DATA_DIR / "orders.json"
 USERS_FILE = DATA_DIR / "users.json"
 FINANCE_SYNC_LOG_FILE = DATA_DIR / "finance-sync-log.json"
+IDEMPOTENCY_CACHE_FILE = DATA_DIR / "idempotency-cache.json"
+SESSION_CACHE_FILE = DATA_DIR / "session-cache.json"
 DEFAULT_PORT = 8080
 DAILY_WORK_BAY_LIMIT = 10
 INTERNAL_API_TOKEN = os.getenv("INTERNAL_API_TOKEN", "").strip()
-ENABLE_DB_STORAGE = os.getenv("ENABLE_DB_STORAGE", "0").strip().lower() in ("1", "true", "yes", "on")
+ENABLE_DB_STORAGE = os.getenv("ENABLE_DB_STORAGE", "").strip().lower() in ("1", "true", "yes", "on")
 POSTGRES_DSN = os.getenv("POSTGRES_DSN", "").strip() or os.getenv("DATABASE_URL", "").strip()
 POSTGRES_HOST = os.getenv("POSTGRES_HOST", "127.0.0.1").strip()
 POSTGRES_PORT = int(os.getenv("POSTGRES_PORT", "5432").strip() or "5432")
 POSTGRES_DB = os.getenv("POSTGRES_DB", "slim").strip()
 POSTGRES_USER = os.getenv("POSTGRES_USER", "postgres").strip()
 POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD", "").strip()
+PASSWORD_HASH_ALGO = "pbkdf2_sha256"
+try:
+    PASSWORD_HASH_ITERATIONS = int(os.getenv("PASSWORD_HASH_ITERATIONS", "260000").strip() or "260000")
+except ValueError:
+    PASSWORD_HASH_ITERATIONS = 260000
+try:
+    IDEMPOTENCY_TTL_SECONDS = int(os.getenv("IDEMPOTENCY_TTL_SECONDS", "86400").strip() or "86400")
+except ValueError:
+    IDEMPOTENCY_TTL_SECONDS = 86400
+try:
+    IDEMPOTENCY_MAX_RECORDS = int(os.getenv("IDEMPOTENCY_MAX_RECORDS", "10000").strip() or "10000")
+except ValueError:
+    IDEMPOTENCY_MAX_RECORDS = 10000
+try:
+    SESSION_TTL_SECONDS = int(os.getenv("SESSION_TTL_SECONDS", "604800").strip() or "604800")
+except ValueError:
+    SESSION_TTL_SECONDS = 604800
+try:
+    SESSION_MAX_RECORDS = int(os.getenv("SESSION_MAX_RECORDS", "5000").strip() or "5000")
+except ValueError:
+    SESSION_MAX_RECORDS = 5000
 
 DB_INIT_ERROR = ""
 
@@ -71,7 +97,95 @@ ROLE_PERMISSIONS = {
     },
 }
 
-TOKENS = {}
+def is_password_hash(value):
+    text = normalize_text(value)
+    if not text.startswith(f"{PASSWORD_HASH_ALGO}$"):
+        return False
+    parts = text.split("$")
+    if len(parts) != 4:
+        return False
+    if not parts[1].isdigit():
+        return False
+    return bool(parts[2] and parts[3])
+
+
+def hash_password(password):
+    secret = normalize_text(password)
+    if not secret:
+        return ""
+    salt = secrets.token_hex(16)
+    digest = hashlib.pbkdf2_hmac("sha256", secret.encode("utf-8"), salt.encode("utf-8"), PASSWORD_HASH_ITERATIONS)
+    return f"{PASSWORD_HASH_ALGO}${PASSWORD_HASH_ITERATIONS}${salt}${digest.hex()}"
+
+
+def verify_password(password, stored_secret):
+    plain = normalize_text(password)
+    stored = normalize_text(stored_secret)
+    if not stored:
+        return False
+    if is_password_hash(stored):
+        algo, iterations_text, salt, digest_hex = stored.split("$", 3)
+        if algo != PASSWORD_HASH_ALGO:
+            return False
+        try:
+            iterations = int(iterations_text)
+        except ValueError:
+            return False
+        candidate = hashlib.pbkdf2_hmac("sha256", plain.encode("utf-8"), salt.encode("utf-8"), iterations)
+        return hmac.compare_digest(candidate.hex(), digest_hex)
+    return plain == stored
+
+
+def normalize_user_record(user, force_hash=False):
+    source = dict(user) if isinstance(user, dict) else {}
+    username = normalize_text(source.get("username"))
+    name = normalize_text(source.get("name"))
+    role = normalize_text(source.get("role")).lower() or "sales"
+    password_hash = normalize_text(source.get("passwordHash"))
+    legacy_password = normalize_text(source.get("password"))
+
+    if not password_hash and is_password_hash(legacy_password):
+        password_hash = legacy_password
+        legacy_password = ""
+
+    if force_hash and not password_hash and legacy_password:
+        password_hash = hash_password(legacy_password)
+        legacy_password = ""
+
+    normalized = {
+        **source,
+        "username": username,
+        "name": name,
+        "role": role,
+    }
+    if password_hash:
+        normalized["passwordHash"] = password_hash
+        normalized["password"] = ""
+    else:
+        normalized["passwordHash"] = ""
+        normalized["password"] = legacy_password
+    return normalized
+
+
+def extract_user_secret(user):
+    source = user if isinstance(user, dict) else {}
+    password_hash = normalize_text(source.get("passwordHash"))
+    if password_hash:
+        return password_hash
+    return normalize_text(source.get("password"))
+
+
+def maybe_upgrade_user_password_hash(user, plain_password):
+    if not isinstance(user, dict):
+        return False
+    if normalize_text(user.get("passwordHash")):
+        return False
+    legacy_password = normalize_text(user.get("password"))
+    if not legacy_password or legacy_password != normalize_text(plain_password):
+        return False
+    user["passwordHash"] = hash_password(plain_password)
+    user["password"] = ""
+    return True
 
 
 def now_text():
@@ -181,7 +295,9 @@ def save_json(path, value):
 def load_orders():
     if ENABLE_DB_STORAGE:
         db_rows = load_orders_from_db()
-        return db_rows if isinstance(db_rows, list) else []
+        if isinstance(db_rows, list):
+            return db_rows
+        raise RuntimeError("数据库读取订单失败")
     source = load_json(ORDERS_FILE, [])
     if isinstance(source, list):
         return [normalize_order_record(item) for item in source if isinstance(item, dict)]
@@ -192,32 +308,41 @@ def save_orders(orders):
     source = orders if isinstance(orders, list) else []
     normalized = [normalize_order_record(item) for item in source if isinstance(item, dict)]
     if ENABLE_DB_STORAGE:
-        save_orders_to_db(normalized)
-        return
+        if not save_orders_to_db(normalized):
+            raise RuntimeError("数据库写入订单失败")
+        return True
     save_json(ORDERS_FILE, normalized)
+    return True
 
 
 def load_users():
     if ENABLE_DB_STORAGE:
         db_rows = load_users_from_db()
-        return db_rows if isinstance(db_rows, list) else []
+        if isinstance(db_rows, list):
+            return db_rows
+        raise RuntimeError("数据库读取用户失败")
     source = load_json(USERS_FILE, [])
     if isinstance(source, list):
-        return source
+        return [normalize_user_record(item) for item in source if isinstance(item, dict)]
     return []
 
 def save_users(users):
     source = users if isinstance(users, list) else []
+    normalized = [normalize_user_record(item, force_hash=True) for item in source if isinstance(item, dict)]
     if ENABLE_DB_STORAGE:
-        save_users_to_db(source)
-        return
-    save_json(USERS_FILE, source)
+        if not save_users_to_db(normalized):
+            raise RuntimeError("数据库写入用户失败")
+        return True
+    save_json(USERS_FILE, normalized)
+    return True
 
 
 def load_finance_sync_logs():
     if ENABLE_DB_STORAGE:
         db_rows = load_finance_sync_logs_from_db()
-        return db_rows if isinstance(db_rows, list) else []
+        if isinstance(db_rows, list):
+            return db_rows
+        raise RuntimeError("数据库读取财务同步日志失败")
     source = load_json(FINANCE_SYNC_LOG_FILE, [])
     if isinstance(source, list):
         return source
@@ -226,9 +351,11 @@ def load_finance_sync_logs():
 
 def save_finance_sync_logs(logs):
     if ENABLE_DB_STORAGE:
-        save_finance_sync_logs_to_db(logs)
-        return
+        if not save_finance_sync_logs_to_db(logs):
+            raise RuntimeError("数据库写入财务同步日志失败")
+        return True
     save_json(FINANCE_SYNC_LOG_FILE, logs)
+    return True
 
 
 def db_enabled():
@@ -262,6 +389,256 @@ def extract_updated_at_for_db(payload):
     return datetime.now()
 
 
+def to_float(value, default=0.0):
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return default
+
+
+def parse_appointment_datetime(order):
+    source = order if isinstance(order, dict) else {}
+    date_text = normalize_date(source.get("appointmentDate"))
+    time_text = normalize_time(source.get("appointmentTime"))
+    if date_text and time_text:
+        return parse_datetime_text(f"{date_text} {time_text}")
+    if date_text:
+        return parse_datetime_text(date_text)
+    return parse_datetime_text(source.get("appointmentDate"))
+
+
+def ensure_table_columns(cur, table_name, columns):
+    for name, definition in columns:
+        cur.execute(f"ALTER TABLE {table_name} ADD COLUMN IF NOT EXISTS {name} {definition};")
+
+
+def filter_orders_by_updated_after(items, updated_after_text):
+    source = items if isinstance(items, list) else []
+    threshold = parse_datetime_text(updated_after_text)
+    if not threshold:
+        return source
+    return [
+        item
+        for item in source
+        if (parse_datetime_text(item.get("updatedAt") or item.get("createdAt")) or datetime.min) > threshold
+    ]
+
+
+def get_order_version_value(order):
+    if not isinstance(order, dict):
+        return 0
+    try:
+        parsed = int(order.get("version") or 0)
+    except (TypeError, ValueError):
+        parsed = 0
+    return max(0, parsed)
+
+
+def apply_incremental_order_sync(incoming_orders):
+    incoming = incoming_orders if isinstance(incoming_orders, list) else []
+    existing_orders = load_orders()
+    order_map = {}
+    for item in existing_orders:
+        if not isinstance(item, dict):
+            continue
+        order_id = normalize_text(item.get("id"))
+        if not order_id:
+            continue
+        order_map[order_id] = normalize_order_record(item)
+
+    accepted_ids = []
+    conflicts = []
+    for item in incoming:
+        if not isinstance(item, dict):
+            continue
+        candidate = normalize_order_record(item)
+        order_id = normalize_text(candidate.get("id"))
+        if not order_id:
+            continue
+        current = order_map.get(order_id)
+        incoming_version = get_order_version_value(candidate)
+        current_version = get_order_version_value(current)
+
+        if isinstance(current, dict):
+            if incoming_version < current_version:
+                conflicts.append(
+                    {
+                        "id": order_id,
+                        "code": "ORDER_VERSION_CONFLICT",
+                        "reason": "VERSION_TOO_OLD",
+                        "incomingVersion": incoming_version,
+                        "currentVersion": current_version,
+                        "currentItem": current,
+                    }
+                )
+                continue
+            if incoming_version == current_version and candidate != normalize_order_record(current):
+                conflicts.append(
+                    {
+                        "id": order_id,
+                        "code": "ORDER_VERSION_CONFLICT",
+                        "reason": "VERSION_NOT_ADVANCED",
+                        "incomingVersion": incoming_version,
+                        "currentVersion": current_version,
+                        "currentItem": current,
+                    }
+                )
+                continue
+
+        if not normalize_text(candidate.get("createdAt")):
+            if isinstance(current, dict):
+                candidate["createdAt"] = normalize_text(current.get("createdAt")) or now_text()
+            else:
+                candidate["createdAt"] = now_text()
+        if not normalize_text(candidate.get("updatedAt")):
+            candidate["updatedAt"] = now_text()
+
+        order_map[order_id] = candidate
+        accepted_ids.append(order_id)
+
+    if accepted_ids:
+        next_orders = list(order_map.values())
+        next_orders.sort(key=order_sort_key, reverse=True)
+        save_orders(next_orders)
+
+    return {
+        "acceptedIds": accepted_ids,
+        "acceptedCount": len(accepted_ids),
+        "conflicts": conflicts,
+        "conflictCount": len(conflicts),
+    }
+
+
+def make_idempotency_cache_key(endpoint, idempotency_key):
+    return f"{normalize_text(endpoint)}::{normalize_text(idempotency_key)}"
+
+
+def prune_idempotency_cache(cache):
+    now_dt = datetime.now()
+    cutoff = now_dt - timedelta(seconds=IDEMPOTENCY_TTL_SECONDS)
+    source = cache if isinstance(cache, dict) else {}
+    items = []
+    for key, value in source.items():
+        if not isinstance(value, dict):
+            continue
+        created_at = parse_datetime_text(value.get("createdAt"))
+        if not created_at:
+            continue
+        if created_at < cutoff:
+            continue
+        items.append((key, value, created_at))
+    items.sort(key=lambda pair: pair[2], reverse=True)
+    items = items[:IDEMPOTENCY_MAX_RECORDS]
+    return {key: value for key, value, _ in items}
+
+
+def read_idempotency_cache_local():
+    source = load_json(IDEMPOTENCY_CACHE_FILE, {})
+    return prune_idempotency_cache(source)
+
+
+def write_idempotency_cache_local(cache):
+    save_json(IDEMPOTENCY_CACHE_FILE, prune_idempotency_cache(cache))
+
+
+def load_idempotent_response(endpoint, idempotency_key):
+    token = normalize_text(idempotency_key)
+    if not token:
+        return None
+    endpoint_key = normalize_text(endpoint)
+    storage_key = make_idempotency_cache_key(endpoint_key, token)
+    cutoff = datetime.now() - timedelta(seconds=IDEMPOTENCY_TTL_SECONDS)
+    if db_enabled():
+        try:
+            with get_db_connection() as conn:
+                with conn.cursor() as cur:
+                    cur.execute(
+                        """
+                        SELECT status_code, response_payload, created_at
+                        FROM api_idempotency
+                        WHERE idempotency_key = %s
+                        LIMIT 1
+                        """,
+                        (storage_key,),
+                    )
+                    row = cur.fetchone()
+                    if not row:
+                        return None
+                    created_at = row[2]
+                    if isinstance(created_at, datetime) and created_at < cutoff:
+                        cur.execute(
+                            "DELETE FROM api_idempotency WHERE idempotency_key = %s",
+                            (storage_key,),
+                        )
+                        return None
+                    payload = row[1] if isinstance(row[1], dict) else {}
+                    return {"statusCode": int(row[0] or 200), "payload": payload}
+        except Exception:
+            return None
+
+    cache = read_idempotency_cache_local()
+    record = cache.get(make_idempotency_cache_key(endpoint_key, token))
+    if not isinstance(record, dict):
+        return None
+    payload = record.get("payload")
+    if not isinstance(payload, dict):
+        return None
+    return {
+        "statusCode": int(record.get("statusCode") or 200),
+        "payload": payload,
+    }
+
+
+def save_idempotent_response(endpoint, idempotency_key, status_code, payload):
+    token = normalize_text(idempotency_key)
+    endpoint_key = normalize_text(endpoint)
+    if not token or not endpoint_key:
+        return
+    storage_key = make_idempotency_cache_key(endpoint_key, token)
+    status_value = int(status_code or 200)
+    payload_value = payload if isinstance(payload, dict) else {}
+    now_dt = datetime.now()
+    if db_enabled():
+        try:
+            with get_db_connection() as conn:
+                with conn.cursor() as cur:
+                    cur.execute(
+                        """
+                        INSERT INTO api_idempotency (idempotency_key, endpoint, status_code, response_payload, created_at, updated_at)
+                        VALUES (%s, %s, %s, %s::jsonb, %s, %s)
+                        ON CONFLICT (idempotency_key)
+                        DO UPDATE SET
+                            endpoint = EXCLUDED.endpoint,
+                            status_code = EXCLUDED.status_code,
+                            response_payload = EXCLUDED.response_payload,
+                            updated_at = EXCLUDED.updated_at
+                        """,
+                        (
+                            storage_key,
+                            endpoint_key,
+                            status_value,
+                            json.dumps(payload_value, ensure_ascii=False),
+                            now_dt,
+                            now_dt,
+                        ),
+                    )
+                    cur.execute(
+                        "DELETE FROM api_idempotency WHERE updated_at < %s",
+                        (now_dt - timedelta(seconds=IDEMPOTENCY_TTL_SECONDS),),
+                    )
+            return
+        except Exception:
+            return
+
+    cache = read_idempotency_cache_local()
+    cache[make_idempotency_cache_key(endpoint_key, token)] = {
+        "statusCode": status_value,
+        "payload": payload_value,
+        "createdAt": now_text(),
+    }
+    write_idempotency_cache_local(cache)
+
+
 def init_database_if_needed():
     global DB_INIT_ERROR
     if not ENABLE_DB_STORAGE:
@@ -276,47 +653,174 @@ def init_database_if_needed():
                     """
                     CREATE TABLE IF NOT EXISTS users (
                         username TEXT PRIMARY KEY,
-                        payload JSONB NOT NULL,
+                        name TEXT NOT NULL DEFAULT '',
+                        role TEXT NOT NULL DEFAULT 'sales',
+                        password_hash TEXT,
+                        status TEXT NOT NULL DEFAULT 'active',
+                        payload JSONB NOT NULL DEFAULT '{}'::jsonb,
+                        created_at TIMESTAMP NOT NULL DEFAULT NOW(),
                         updated_at TIMESTAMP NOT NULL DEFAULT NOW()
                     );
                     """
+                )
+                ensure_table_columns(
+                    cur,
+                    "users",
+                    [
+                        ("name", "TEXT NOT NULL DEFAULT ''"),
+                        ("role", "TEXT NOT NULL DEFAULT 'sales'"),
+                        ("password_hash", "TEXT"),
+                        ("status", "TEXT NOT NULL DEFAULT 'active'"),
+                        ("payload", "JSONB NOT NULL DEFAULT '{}'::jsonb"),
+                        ("created_at", "TIMESTAMP NOT NULL DEFAULT NOW()"),
+                        ("updated_at", "TIMESTAMP NOT NULL DEFAULT NOW()"),
+                    ],
                 )
                 cur.execute(
                     """
                     CREATE TABLE IF NOT EXISTS orders (
                         order_id TEXT PRIMARY KEY,
-                        payload JSONB NOT NULL,
+                        service_type TEXT NOT NULL DEFAULT 'FILM',
+                        status TEXT NOT NULL DEFAULT '未完工',
+                        customer_name TEXT NOT NULL DEFAULT '',
+                        phone TEXT NOT NULL DEFAULT '',
+                        plate_number TEXT NOT NULL DEFAULT '',
+                        car_model TEXT NOT NULL DEFAULT '',
+                        sales_owner TEXT NOT NULL DEFAULT '',
+                        store TEXT NOT NULL DEFAULT '',
+                        appointment_time TIMESTAMP,
+                        total_price NUMERIC(12, 2) NOT NULL DEFAULT 0,
+                        version INTEGER NOT NULL DEFAULT 0,
+                        payload JSONB NOT NULL DEFAULT '{}'::jsonb,
+                        created_at TIMESTAMP NOT NULL DEFAULT NOW(),
                         updated_at TIMESTAMP NOT NULL DEFAULT NOW()
                     );
                     """
                 )
+                ensure_table_columns(
+                    cur,
+                    "orders",
+                    [
+                        ("service_type", "TEXT NOT NULL DEFAULT 'FILM'"),
+                        ("status", "TEXT NOT NULL DEFAULT '未完工'"),
+                        ("customer_name", "TEXT NOT NULL DEFAULT ''"),
+                        ("phone", "TEXT NOT NULL DEFAULT ''"),
+                        ("plate_number", "TEXT NOT NULL DEFAULT ''"),
+                        ("car_model", "TEXT NOT NULL DEFAULT ''"),
+                        ("sales_owner", "TEXT NOT NULL DEFAULT ''"),
+                        ("store", "TEXT NOT NULL DEFAULT ''"),
+                        ("appointment_time", "TIMESTAMP"),
+                        ("total_price", "NUMERIC(12, 2) NOT NULL DEFAULT 0"),
+                        ("version", "INTEGER NOT NULL DEFAULT 0"),
+                        ("payload", "JSONB NOT NULL DEFAULT '{}'::jsonb"),
+                        ("created_at", "TIMESTAMP NOT NULL DEFAULT NOW()"),
+                        ("updated_at", "TIMESTAMP NOT NULL DEFAULT NOW()"),
+                    ],
+                )
+                cur.execute("CREATE INDEX IF NOT EXISTS idx_orders_updated_at ON orders(updated_at DESC);")
+                cur.execute("CREATE INDEX IF NOT EXISTS idx_orders_status ON orders(status);")
+                cur.execute("CREATE INDEX IF NOT EXISTS idx_orders_sales_owner ON orders(sales_owner);")
+                cur.execute("CREATE INDEX IF NOT EXISTS idx_orders_appointment_time ON orders(appointment_time);")
                 cur.execute(
                     """
                     CREATE TABLE IF NOT EXISTS finance_sync_logs (
                         log_id TEXT PRIMARY KEY,
-                        payload JSONB NOT NULL,
-                        created_at TIMESTAMP NOT NULL DEFAULT NOW()
+                        order_id TEXT NOT NULL DEFAULT '',
+                        event_type TEXT NOT NULL DEFAULT '',
+                        service_type TEXT NOT NULL DEFAULT '',
+                        result TEXT NOT NULL DEFAULT 'SUCCESS',
+                        payload JSONB NOT NULL DEFAULT '{}'::jsonb,
+                        created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+                        updated_at TIMESTAMP NOT NULL DEFAULT NOW()
                     );
                     """
                 )
+                ensure_table_columns(
+                    cur,
+                    "finance_sync_logs",
+                    [
+                        ("order_id", "TEXT NOT NULL DEFAULT ''"),
+                        ("event_type", "TEXT NOT NULL DEFAULT ''"),
+                        ("service_type", "TEXT NOT NULL DEFAULT ''"),
+                        ("result", "TEXT NOT NULL DEFAULT 'SUCCESS'"),
+                        ("payload", "JSONB NOT NULL DEFAULT '{}'::jsonb"),
+                        ("created_at", "TIMESTAMP NOT NULL DEFAULT NOW()"),
+                        ("updated_at", "TIMESTAMP NOT NULL DEFAULT NOW()"),
+                    ],
+                )
+                cur.execute("CREATE INDEX IF NOT EXISTS idx_finance_logs_order_id ON finance_sync_logs(order_id);")
+                cur.execute("CREATE INDEX IF NOT EXISTS idx_finance_logs_created_at ON finance_sync_logs(created_at DESC);")
+                cur.execute(
+                    """
+                    CREATE TABLE IF NOT EXISTS api_idempotency (
+                        idempotency_key TEXT PRIMARY KEY,
+                        endpoint TEXT NOT NULL DEFAULT '',
+                        status_code INTEGER NOT NULL DEFAULT 200,
+                        response_payload JSONB NOT NULL DEFAULT '{}'::jsonb,
+                        created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+                        updated_at TIMESTAMP NOT NULL DEFAULT NOW()
+                    );
+                    """
+                )
+                ensure_table_columns(
+                    cur,
+                    "api_idempotency",
+                    [
+                        ("endpoint", "TEXT NOT NULL DEFAULT ''"),
+                        ("status_code", "INTEGER NOT NULL DEFAULT 200"),
+                        ("response_payload", "JSONB NOT NULL DEFAULT '{}'::jsonb"),
+                        ("created_at", "TIMESTAMP NOT NULL DEFAULT NOW()"),
+                        ("updated_at", "TIMESTAMP NOT NULL DEFAULT NOW()"),
+                    ],
+                )
+                cur.execute("CREATE INDEX IF NOT EXISTS idx_api_idempotency_endpoint ON api_idempotency(endpoint);")
+                cur.execute("CREATE INDEX IF NOT EXISTS idx_api_idempotency_updated_at ON api_idempotency(updated_at DESC);")
+                cur.execute(
+                    """
+                    CREATE TABLE IF NOT EXISTS auth_sessions (
+                        session_token TEXT PRIMARY KEY,
+                        username TEXT NOT NULL DEFAULT '',
+                        user_payload JSONB NOT NULL DEFAULT '{}'::jsonb,
+                        created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+                        updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
+                        expires_at TIMESTAMP NOT NULL DEFAULT NOW()
+                    );
+                    """
+                )
+                ensure_table_columns(
+                    cur,
+                    "auth_sessions",
+                    [
+                        ("username", "TEXT NOT NULL DEFAULT ''"),
+                        ("user_payload", "JSONB NOT NULL DEFAULT '{}'::jsonb"),
+                        ("created_at", "TIMESTAMP NOT NULL DEFAULT NOW()"),
+                        ("updated_at", "TIMESTAMP NOT NULL DEFAULT NOW()"),
+                        ("expires_at", "TIMESTAMP NOT NULL DEFAULT NOW()"),
+                    ],
+                )
+                cur.execute("CREATE INDEX IF NOT EXISTS idx_auth_sessions_username ON auth_sessions(username);")
+                cur.execute("CREATE INDEX IF NOT EXISTS idx_auth_sessions_expires_at ON auth_sessions(expires_at);")
 
             with conn.cursor() as cur:
                 cur.execute("SELECT COUNT(*) FROM users")
                 users_count = cur.fetchone()[0]
             if users_count == 0:
-                save_users_to_db(load_json(USERS_FILE, []))
+                if not save_users_to_db(load_json(USERS_FILE, [])):
+                    raise RuntimeError("初始化用户数据失败")
 
             with conn.cursor() as cur:
                 cur.execute("SELECT COUNT(*) FROM orders")
                 orders_count = cur.fetchone()[0]
             if orders_count == 0:
-                save_orders_to_db(load_json(ORDERS_FILE, []))
+                if not save_orders_to_db(load_json(ORDERS_FILE, [])):
+                    raise RuntimeError("初始化订单数据失败")
 
             with conn.cursor() as cur:
                 cur.execute("SELECT COUNT(*) FROM finance_sync_logs")
                 logs_count = cur.fetchone()[0]
             if logs_count == 0:
-                save_finance_sync_logs_to_db(load_json(FINANCE_SYNC_LOG_FILE, []))
+                if not save_finance_sync_logs_to_db(load_json(FINANCE_SYNC_LOG_FILE, [])):
+                    raise RuntimeError("初始化财务日志数据失败")
 
         DB_INIT_ERROR = ""
     except Exception as error:
@@ -327,8 +831,29 @@ def load_users_from_db():
     try:
         with get_db_connection() as conn:
             with conn.cursor() as cur:
-                cur.execute("SELECT payload FROM users ORDER BY username ASC")
-                return [row[0] for row in cur.fetchall() if isinstance(row[0], dict)]
+                cur.execute(
+                    """
+                    SELECT username, name, role, password_hash, status, payload
+                    FROM users
+                    ORDER BY username ASC
+                    """
+                )
+                rows = []
+                for row in cur.fetchall():
+                    payload = row[5] if isinstance(row[5], dict) else {}
+                    merged = {
+                        **payload,
+                        "username": normalize_text(row[0]) or normalize_text(payload.get("username")),
+                        "name": normalize_text(row[1]) or normalize_text(payload.get("name")),
+                        "role": normalize_text(row[2]) or normalize_text(payload.get("role")),
+                        "status": normalize_text(row[4]) or normalize_text(payload.get("status")) or "active",
+                    }
+                    password_hash = normalize_text(row[3])
+                    if password_hash:
+                        merged["passwordHash"] = password_hash
+                        merged["password"] = ""
+                    rows.append(normalize_user_record(merged))
+                return rows
     except Exception:
         return None
 
@@ -342,17 +867,37 @@ def save_users_to_db(users):
                 for user in users:
                     if not isinstance(user, dict):
                         continue
-                    username = normalize_text(user.get("username"))
+                    normalized_user = normalize_user_record(user, force_hash=True)
+                    username = normalize_text(normalized_user.get("username"))
                     if not username:
                         continue
+                    name = normalize_text(normalized_user.get("name"))
+                    role = normalize_text(normalized_user.get("role")).lower() or "sales"
+                    status = normalize_text(normalized_user.get("status")) or "active"
+                    password_hash = normalize_text(normalized_user.get("passwordHash"))
+                    payload = {**normalized_user, "password": ""}
                     cur.execute(
                         """
-                        INSERT INTO users (username, payload, updated_at)
-                        VALUES (%s, %s::jsonb, %s)
+                        INSERT INTO users (username, name, role, password_hash, status, payload, updated_at)
+                        VALUES (%s, %s, %s, %s, %s, %s::jsonb, %s)
                         ON CONFLICT (username)
-                        DO UPDATE SET payload = EXCLUDED.payload, updated_at = EXCLUDED.updated_at
+                        DO UPDATE SET
+                            name = EXCLUDED.name,
+                            role = EXCLUDED.role,
+                            password_hash = EXCLUDED.password_hash,
+                            status = EXCLUDED.status,
+                            payload = EXCLUDED.payload,
+                            updated_at = EXCLUDED.updated_at
                         """,
-                        (username, json.dumps(user, ensure_ascii=False), datetime.now()),
+                        (
+                            username,
+                            name,
+                            role,
+                            password_hash,
+                            status,
+                            json.dumps(payload, ensure_ascii=False),
+                            datetime.now(),
+                        ),
                     )
         return True
     except Exception:
@@ -389,17 +934,58 @@ def save_orders_to_db(orders):
                     if not order_id:
                         continue
                     payload = normalize_order_record(order)
+                    
+                    # Extract key fields for indexed columns
+                    service_type = normalize_text(order.get("serviceType")) or "FILM"
+                    status = normalize_order_status(order.get("status"))
+                    customer_name = normalize_text(order.get("customerName"))
+                    phone = normalize_text(order.get("phone"))
+                    plate_number = normalize_text(order.get("plateNumber"))
+                    car_model = normalize_text(order.get("carModel"))
+                    sales_owner = normalize_text(order.get("salesBrandText"))
+                    store = normalize_text(order.get("store"))
+                    appointment_time = parse_appointment_datetime(order)
+                    total_price = to_float(
+                        order.get("priceSummary", {}).get("totalPrice") if isinstance(order.get("priceSummary"), dict) else 0,
+                        0.0,
+                    )
+                    version = int(payload.get("version") or 0)
+                    created_at = parse_datetime_text(order.get("createdAt")) or datetime.now()
+                    updated_at = extract_updated_at_for_db(payload)
+                    
                     cur.execute(
                         """
-                        INSERT INTO orders (order_id, payload, updated_at)
-                        VALUES (%s, %s::jsonb, %s)
+                        INSERT INTO orders (
+                            order_id, service_type, status, customer_name, phone, plate_number, 
+                            car_model, sales_owner, store, appointment_time, total_price, version, 
+                            payload, created_at, updated_at
+                        )
+                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s::jsonb, %s, %s)
                         ON CONFLICT (order_id)
-                        DO UPDATE SET payload = EXCLUDED.payload, updated_at = EXCLUDED.updated_at
+                        DO UPDATE SET 
+                            service_type = EXCLUDED.service_type,
+                            status = EXCLUDED.status,
+                            customer_name = EXCLUDED.customer_name,
+                            phone = EXCLUDED.phone,
+                            plate_number = EXCLUDED.plate_number,
+                            car_model = EXCLUDED.car_model,
+                            sales_owner = EXCLUDED.sales_owner,
+                            store = EXCLUDED.store,
+                            appointment_time = EXCLUDED.appointment_time,
+                            total_price = EXCLUDED.total_price,
+                            version = EXCLUDED.version,
+                            payload = EXCLUDED.payload,
+                            updated_at = EXCLUDED.updated_at
                         """,
-                        (order_id, json.dumps(payload, ensure_ascii=False), extract_updated_at_for_db(payload)),
+                        (
+                            order_id, service_type, status, customer_name, phone, plate_number,
+                            car_model, sales_owner, store, appointment_time, total_price, version,
+                            json.dumps(payload, ensure_ascii=False), created_at, updated_at
+                        ),
                     )
         return True
-    except Exception:
+    except Exception as e:
+        print(f"Error saving orders to DB: {e}")
         return False
 
 
@@ -489,19 +1075,265 @@ def is_valid_password(password):
     return len(text) >= 4
 
 
-def remove_tokens_for_username(username, exclude_token=""):
+def build_session_record(user):
+    safe_user = sanitize_user(user if isinstance(user, dict) else {})
+    now_ts = int(time.time())
+    return {
+        "username": normalize_text(safe_user.get("username")),
+        "user": safe_user,
+        "createdAt": now_ts,
+        "updatedAt": now_ts,
+        "expiresAt": now_ts + SESSION_TTL_SECONDS,
+    }
+
+
+def prune_local_sessions(cache):
+    source = cache if isinstance(cache, dict) else {}
+    now_ts = int(time.time())
+    items = []
+    for token, record in source.items():
+        token_text = normalize_text(token)
+        if not token_text or not isinstance(record, dict):
+            continue
+        try:
+            expires_at = int(record.get("expiresAt") or 0)
+        except (TypeError, ValueError):
+            continue
+        if expires_at <= now_ts:
+            continue
+        safe_user = sanitize_user(record.get("user"))
+        if not normalize_text(safe_user.get("username")):
+            continue
+        try:
+            updated_at = int(record.get("updatedAt") or record.get("createdAt") or now_ts)
+        except (TypeError, ValueError):
+            updated_at = now_ts
+        try:
+            created_at = int(record.get("createdAt") or updated_at)
+        except (TypeError, ValueError):
+            created_at = updated_at
+        items.append(
+            (
+                token_text,
+                {
+                    "username": normalize_text(record.get("username")) or normalize_text(safe_user.get("username")),
+                    "user": safe_user,
+                    "createdAt": created_at,
+                    "updatedAt": updated_at,
+                    "expiresAt": expires_at,
+                },
+                updated_at,
+            )
+        )
+    items.sort(key=lambda pair: pair[2], reverse=True)
+    items = items[:SESSION_MAX_RECORDS]
+    return {token: record for token, record, _ in items}
+
+
+def load_local_sessions():
+    source = load_json(SESSION_CACHE_FILE, {})
+    return prune_local_sessions(source)
+
+
+def save_local_sessions(cache):
+    save_json(SESSION_CACHE_FILE, prune_local_sessions(cache))
+
+
+def persist_session(token, record):
+    token_text = normalize_text(token)
+    if not token_text or not isinstance(record, dict):
+        return False
+    session_username = normalize_text(record.get("username"))
+    session_user = sanitize_user(record.get("user"))
+    if not session_username:
+        session_username = normalize_text(session_user.get("username"))
+    if not session_username:
+        return False
+
+    created_ts = int(record.get("createdAt") or int(time.time()))
+    updated_ts = int(record.get("updatedAt") or created_ts)
+    expires_ts = int(record.get("expiresAt") or (updated_ts + SESSION_TTL_SECONDS))
+    payload = {
+        **session_user,
+        "username": session_username,
+    }
+
+    if db_enabled():
+        try:
+            with get_db_connection() as conn:
+                with conn.cursor() as cur:
+                    cur.execute(
+                        """
+                        INSERT INTO auth_sessions (session_token, username, user_payload, created_at, updated_at, expires_at)
+                        VALUES (%s, %s, %s::jsonb, %s, %s, %s)
+                        ON CONFLICT (session_token)
+                        DO UPDATE SET
+                            username = EXCLUDED.username,
+                            user_payload = EXCLUDED.user_payload,
+                            updated_at = EXCLUDED.updated_at,
+                            expires_at = EXCLUDED.expires_at
+                        """,
+                        (
+                            token_text,
+                            session_username,
+                            json.dumps(payload, ensure_ascii=False),
+                            datetime.fromtimestamp(created_ts),
+                            datetime.fromtimestamp(updated_ts),
+                            datetime.fromtimestamp(expires_ts),
+                        ),
+                    )
+                    cur.execute("DELETE FROM auth_sessions WHERE expires_at <= %s", (datetime.now(),))
+            return True
+        except Exception:
+            return False
+
+    cache = load_local_sessions()
+    cache[token_text] = {
+        "username": session_username,
+        "user": payload,
+        "createdAt": created_ts,
+        "updatedAt": updated_ts,
+        "expiresAt": expires_ts,
+    }
+    save_local_sessions(cache)
+    return True
+
+
+def create_auth_session(user):
+    token = uuid.uuid4().hex
+    record = build_session_record(user)
+    if persist_session(token, record):
+        return token
+    return ""
+
+
+def get_auth_session_user(token):
+    token_text = normalize_text(token)
+    if not token_text:
+        return None
+    now_ts = int(time.time())
+    now_dt = datetime.now()
+
+    if db_enabled():
+        try:
+            with get_db_connection() as conn:
+                with conn.cursor() as cur:
+                    cur.execute(
+                        """
+                        SELECT username, user_payload, created_at, updated_at, expires_at
+                        FROM auth_sessions
+                        WHERE session_token = %s
+                        LIMIT 1
+                        """,
+                        (token_text,),
+                    )
+                    row = cur.fetchone()
+                    if not row:
+                        return None
+                    expires_at = row[4]
+                    if isinstance(expires_at, datetime) and expires_at <= now_dt:
+                        cur.execute("DELETE FROM auth_sessions WHERE session_token = %s", (token_text,))
+                        return None
+                    payload = row[1] if isinstance(row[1], dict) else {}
+                    safe_user = sanitize_user({**payload, "username": normalize_text(row[0]) or payload.get("username")})
+                    next_expire_dt = now_dt + timedelta(seconds=SESSION_TTL_SECONDS)
+                    cur.execute(
+                        """
+                        UPDATE auth_sessions
+                        SET updated_at = %s, expires_at = %s, user_payload = %s::jsonb
+                        WHERE session_token = %s
+                        """,
+                        (
+                            now_dt,
+                            next_expire_dt,
+                            json.dumps(safe_user, ensure_ascii=False),
+                            token_text,
+                        ),
+                    )
+                    return safe_user
+        except Exception:
+            return None
+
+    cache = load_local_sessions()
+    record = cache.get(token_text)
+    if not isinstance(record, dict):
+        return None
+    try:
+        expires_ts = int(record.get("expiresAt") or 0)
+    except (TypeError, ValueError):
+        expires_ts = 0
+    if expires_ts <= now_ts:
+        cache.pop(token_text, None)
+        save_local_sessions(cache)
+        return None
+    safe_user = sanitize_user(record.get("user"))
+    if not normalize_text(safe_user.get("username")):
+        cache.pop(token_text, None)
+        save_local_sessions(cache)
+        return None
+    record["user"] = safe_user
+    record["updatedAt"] = now_ts
+    record["expiresAt"] = now_ts + SESSION_TTL_SECONDS
+    cache[token_text] = record
+    save_local_sessions(cache)
+    return safe_user
+
+
+def delete_auth_session(token):
+    token_text = normalize_text(token)
+    if not token_text:
+        return
+    if db_enabled():
+        try:
+            with get_db_connection() as conn:
+                with conn.cursor() as cur:
+                    cur.execute("DELETE FROM auth_sessions WHERE session_token = %s", (token_text,))
+            return
+        except Exception:
+            return
+    cache = load_local_sessions()
+    if token_text in cache:
+        cache.pop(token_text, None)
+        save_local_sessions(cache)
+
+
+def remove_auth_sessions_for_username(username, exclude_token=""):
     target = normalize_text(username)
     if not target:
         return
     skip = normalize_text(exclude_token)
+    if db_enabled():
+        try:
+            with get_db_connection() as conn:
+                with conn.cursor() as cur:
+                    if skip:
+                        cur.execute(
+                            "DELETE FROM auth_sessions WHERE username = %s AND session_token <> %s",
+                            (target, skip),
+                        )
+                    else:
+                        cur.execute("DELETE FROM auth_sessions WHERE username = %s", (target,))
+            return
+        except Exception:
+            return
+
+    cache = load_local_sessions()
     remove_keys = []
-    for token, user in TOKENS.items():
+    for token, record in cache.items():
         if normalize_text(token) == skip:
             continue
-        if normalize_text(user.get("username")) == target:
+        session_user = record.get("user") if isinstance(record, dict) else {}
+        session_username = normalize_text(record.get("username")) if isinstance(record, dict) else ""
+        if session_username == target or normalize_text(session_user.get("username")) == target:
             remove_keys.append(token)
-    for token in remove_keys:
-        TOKENS.pop(token, None)
+    if remove_keys:
+        for token in remove_keys:
+            cache.pop(token, None)
+        save_local_sessions(cache)
+
+
+def remove_tokens_for_username(username, exclude_token=""):
+    remove_auth_sessions_for_username(username, exclude_token=exclude_token)
 
 
 def read_internal_api_token_from_headers(handler):
@@ -800,7 +1632,7 @@ class AdminHandler(SimpleHTTPRequestHandler):
 
     def end_headers(self):
         self.send_header("Access-Control-Allow-Origin", "*")
-        self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Api-Token")
+        self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Api-Token, Idempotency-Key")
         self.send_header("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, OPTIONS")
         super().end_headers()
 
@@ -811,7 +1643,10 @@ class AdminHandler(SimpleHTTPRequestHandler):
     def do_GET(self):
         parsed = urlparse(self.path)
         if parsed.path.startswith("/api/"):
-            self.handle_api_get(parsed)
+            try:
+                self.handle_api_get(parsed)
+            except RuntimeError as error:
+                self.send_json(500, {"ok": False, "success": False, "message": str(error), "code": 500})
             return
         if parsed.path == "/":
             self.path = "/index.html"
@@ -820,21 +1655,30 @@ class AdminHandler(SimpleHTTPRequestHandler):
     def do_POST(self):
         parsed = urlparse(self.path)
         if parsed.path.startswith("/api/"):
-            self.handle_api_post(parsed)
+            try:
+                self.handle_api_post(parsed)
+            except RuntimeError as error:
+                self.send_json(500, {"ok": False, "success": False, "message": str(error), "code": 500})
             return
         self.send_json(404, {"ok": False, "message": "Not Found"})
 
     def do_PUT(self):
         parsed = urlparse(self.path)
         if parsed.path.startswith("/api/"):
-            self.handle_api_put(parsed)
+            try:
+                self.handle_api_put(parsed)
+            except RuntimeError as error:
+                self.send_json(500, {"ok": False, "success": False, "message": str(error), "code": 500})
             return
         self.send_json(404, {"ok": False, "message": "Not Found"})
 
     def do_PATCH(self):
         parsed = urlparse(self.path)
         if parsed.path.startswith("/api/"):
-            self.handle_api_patch(parsed)
+            try:
+                self.handle_api_patch(parsed)
+            except RuntimeError as error:
+                self.send_json(500, {"ok": False, "success": False, "message": str(error), "code": 500})
             return
         self.send_json(404, {"ok": False, "message": "Not Found"})
 
@@ -891,11 +1735,15 @@ class AdminHandler(SimpleHTTPRequestHandler):
             if not require_internal_api_token(self):
                 return
 
+            params = parse_qs(parsed.query)
+            updated_after = normalize_text(get_first(params, "updatedAfter", ""))
+            items = filter_orders_by_updated_after(load_orders(), updated_after)
             self.send_json(
                 200,
                 {
                     "success": True,
-                    "items": load_orders(),
+                    "items": items,
+                    "count": len(items),
                     "updatedAt": now_text(),
                 },
             )
@@ -1107,22 +1955,42 @@ class AdminHandler(SimpleHTTPRequestHandler):
                 return
 
             body = self.read_json_body()
+            idempotency_key = normalize_text(self.headers.get("Idempotency-Key"))
+            if not idempotency_key and isinstance(body, dict):
+                idempotency_key = normalize_text(body.get("idempotencyKey"))
+            if idempotency_key:
+                cached_response = load_idempotent_response(parsed.path, idempotency_key)
+                if isinstance(cached_response, dict):
+                    self.send_json(
+                        int(cached_response.get("statusCode") or 200),
+                        cached_response.get("payload") if isinstance(cached_response.get("payload"), dict) else {},
+                    )
+                    return
+
             orders = body.get("orders") if isinstance(body, dict) else None
             if not isinstance(orders, list):
                 self.send_json(400, {"success": False, "message": "orders 必须是数组", "code": 400})
                 return
 
-            save_orders(orders)
-            self.send_json(
-                200,
-                {
-                    "success": True,
-                    "code": 0,
-                    "message": "订单同步成功",
-                    "count": len(orders),
-                    "updatedAt": now_text(),
-                },
-            )
+            try:
+                result = apply_incremental_order_sync(orders)
+            except RuntimeError as error:
+                self.send_json(500, {"success": False, "message": str(error), "code": 500})
+                return
+            response_payload = {
+                "success": True,
+                "code": 0,
+                "message": "订单增量同步完成",
+                "count": len(orders),
+                "acceptedCount": result.get("acceptedCount", 0),
+                "acceptedIds": result.get("acceptedIds", []),
+                "conflictCount": result.get("conflictCount", 0),
+                "conflicts": result.get("conflicts", []),
+                "updatedAt": now_text(),
+            }
+            if idempotency_key:
+                save_idempotent_response(parsed.path, idempotency_key, 200, response_payload)
+            self.send_json(200, response_payload)
             return
 
         if parsed.path == "/api/v1/internal/work-orders/sync":
@@ -1130,6 +1998,18 @@ class AdminHandler(SimpleHTTPRequestHandler):
                 return
 
             body = self.read_json_body()
+            idempotency_key = normalize_text(self.headers.get("Idempotency-Key"))
+            if not idempotency_key and isinstance(body, dict):
+                idempotency_key = normalize_text(body.get("idempotencyKey"))
+            if idempotency_key:
+                cached_response = load_idempotent_response(parsed.path, idempotency_key)
+                if isinstance(cached_response, dict):
+                    self.send_json(
+                        int(cached_response.get("statusCode") or 200),
+                        cached_response.get("payload") if isinstance(cached_response.get("payload"), dict) else {},
+                    )
+                    return
+
             order = body.get("order") if isinstance(body, dict) else {}
             order_id = normalize_text(order.get("id")) if isinstance(order, dict) else ""
             if not order_id:
@@ -1162,21 +2042,25 @@ class AdminHandler(SimpleHTTPRequestHandler):
                 },
             )
             # Keep recent 1000 records.
-            save_finance_sync_logs(logs[:1000])
+            try:
+                save_finance_sync_logs(logs[:1000])
+            except RuntimeError as error:
+                self.send_json(500, {"success": False, "message": str(error), "code": 500})
+                return
 
-            self.send_json(
-                200,
-                {
-                    "success": True,
-                    "code": 0,
-                    "message": "财务系统入账成功",
-                    "data": {
-                        "externalId": external_id,
-                        "orderId": order_id,
-                        "receivedAt": now_text(),
-                    },
+            response_payload = {
+                "success": True,
+                "code": 0,
+                "message": "财务系统入账成功",
+                "data": {
+                    "externalId": external_id,
+                    "orderId": order_id,
+                    "receivedAt": now_text(),
                 },
-            )
+            }
+            if idempotency_key:
+                save_idempotent_response(parsed.path, idempotency_key, 200, response_payload)
+            self.send_json(200, response_payload)
             return
 
         if parsed.path == "/api/login":
@@ -1186,16 +2070,26 @@ class AdminHandler(SimpleHTTPRequestHandler):
             users = load_users()
             matched = None
             for user in users:
-                if normalize_text(user.get("username")) == username and normalize_text(user.get("password")) == password:
+                if normalize_text(user.get("username")) != username:
+                    continue
+                if verify_password(password, extract_user_secret(user)):
                     matched = user
                     break
             if not matched:
                 self.send_json(401, {"ok": False, "message": "账号或密码错误"})
                 return
 
+            if maybe_upgrade_user_password_hash(matched, password):
+                try:
+                    save_users(users)
+                except RuntimeError:
+                    pass
+
             safe_user = sanitize_user(matched)
-            token = uuid.uuid4().hex
-            TOKENS[token] = safe_user
+            token = create_auth_session(safe_user)
+            if not token:
+                self.send_json(500, {"ok": False, "message": "会话创建失败，请稍后重试"})
+                return
             self.send_json(200, {"ok": True, "token": token, "user": safe_user})
             return
 
@@ -1205,8 +2099,7 @@ class AdminHandler(SimpleHTTPRequestHandler):
 
         if parsed.path == "/api/logout":
             token = self.get_token_from_header()
-            if token and token in TOKENS:
-                TOKENS.pop(token, None)
+            delete_auth_session(token)
             self.send_json(200, {"ok": True})
             return
 
@@ -1227,16 +2120,20 @@ class AdminHandler(SimpleHTTPRequestHandler):
             if not target:
                 self.send_json(404, {"ok": False, "message": "账号不存在"})
                 return
-            old_password = normalize_text(target.get("password"))
-            if old_password != current_password:
+            if not verify_password(current_password, extract_user_secret(target)):
                 self.send_json(400, {"ok": False, "message": "当前密码错误"})
                 return
-            if old_password == new_password:
+            if verify_password(new_password, extract_user_secret(target)):
                 self.send_json(400, {"ok": False, "message": "新密码不能与当前密码相同"})
                 return
 
-            target["password"] = new_password
-            save_users(users)
+            target["passwordHash"] = hash_password(new_password)
+            target["password"] = ""
+            try:
+                save_users(users)
+            except RuntimeError as error:
+                self.send_json(500, {"ok": False, "message": str(error)})
+                return
             keep_token = self.get_token_from_header()
             remove_tokens_for_username(username, exclude_token=keep_token)
             self.send_json(200, {"ok": True, "message": "密码修改成功"})
@@ -1263,8 +2160,13 @@ class AdminHandler(SimpleHTTPRequestHandler):
                 self.send_json(404, {"ok": False, "message": "账号不存在"})
                 return
 
-            target["password"] = new_password
-            save_users(users)
+            target["passwordHash"] = hash_password(new_password)
+            target["password"] = ""
+            try:
+                save_users(users)
+            except RuntimeError as error:
+                self.send_json(500, {"ok": False, "message": str(error)})
+                return
             current_username = normalize_text(user.get("username"))
             keep_token = self.get_token_from_header() if current_username == username else ""
             remove_tokens_for_username(username, exclude_token=keep_token)
@@ -1317,7 +2219,11 @@ class AdminHandler(SimpleHTTPRequestHandler):
             target["followupLastUpdatedAt"] = now_text()
             target["updatedAt"] = now_text()
             target["version"] = int(target.get("version") or 0) + 1
-            save_orders(orders)
+            try:
+                save_orders(orders)
+            except RuntimeError as error:
+                self.send_json(500, {"ok": False, "message": str(error)})
+                return
             self.send_json(200, {"ok": True, "message": "回访已标记完成"})
             return
 
@@ -1330,7 +2236,11 @@ class AdminHandler(SimpleHTTPRequestHandler):
             if not isinstance(orders, list):
                 self.send_json(400, {"ok": False, "message": "orders 必须是数组"})
                 return
-            save_orders(orders)
+            try:
+                save_orders(orders)
+            except RuntimeError as error:
+                self.send_json(500, {"ok": False, "message": str(error)})
+                return
             self.send_json(200, {"ok": True, "message": f"已导入 {len(orders)} 条订单"})
             return
 
@@ -1394,7 +2304,11 @@ class AdminHandler(SimpleHTTPRequestHandler):
         target.update(patch)
         target["updatedAt"] = now_text()
         target["version"] = current_version + 1
-        save_orders(orders)
+        try:
+            save_orders(orders)
+        except RuntimeError as error:
+            self.send_json(500, {"ok": False, "message": str(error)})
+            return
         self.send_json(200, {"ok": True, "item": target})
 
     def handle_api_patch(self, parsed):
@@ -1449,7 +2363,11 @@ class AdminHandler(SimpleHTTPRequestHandler):
         target.update(patch)
         target["updatedAt"] = now_text()
         target["version"] = current_version + 1
-        save_orders(orders)
+        try:
+            save_orders(orders)
+        except RuntimeError as error:
+            self.send_json(500, {"success": False, "message": str(error), "code": 500})
+            return
         self.send_json(200, {"success": True, "code": 0, "item": target})
 
     def get_token_from_header(self):
@@ -1460,7 +2378,7 @@ class AdminHandler(SimpleHTTPRequestHandler):
 
     def require_auth(self):
         token = self.get_token_from_header()
-        user = TOKENS.get(token)
+        user = get_auth_session_user(token)
         if not user:
             self.send_json(401, {"ok": False, "message": "请先登录"})
             return None
@@ -1530,10 +2448,34 @@ def ensure_seed_files():
         save_json(
             USERS_FILE,
             [
-                {"username": "manager", "password": "manager123", "name": "店长", "role": "manager"},
-                {"username": "salesa", "password": "sales123", "name": "销售A", "role": "sales"},
-                {"username": "salesb", "password": "sales123", "name": "销售B", "role": "sales"},
-                {"username": "techa", "password": "tech123", "name": "技师A", "role": "technician"},
+                {
+                    "username": "manager",
+                    "password": "",
+                    "passwordHash": "pbkdf2_sha256$260000$manager_seed_2026$e7c1497cdb5acd39d9a267b4023b4bda9504500d7d51792a13c833f86203dc07",
+                    "name": "店长",
+                    "role": "manager",
+                },
+                {
+                    "username": "salesa",
+                    "password": "",
+                    "passwordHash": "pbkdf2_sha256$260000$salesa_seed_2026$104c2d347112e22668561ecb1c67ed28af32154cfdd5c9eb32369f62a79d9fa9",
+                    "name": "销售A",
+                    "role": "sales",
+                },
+                {
+                    "username": "salesb",
+                    "password": "",
+                    "passwordHash": "pbkdf2_sha256$260000$salesb_seed_2026$ea6f0ea012b3e7870b4330eafd1d79050faab6b15252074ba504775526921efb",
+                    "name": "销售B",
+                    "role": "sales",
+                },
+                {
+                    "username": "techa",
+                    "password": "",
+                    "passwordHash": "pbkdf2_sha256$260000$techa_seed_2026$3cdda7390db61b8083a6f0931d6e16618748fcfb2861ac2704b10a1db6efa119",
+                    "name": "技师A",
+                    "role": "technician",
+                },
             ],
         )
 

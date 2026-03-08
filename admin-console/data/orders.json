@@ -1,230 +1,20 @@
 [
   {
-    "id": "TEST20260305001",
+    "id": "TEST20260305015",
     "serviceType": "FILM",
     "serviceTypeLabel": "贴膜",
     "status": "未完工",
-    "createdAt": "2026-03-05 20:56",
-    "updatedAt": "2026-03-05 20:56",
-    "customerName": "测试客户01",
-    "phone": "13800000001",
-    "carModel": "Model Y",
-    "plateNumber": "沪TEST001",
-    "vinPhoto": "https://example.com/vin/TEST20260305001.jpg",
-    "sourceChannel": "抖音",
-    "depositAmount": "500",
-    "depositProofPhotos": [
-      "https://example.com/deposit/TEST20260305001.jpg"
-    ],
-    "filmPackage": "FRONT",
-    "filmPackages": [
-      "FRONT"
-    ],
-    "packageDetails": [
-      {
-        "value": "FRONT",
-        "label": "BOP风狂者",
-        "desc": "整车",
-        "basePrice": 3600
-      }
-    ],
-    "packageLabel": "BOP风狂者",
-    "packageDesc": "整车",
-    "salesBrandText": "孟傲",
-    "store": "BOP 保镖上海工厂店",
-    "appointmentDate": "2026-03-06",
-    "appointmentTime": "09:00",
-    "addOns": [
-      "STERILIZATION"
-    ],
-    "remark": "TEST自动生成订单，保留用于权限联调",
-    "technicianName": "王澳",
-    "constructionPhotos": [],
-    "damagePhotos": [
-      "https://example.com/damage/TEST20260305001.jpg"
-    ],
-    "workPartRecords": [
-      {
-        "id": "WPRTEST001",
-        "partType": "FULL_CAR",
-        "partTypeLabel": "整车提成",
-        "partCode": "FULL_FRONT_HOOD",
-        "partLabel": "前杠机盖",
-        "amount": 200,
-        "technicianAccountId": "tech_wangao",
-        "technicianAccountName": "王澳",
-        "technicianName": "王澳",
-        "photos": [
-          "https://example.com/work/TEST20260305001.jpg"
-        ],
-        "submittedAt": "2026-03-05 20:56"
-      }
-    ],
-    "dispatchInfo": {
-      "date": "2026-03-06",
-      "time": "09:00",
-      "workBay": "1号工位",
-      "technicianName": "王澳",
-      "technicianNames": [
-        "王澳",
-        "王迪"
-      ],
-      "technicianDisplay": "王澳 / 王迪",
-      "remark": "测试派工单",
-      "updatedAt": "2026-03-05 20:56"
-    },
-    "deliveryStatus": "待交车验收",
-    "deliveryPassedAt": "",
-    "commissionStatus": "未生成",
-    "commissionGeneratedAt": "",
-    "commissionTotal": 0,
-    "commissionRecords": [],
-    "followupRecords": [],
-    "followupLastUpdatedAt": "",
-    "financeSyncStatus": "已同步",
-    "financeSyncAt": "2026-03-05 20:56",
-    "financeSyncMessage": "TEST生成",
-    "financeExternalId": "FIN-TEST-001",
-    "financeLastEvent": "ORDER_UPDATED",
-    "priceSummary": {
-      "packagePrice": 3600,
-      "addOnFee": 0,
-      "totalPrice": 3600,
-      "deposit": 500
-    },
-    "finalPaymentPhotos": [],
-    "finalPaymentUploadedAt": ""
-  },
-  {
-    "id": "TEST20260305002",
-    "serviceType": "FILM",
-    "serviceTypeLabel": "贴膜",
-    "status": "已完工",
-    "createdAt": "2026-03-05 20:57",
-    "updatedAt": "2026-03-05 20:57",
-    "customerName": "测试客户02",
-    "phone": "13800000002",
-    "carModel": "理想 L9",
-    "plateNumber": "沪TEST002",
-    "vinPhoto": "https://example.com/vin/TEST20260305002.jpg",
-    "sourceChannel": "老客户转介绍",
-    "depositAmount": "700",
-    "depositProofPhotos": [
-      "https://example.com/deposit/TEST20260305002.jpg"
-    ],
-    "filmPackage": "FRONT",
-    "filmPackages": [
-      "FRONT"
-    ],
-    "packageDetails": [
-      {
-        "value": "FRONT",
-        "label": "BOP风狂者",
-        "desc": "整车",
-        "basePrice": 4400
-      }
-    ],
-    "packageLabel": "BOP风狂者",
-    "packageDesc": "整车",
-    "salesBrandText": "田佳佳",
-    "store": "龙膜精英店",
-    "appointmentDate": "2026-03-07",
-    "appointmentTime": "10:00",
-    "addOns": [
-      "FREE_PATCH_50"
-    ],
-    "remark": "TEST自动生成订单，保留用于权限联调",
-    "technicianName": "张霖",
-    "constructionPhotos": [
-      "https://example.com/construction/TEST20260305002.jpg"
-    ],
-    "damagePhotos": [],
-    "workPartRecords": [
-      {
-        "id": "WPRTEST002",
-        "partType": "FULL_CAR",
-        "partTypeLabel": "整车提成",
-        "partCode": "FULL_REAR_TRUNK_WING",
-        "partLabel": "后杠后盖尾翼",
-        "amount": 200,
-        "technicianAccountId": "tech_zhanglin",
-        "technicianAccountName": "张霖",
-        "technicianName": "张霖",
-        "photos": [
-          "https://example.com/work/TEST20260305002.jpg"
-        ],
-        "submittedAt": "2026-03-05 20:57"
-      }
-    ],
-    "dispatchInfo": {
-      "date": "2026-03-07",
-      "time": "10:00",
-      "workBay": "2号工位",
-      "technicianName": "张霖",
-      "technicianNames": [
-        "张霖",
-        "杨振东"
-      ],
-      "technicianDisplay": "张霖 / 杨振东",
-      "remark": "测试派工单",
-      "updatedAt": "2026-03-05 20:57"
-    },
-    "deliveryStatus": "交车通过",
-    "deliveryPassedAt": "2026-03-05 20:57",
-    "commissionStatus": "已生成",
-    "commissionGeneratedAt": "2026-03-05 20:57",
-    "commissionTotal": 200,
-    "commissionRecords": [
-      {
-        "id": "WPRTEST002",
-        "partType": "FULL_CAR",
-        "partTypeLabel": "整车提成",
-        "partCode": "FULL_REAR_TRUNK_WING",
-        "partLabel": "后杠后盖尾翼",
-        "amount": 200,
-        "technicianAccountId": "tech_zhanglin",
-        "technicianAccountName": "张霖",
-        "technicianName": "张霖",
-        "photos": [
-          "https://example.com/work/TEST20260305002.jpg"
-        ],
-        "submittedAt": "2026-03-05 20:57"
-      }
-    ],
-    "followupRecords": [],
-    "followupLastUpdatedAt": "",
-    "financeSyncStatus": "未同步",
-    "financeSyncAt": "",
-    "financeSyncMessage": "待同步",
-    "financeExternalId": "",
-    "financeLastEvent": "",
-    "priceSummary": {
-      "packagePrice": 4400,
-      "addOnFee": 0,
-      "totalPrice": 4400,
-      "deposit": 700
-    },
-    "finalPaymentPhotos": [
-      "https://example.com/final/TEST20260305002.jpg"
-    ],
-    "finalPaymentUploadedAt": "2026-03-05 20:57"
-  },
-  {
-    "id": "TEST20260305003",
-    "serviceType": "FILM",
-    "serviceTypeLabel": "贴膜",
-    "status": "未完工",
-    "createdAt": "2026-03-05 20:58",
-    "updatedAt": "2026-03-05 20:58",
-    "customerName": "测试客户03",
-    "phone": "13800000003",
+    "createdAt": "2026-03-05 21:10",
+    "updatedAt": "2026-03-05 21:10",
+    "customerName": "测试客户15",
+    "phone": "13800000015",
     "carModel": "极氪 009",
-    "plateNumber": "沪TEST003",
-    "vinPhoto": "https://example.com/vin/TEST20260305003.jpg",
+    "plateNumber": "沪TEST015",
+    "vinPhoto": "https://example.com/vin/TEST20260305015.jpg",
     "sourceChannel": "门店自然进店",
     "depositAmount": "900",
     "depositProofPhotos": [
-      "https://example.com/deposit/TEST20260305003.jpg"
+      "https://example.com/deposit/TEST20260305015.jpg"
     ],
     "filmPackage": "FRONT",
     "filmPackages": [
@@ -242,37 +32,118 @@
     "packageDesc": "整车",
     "salesBrandText": "周石磊",
     "store": "BOP 保镖上海工厂店",
-    "appointmentDate": "2026-03-08",
-    "appointmentTime": "11:00",
+    "appointmentDate": "2026-03-06",
+    "appointmentTime": "13:00",
     "addOns": [
       "STERILIZATION"
     ],
     "remark": "TEST自动生成订单，保留用于权限联调",
+    "technicianName": "张发强",
+    "constructionPhotos": [
+      "https://example.com/construction/TEST20260305015.jpg"
+    ],
+    "damagePhotos": [],
+    "workPartRecords": [],
+    "dispatchInfo": {
+      "date": "2026-03-06",
+      "time": "13:00",
+      "workBay": "5号工位",
+      "technicianName": "张发强",
+      "technicianNames": [
+        "张发强",
+        "林睿豪"
+      ],
+      "technicianDisplay": "张发强 / 林睿豪",
+      "remark": "测试派工单",
+      "updatedAt": "2026-03-05 21:10"
+    },
+    "deliveryStatus": "待交车验收",
+    "deliveryPassedAt": "",
+    "commissionStatus": "未生成",
+    "commissionGeneratedAt": "",
+    "commissionTotal": 0,
+    "commissionRecords": [],
+    "followupRecords": [],
+    "followupLastUpdatedAt": "",
+    "financeSyncStatus": "已同步",
+    "financeSyncAt": "2026-03-05 21:10",
+    "financeSyncMessage": "TEST生成",
+    "financeExternalId": "FIN-TEST-015",
+    "financeLastEvent": "ORDER_UPDATED",
+    "priceSummary": {
+      "packagePrice": 5200,
+      "addOnFee": 0,
+      "totalPrice": 5200,
+      "deposit": 900
+    },
+    "finalPaymentPhotos": [],
+    "finalPaymentUploadedAt": "",
+    "version": 0
+  },
+  {
+    "id": "TEST20260305014",
+    "serviceType": "FILM",
+    "serviceTypeLabel": "贴膜",
+    "status": "未完工",
+    "createdAt": "2026-03-05 21:09",
+    "updatedAt": "2026-03-05 21:09",
+    "customerName": "测试客户14",
+    "phone": "13800000014",
+    "carModel": "理想 L9",
+    "plateNumber": "沪TEST014",
+    "vinPhoto": "https://example.com/vin/TEST20260305014.jpg",
+    "sourceChannel": "老客户转介绍",
+    "depositAmount": "700",
+    "depositProofPhotos": [
+      "https://example.com/deposit/TEST20260305014.jpg"
+    ],
+    "filmPackage": "FRONT",
+    "filmPackages": [
+      "FRONT"
+    ],
+    "packageDetails": [
+      {
+        "value": "FRONT",
+        "label": "BOP风狂者",
+        "desc": "整车",
+        "basePrice": 4400
+      }
+    ],
+    "packageLabel": "BOP风狂者",
+    "packageDesc": "整车",
+    "salesBrandText": "田佳佳",
+    "store": "龙膜精英店",
+    "appointmentDate": "2026-03-12",
+    "appointmentTime": "12:00",
+    "addOns": [
+      "FREE_PATCH_50"
+    ],
+    "remark": "TEST自动生成订单，保留用于权限联调",
     "technicianName": "",
     "constructionPhotos": [
-      "https://example.com/construction/TEST20260305003.jpg"
+      "https://example.com/construction/TEST20260305014.jpg"
     ],
     "damagePhotos": [],
     "workPartRecords": [
       {
-        "id": "WPRTEST003",
+        "id": "WPRTEST014",
         "partType": "FULL_CAR",
         "partTypeLabel": "整车提成",
-        "partCode": "FULL_LEFT_SIDE",
-        "partLabel": "左侧面",
-        "amount": 100,
-        "technicianAccountId": "tech_zhangfaqiang",
-        "technicianAccountName": "张发强",
-        "technicianName": "张发强",
+        "partCode": "FULL_REAR_TRUNK_WING",
+        "partLabel": "后杠后盖尾翼",
+        "amount": 200,
+        "technicianAccountId": "tech_zhanglin",
+        "technicianAccountName": "张霖",
+        "technicianName": "张霖",
         "photos": [
-          "https://example.com/work/TEST20260305003.jpg"
+          "https://example.com/work/TEST20260305014.jpg"
         ],
-        "submittedAt": "2026-03-05 20:58"
+        "submittedAt": "2026-03-05 21:09"
       }
     ],
     "dispatchInfo": {
-      "date": "2026-03-08",
-      "time": "11:00",
+      "date": "2026-03-12",
+      "time": "12:00",
       "workBay": "",
       "technicianName": "",
       "technicianNames": [],
@@ -288,36 +159,37 @@
     "commissionRecords": [],
     "followupRecords": [],
     "followupLastUpdatedAt": "",
-    "financeSyncStatus": "已同步",
-    "financeSyncAt": "2026-03-05 20:58",
-    "financeSyncMessage": "TEST生成",
-    "financeExternalId": "FIN-TEST-003",
-    "financeLastEvent": "ORDER_UPDATED",
+    "financeSyncStatus": "未同步",
+    "financeSyncAt": "",
+    "financeSyncMessage": "待同步",
+    "financeExternalId": "",
+    "financeLastEvent": "",
     "priceSummary": {
-      "packagePrice": 5200,
+      "packagePrice": 4400,
       "addOnFee": 0,
-      "totalPrice": 5200,
-      "deposit": 900
+      "totalPrice": 4400,
+      "deposit": 700
     },
     "finalPaymentPhotos": [],
-    "finalPaymentUploadedAt": ""
+    "finalPaymentUploadedAt": "",
+    "version": 0
   },
   {
-    "id": "TEST20260305004",
+    "id": "TEST20260305013",
     "serviceType": "FILM",
     "serviceTypeLabel": "贴膜",
     "status": "已完工",
-    "createdAt": "2026-03-05 20:59",
-    "updatedAt": "2026-03-05 20:59",
-    "customerName": "测试客户04",
-    "phone": "13800000004",
-    "carModel": "宝马 X5",
-    "plateNumber": "沪TEST004",
-    "vinPhoto": "https://example.com/vin/TEST20260305004.jpg",
-    "sourceChannel": "小红书",
-    "depositAmount": "1100",
+    "createdAt": "2026-03-05 21:08",
+    "updatedAt": "2026-03-05 21:08",
+    "customerName": "测试客户13",
+    "phone": "13800000013",
+    "carModel": "Model Y",
+    "plateNumber": "沪TEST013",
+    "vinPhoto": "https://example.com/vin/TEST20260305013.jpg",
+    "sourceChannel": "抖音",
+    "depositAmount": "500",
     "depositProofPhotos": [
-      "https://example.com/deposit/TEST20260305004.jpg"
+      "https://example.com/deposit/TEST20260305013.jpg"
     ],
     "filmPackage": "FRONT",
     "filmPackages": [
@@ -328,74 +200,173 @@
         "value": "FRONT",
         "label": "BOP风狂者",
         "desc": "整车",
-        "basePrice": 6000
+        "basePrice": 3600
       }
     ],
     "packageLabel": "BOP风狂者",
     "packageDesc": "整车",
-    "salesBrandText": "崔庭廷",
-    "store": "龙膜精英店",
-    "appointmentDate": "2026-03-09",
-    "appointmentTime": "12:00",
+    "salesBrandText": "孟傲",
+    "store": "BOP 保镖上海工厂店",
+    "appointmentDate": "2026-03-11",
+    "appointmentTime": "11:00",
     "addOns": [
-      "FREE_PATCH_50"
+      "STERILIZATION"
     ],
     "remark": "TEST自动生成订单，保留用于权限联调",
-    "technicianName": "方圆",
+    "technicianName": "王澳",
     "constructionPhotos": [],
     "damagePhotos": [],
     "workPartRecords": [
       {
-        "id": "WPRTEST004",
+        "id": "WPRTEST013",
         "partType": "FULL_CAR",
         "partTypeLabel": "整车提成",
-        "partCode": "FULL_RIGHT_SIDE",
-        "partLabel": "右侧面",
-        "amount": 100,
-        "technicianAccountId": "tech_fangyuan",
-        "technicianAccountName": "方圆",
-        "technicianName": "方圆",
+        "partCode": "FULL_FRONT_HOOD",
+        "partLabel": "前杠机盖",
+        "amount": 200,
+        "technicianAccountId": "tech_wangao",
+        "technicianAccountName": "王澳",
+        "technicianName": "王澳",
         "photos": [
-          "https://example.com/work/TEST20260305004.jpg"
+          "https://example.com/work/TEST20260305013.jpg"
         ],
-        "submittedAt": "2026-03-05 20:59"
+        "submittedAt": "2026-03-05 21:08"
       }
     ],
     "dispatchInfo": {
-      "date": "2026-03-09",
-      "time": "12:00",
-      "workBay": "4号工位",
-      "technicianName": "方圆",
+      "date": "2026-03-11",
+      "time": "11:00",
+      "workBay": "3号工位",
+      "technicianName": "王澳",
       "technicianNames": [
-        "方圆",
-        "范向阳"
+        "王澳",
+        "王迪"
       ],
-      "technicianDisplay": "方圆 / 范向阳",
+      "technicianDisplay": "王澳 / 王迪",
       "remark": "测试派工单",
-      "updatedAt": "2026-03-05 20:59"
+      "updatedAt": "2026-03-05 21:08"
     },
     "deliveryStatus": "交车通过",
-    "deliveryPassedAt": "2026-03-05 20:59",
+    "deliveryPassedAt": "2026-03-05 21:08",
     "commissionStatus": "已生成",
-    "commissionGeneratedAt": "2026-03-05 20:59",
-    "commissionTotal": 100,
+    "commissionGeneratedAt": "2026-03-05 21:08",
+    "commissionTotal": 200,
     "commissionRecords": [
       {
-        "id": "WPRTEST004",
+        "id": "WPRTEST013",
+        "partType": "FULL_CAR",
+        "partTypeLabel": "整车提成",
+        "partCode": "FULL_FRONT_HOOD",
+        "partLabel": "前杠机盖",
+        "amount": 200,
+        "technicianAccountId": "tech_wangao",
+        "technicianAccountName": "王澳",
+        "technicianName": "王澳",
+        "photos": [
+          "https://example.com/work/TEST20260305013.jpg"
+        ],
+        "submittedAt": "2026-03-05 21:08"
+      }
+    ],
+    "followupRecords": [],
+    "followupLastUpdatedAt": "",
+    "financeSyncStatus": "已同步",
+    "financeSyncAt": "2026-03-05 21:08",
+    "financeSyncMessage": "TEST生成",
+    "financeExternalId": "FIN-TEST-013",
+    "financeLastEvent": "ORDER_UPDATED",
+    "priceSummary": {
+      "packagePrice": 3600,
+      "addOnFee": 0,
+      "totalPrice": 3600,
+      "deposit": 500
+    },
+    "finalPaymentPhotos": [
+      "https://example.com/final/TEST20260305013.jpg"
+    ],
+    "finalPaymentUploadedAt": "2026-03-05 21:08",
+    "version": 0
+  },
+  {
+    "id": "TEST20260305012",
+    "serviceType": "FILM",
+    "serviceTypeLabel": "贴膜",
+    "status": "未完工",
+    "createdAt": "2026-03-05 21:07",
+    "updatedAt": "2026-03-05 21:07",
+    "customerName": "测试客户12",
+    "phone": "13800000012",
+    "carModel": "小米 SU7",
+    "plateNumber": "沪TEST012",
+    "vinPhoto": "https://example.com/vin/TEST20260305012.jpg",
+    "sourceChannel": "小红书",
+    "depositAmount": "1100",
+    "depositProofPhotos": [
+      "https://example.com/deposit/TEST20260305012.jpg"
+    ],
+    "filmPackage": "FRONT",
+    "filmPackages": [
+      "FRONT"
+    ],
+    "packageDetails": [
+      {
+        "value": "FRONT",
+        "label": "BOP风狂者",
+        "desc": "整车",
+        "basePrice": 7600
+      }
+    ],
+    "packageLabel": "BOP风狂者",
+    "packageDesc": "整车",
+    "salesBrandText": "李博超",
+    "store": "龙膜精英店",
+    "appointmentDate": "2026-03-10",
+    "appointmentTime": "10:00",
+    "addOns": [
+      "FREE_PATCH_50"
+    ],
+    "remark": "TEST自动生成订单，保留用于权限联调",
+    "technicianName": "张永志",
+    "constructionPhotos": [
+      "https://example.com/construction/TEST20260305012.jpg"
+    ],
+    "damagePhotos": [],
+    "workPartRecords": [
+      {
+        "id": "WPRTEST012",
         "partType": "FULL_CAR",
         "partTypeLabel": "整车提成",
         "partCode": "FULL_RIGHT_SIDE",
         "partLabel": "右侧面",
         "amount": 100,
-        "technicianAccountId": "tech_fangyuan",
-        "technicianAccountName": "方圆",
-        "technicianName": "方圆",
+        "technicianAccountId": "tech_zhangyongzhi",
+        "technicianAccountName": "张永志",
+        "technicianName": "张永志",
         "photos": [
-          "https://example.com/work/TEST20260305004.jpg"
+          "https://example.com/work/TEST20260305012.jpg"
         ],
-        "submittedAt": "2026-03-05 20:59"
+        "submittedAt": "2026-03-05 21:07"
       }
     ],
+    "dispatchInfo": {
+      "date": "2026-03-10",
+      "time": "10:00",
+      "workBay": "2号工位",
+      "technicianName": "张永志",
+      "technicianNames": [
+        "张永志",
+        "王澳"
+      ],
+      "technicianDisplay": "张永志 / 王澳",
+      "remark": "测试派工单",
+      "updatedAt": "2026-03-05 21:07"
+    },
+    "deliveryStatus": "待交车验收",
+    "deliveryPassedAt": "",
+    "commissionStatus": "未生成",
+    "commissionGeneratedAt": "",
+    "commissionTotal": 0,
+    "commissionRecords": [],
     "followupRecords": [],
     "followupLastUpdatedAt": "",
     "financeSyncStatus": "未同步",
@@ -404,32 +375,31 @@
     "financeExternalId": "",
     "financeLastEvent": "",
     "priceSummary": {
-      "packagePrice": 6000,
+      "packagePrice": 7600,
       "addOnFee": 0,
-      "totalPrice": 6000,
+      "totalPrice": 7600,
       "deposit": 1100
     },
-    "finalPaymentPhotos": [
-      "https://example.com/final/TEST20260305004.jpg"
-    ],
-    "finalPaymentUploadedAt": "2026-03-05 20:59"
+    "finalPaymentPhotos": [],
+    "finalPaymentUploadedAt": "",
+    "version": 0
   },
   {
-    "id": "TEST20260305005",
+    "id": "TEST20260305011",
     "serviceType": "FILM",
     "serviceTypeLabel": "贴膜",
-    "status": "未完工",
-    "createdAt": "2026-03-05 21:00",
-    "updatedAt": "2026-03-05 21:00",
-    "customerName": "测试客户05",
-    "phone": "13800000005",
+    "status": "已取消",
+    "createdAt": "2026-03-05 21:06",
+    "updatedAt": "2026-03-05 21:06",
+    "customerName": "测试客户11",
+    "phone": "13800000011",
     "carModel": "奔驰 GLC",
-    "plateNumber": "沪TEST005",
-    "vinPhoto": "https://example.com/vin/TEST20260305005.jpg",
-    "sourceChannel": "抖音",
-    "depositAmount": "500",
+    "plateNumber": "沪TEST011",
+    "vinPhoto": "https://example.com/vin/TEST20260305011.jpg",
+    "sourceChannel": "门店自然进店",
+    "depositAmount": "900",
     "depositProofPhotos": [
-      "https://example.com/deposit/TEST20260305005.jpg"
+      "https://example.com/deposit/TEST20260305011.jpg"
     ],
     "filmPackage": "FRONT",
     "filmPackages": [
@@ -447,30 +417,29 @@
     "packageDesc": "整车",
     "salesBrandText": "魏鹏",
     "store": "BOP 保镖上海工厂店",
-    "appointmentDate": "2026-03-10",
-    "appointmentTime": "13:00",
+    "appointmentDate": "2026-03-09",
+    "appointmentTime": "09:00",
     "addOns": [
       "STERILIZATION"
     ],
     "remark": "TEST自动生成订单，保留用于权限联调",
-    "technicianName": "冯国豪",
+    "technicianName": "",
     "constructionPhotos": [
-      "https://example.com/construction/TEST20260305005.jpg"
+      "https://example.com/construction/TEST20260305011.jpg"
     ],
-    "damagePhotos": [],
+    "damagePhotos": [
+      "https://example.com/damage/TEST20260305011.jpg"
+    ],
     "workPartRecords": [],
     "dispatchInfo": {
-      "date": "2026-03-10",
-      "time": "13:00",
-      "workBay": "5号工位",
-      "technicianName": "冯国豪",
-      "technicianNames": [
-        "冯国豪",
-        "姚遵义"
-      ],
-      "technicianDisplay": "冯国豪 / 姚遵义",
+      "date": "2026-03-09",
+      "time": "09:00",
+      "workBay": "",
+      "technicianName": "",
+      "technicianNames": [],
+      "technicianDisplay": "",
       "remark": "测试派工单",
-      "updatedAt": "2026-03-05 21:00"
+      "updatedAt": ""
     },
     "deliveryStatus": "待交车验收",
     "deliveryPassedAt": "",
@@ -481,18 +450,423 @@
     "followupRecords": [],
     "followupLastUpdatedAt": "",
     "financeSyncStatus": "已同步",
-    "financeSyncAt": "2026-03-05 21:00",
+    "financeSyncAt": "2026-03-05 21:06",
     "financeSyncMessage": "TEST生成",
-    "financeExternalId": "FIN-TEST-005",
+    "financeExternalId": "FIN-TEST-011",
     "financeLastEvent": "ORDER_UPDATED",
     "priceSummary": {
       "packagePrice": 6800,
       "addOnFee": 0,
       "totalPrice": 6800,
-      "deposit": 500
+      "deposit": 900
     },
     "finalPaymentPhotos": [],
-    "finalPaymentUploadedAt": ""
+    "finalPaymentUploadedAt": "",
+    "version": 0
+  },
+  {
+    "id": "TEST20260305010",
+    "serviceType": "FILM",
+    "serviceTypeLabel": "贴膜",
+    "status": "未完工",
+    "createdAt": "2026-03-05 21:05",
+    "updatedAt": "2026-03-05 21:05",
+    "customerName": "测试客户10",
+    "phone": "13800000010",
+    "carModel": "宝马 X5",
+    "plateNumber": "沪TEST010",
+    "vinPhoto": "https://example.com/vin/TEST20260305010.jpg",
+    "sourceChannel": "老客户转介绍",
+    "depositAmount": "700",
+    "depositProofPhotos": [
+      "https://example.com/deposit/TEST20260305010.jpg"
+    ],
+    "filmPackage": "FRONT",
+    "filmPackages": [
+      "FRONT"
+    ],
+    "packageDetails": [
+      {
+        "value": "FRONT",
+        "label": "BOP风狂者",
+        "desc": "整车",
+        "basePrice": 6000
+      }
+    ],
+    "packageLabel": "BOP风狂者",
+    "packageDesc": "整车",
+    "salesBrandText": "崔庭廷",
+    "store": "龙膜精英店",
+    "appointmentDate": "2026-03-08",
+    "appointmentTime": "18:00",
+    "addOns": [
+      "FREE_PATCH_50"
+    ],
+    "remark": "TEST自动生成订单，保留用于权限联调",
+    "technicianName": "方圆",
+    "constructionPhotos": [],
+    "damagePhotos": [],
+    "workPartRecords": [
+      {
+        "id": "WPRTEST010",
+        "partType": "FULL_CAR",
+        "partTypeLabel": "整车提成",
+        "partCode": "FULL_REAR_TRUNK_WING",
+        "partLabel": "后杠后盖尾翼",
+        "amount": 200,
+        "technicianAccountId": "tech_fangyuan",
+        "technicianAccountName": "方圆",
+        "technicianName": "方圆",
+        "photos": [
+          "https://example.com/work/TEST20260305010.jpg"
+        ],
+        "submittedAt": "2026-03-05 21:05"
+      }
+    ],
+    "dispatchInfo": {
+      "date": "2026-03-08",
+      "time": "18:00",
+      "workBay": "10号工位",
+      "technicianName": "方圆",
+      "technicianNames": [
+        "方圆",
+        "范向阳"
+      ],
+      "technicianDisplay": "方圆 / 范向阳",
+      "remark": "测试派工单",
+      "updatedAt": "2026-03-05 21:05"
+    },
+    "deliveryStatus": "待交车验收",
+    "deliveryPassedAt": "",
+    "commissionStatus": "未生成",
+    "commissionGeneratedAt": "",
+    "commissionTotal": 0,
+    "commissionRecords": [],
+    "followupRecords": [],
+    "followupLastUpdatedAt": "",
+    "financeSyncStatus": "未同步",
+    "financeSyncAt": "",
+    "financeSyncMessage": "待同步",
+    "financeExternalId": "",
+    "financeLastEvent": "",
+    "priceSummary": {
+      "packagePrice": 6000,
+      "addOnFee": 0,
+      "totalPrice": 6000,
+      "deposit": 700
+    },
+    "finalPaymentPhotos": [],
+    "finalPaymentUploadedAt": "",
+    "version": 0
+  },
+  {
+    "id": "TEST20260305009",
+    "serviceType": "FILM",
+    "serviceTypeLabel": "贴膜",
+    "status": "已完工",
+    "createdAt": "2026-03-05 21:04",
+    "updatedAt": "2026-03-05 21:04",
+    "customerName": "测试客户09",
+    "phone": "13800000009",
+    "carModel": "极氪 009",
+    "plateNumber": "沪TEST009",
+    "vinPhoto": "https://example.com/vin/TEST20260305009.jpg",
+    "sourceChannel": "抖音",
+    "depositAmount": "500",
+    "depositProofPhotos": [
+      "https://example.com/deposit/TEST20260305009.jpg"
+    ],
+    "filmPackage": "FRONT",
+    "filmPackages": [
+      "FRONT"
+    ],
+    "packageDetails": [
+      {
+        "value": "FRONT",
+        "label": "BOP风狂者",
+        "desc": "整车",
+        "basePrice": 5200
+      }
+    ],
+    "packageLabel": "BOP风狂者",
+    "packageDesc": "整车",
+    "salesBrandText": "周石磊",
+    "store": "BOP 保镖上海工厂店",
+    "appointmentDate": "2026-03-07",
+    "appointmentTime": "17:00",
+    "addOns": [
+      "STERILIZATION"
+    ],
+    "remark": "TEST自动生成订单，保留用于权限联调",
+    "technicianName": "张发强",
+    "constructionPhotos": [
+      "https://example.com/construction/TEST20260305009.jpg"
+    ],
+    "damagePhotos": [],
+    "workPartRecords": [
+      {
+        "id": "WPRTEST009",
+        "partType": "FULL_CAR",
+        "partTypeLabel": "整车提成",
+        "partCode": "FULL_FRONT_HOOD",
+        "partLabel": "前杠机盖",
+        "amount": 200,
+        "technicianAccountId": "tech_zhangfaqiang",
+        "technicianAccountName": "张发强",
+        "technicianName": "张发强",
+        "photos": [
+          "https://example.com/work/TEST20260305009.jpg"
+        ],
+        "submittedAt": "2026-03-05 21:04"
+      }
+    ],
+    "dispatchInfo": {
+      "date": "2026-03-07",
+      "time": "17:00",
+      "workBay": "9号工位",
+      "technicianName": "张发强",
+      "technicianNames": [
+        "张发强",
+        "林睿豪"
+      ],
+      "technicianDisplay": "张发强 / 林睿豪",
+      "remark": "测试派工单",
+      "updatedAt": "2026-03-05 21:04"
+    },
+    "deliveryStatus": "交车通过",
+    "deliveryPassedAt": "2026-03-05 21:04",
+    "commissionStatus": "已生成",
+    "commissionGeneratedAt": "2026-03-05 21:04",
+    "commissionTotal": 200,
+    "commissionRecords": [
+      {
+        "id": "WPRTEST009",
+        "partType": "FULL_CAR",
+        "partTypeLabel": "整车提成",
+        "partCode": "FULL_FRONT_HOOD",
+        "partLabel": "前杠机盖",
+        "amount": 200,
+        "technicianAccountId": "tech_zhangfaqiang",
+        "technicianAccountName": "张发强",
+        "technicianName": "张发强",
+        "photos": [
+          "https://example.com/work/TEST20260305009.jpg"
+        ],
+        "submittedAt": "2026-03-05 21:04"
+      }
+    ],
+    "followupRecords": [],
+    "followupLastUpdatedAt": "",
+    "financeSyncStatus": "已同步",
+    "financeSyncAt": "2026-03-05 21:04",
+    "financeSyncMessage": "TEST生成",
+    "financeExternalId": "FIN-TEST-009",
+    "financeLastEvent": "ORDER_UPDATED",
+    "priceSummary": {
+      "packagePrice": 5200,
+      "addOnFee": 0,
+      "totalPrice": 5200,
+      "deposit": 500
+    },
+    "finalPaymentPhotos": [
+      "https://example.com/final/TEST20260305009.jpg"
+    ],
+    "finalPaymentUploadedAt": "2026-03-05 21:04",
+    "version": 0
+  },
+  {
+    "id": "TEST20260305008",
+    "serviceType": "FILM",
+    "serviceTypeLabel": "贴膜",
+    "status": "未完工",
+    "createdAt": "2026-03-05 21:03",
+    "updatedAt": "2026-03-05 21:03",
+    "customerName": "测试客户08",
+    "phone": "13800000008",
+    "carModel": "理想 L9",
+    "plateNumber": "沪TEST008",
+    "vinPhoto": "https://example.com/vin/TEST20260305008.jpg",
+    "sourceChannel": "小红书",
+    "depositAmount": "1100",
+    "depositProofPhotos": [
+      "https://example.com/deposit/TEST20260305008.jpg"
+    ],
+    "filmPackage": "FRONT",
+    "filmPackages": [
+      "FRONT"
+    ],
+    "packageDetails": [
+      {
+        "value": "FRONT",
+        "label": "BOP风狂者",
+        "desc": "整车",
+        "basePrice": 4400
+      }
+    ],
+    "packageLabel": "BOP风狂者",
+    "packageDesc": "整车",
+    "salesBrandText": "田佳佳",
+    "store": "龙膜精英店",
+    "appointmentDate": "2026-03-06",
+    "appointmentTime": "16:00",
+    "addOns": [
+      "FREE_PATCH_50"
+    ],
+    "remark": "TEST自动生成订单，保留用于权限联调",
+    "technicianName": "张霖",
+    "constructionPhotos": [
+      "https://example.com/construction/TEST20260305008.jpg"
+    ],
+    "damagePhotos": [],
+    "workPartRecords": [
+      {
+        "id": "WPRTEST008",
+        "partType": "FULL_CAR",
+        "partTypeLabel": "整车提成",
+        "partCode": "FULL_RIGHT_SIDE",
+        "partLabel": "右侧面",
+        "amount": 100,
+        "technicianAccountId": "tech_zhanglin",
+        "technicianAccountName": "张霖",
+        "technicianName": "张霖",
+        "photos": [
+          "https://example.com/work/TEST20260305008.jpg"
+        ],
+        "submittedAt": "2026-03-05 21:03"
+      }
+    ],
+    "dispatchInfo": {
+      "date": "2026-03-06",
+      "time": "16:00",
+      "workBay": "8号工位",
+      "technicianName": "张霖",
+      "technicianNames": [
+        "张霖",
+        "杨振东"
+      ],
+      "technicianDisplay": "张霖 / 杨振东",
+      "remark": "测试派工单",
+      "updatedAt": "2026-03-05 21:03"
+    },
+    "deliveryStatus": "待交车验收",
+    "deliveryPassedAt": "",
+    "commissionStatus": "未生成",
+    "commissionGeneratedAt": "",
+    "commissionTotal": 0,
+    "commissionRecords": [],
+    "followupRecords": [],
+    "followupLastUpdatedAt": "",
+    "financeSyncStatus": "未同步",
+    "financeSyncAt": "",
+    "financeSyncMessage": "待同步",
+    "financeExternalId": "",
+    "financeLastEvent": "",
+    "priceSummary": {
+      "packagePrice": 4400,
+      "addOnFee": 0,
+      "totalPrice": 4400,
+      "deposit": 1100
+    },
+    "finalPaymentPhotos": [],
+    "finalPaymentUploadedAt": "",
+    "version": 0
+  },
+  {
+    "id": "TEST20260305007",
+    "serviceType": "FILM",
+    "serviceTypeLabel": "贴膜",
+    "status": "未完工",
+    "createdAt": "2026-03-05 21:02",
+    "updatedAt": "2026-03-05 21:02",
+    "customerName": "测试客户07",
+    "phone": "13800000007",
+    "carModel": "Model Y",
+    "plateNumber": "沪TEST007",
+    "vinPhoto": "https://example.com/vin/TEST20260305007.jpg",
+    "sourceChannel": "门店自然进店",
+    "depositAmount": "900",
+    "depositProofPhotos": [
+      "https://example.com/deposit/TEST20260305007.jpg"
+    ],
+    "filmPackage": "FRONT",
+    "filmPackages": [
+      "FRONT"
+    ],
+    "packageDetails": [
+      {
+        "value": "FRONT",
+        "label": "BOP风狂者",
+        "desc": "整车",
+        "basePrice": 3600
+      }
+    ],
+    "packageLabel": "BOP风狂者",
+    "packageDesc": "整车",
+    "salesBrandText": "孟傲",
+    "store": "BOP 保镖上海工厂店",
+    "appointmentDate": "2026-03-12",
+    "appointmentTime": "15:00",
+    "addOns": [
+      "STERILIZATION"
+    ],
+    "remark": "TEST自动生成订单，保留用于权限联调",
+    "technicianName": "王澳",
+    "constructionPhotos": [],
+    "damagePhotos": [],
+    "workPartRecords": [
+      {
+        "id": "WPRTEST007",
+        "partType": "FULL_CAR",
+        "partTypeLabel": "整车提成",
+        "partCode": "FULL_LEFT_SIDE",
+        "partLabel": "左侧面",
+        "amount": 100,
+        "technicianAccountId": "tech_wangao",
+        "technicianAccountName": "王澳",
+        "technicianName": "王澳",
+        "photos": [
+          "https://example.com/work/TEST20260305007.jpg"
+        ],
+        "submittedAt": "2026-03-05 21:02"
+      }
+    ],
+    "dispatchInfo": {
+      "date": "2026-03-12",
+      "time": "15:00",
+      "workBay": "7号工位",
+      "technicianName": "王澳",
+      "technicianNames": [
+        "王澳",
+        "王迪"
+      ],
+      "technicianDisplay": "王澳 / 王迪",
+      "remark": "测试派工单",
+      "updatedAt": "2026-03-05 21:02"
+    },
+    "deliveryStatus": "交车通过",
+    "deliveryPassedAt": "2026-03-05 21:02",
+    "commissionStatus": "未生成",
+    "commissionGeneratedAt": "",
+    "commissionTotal": 0,
+    "commissionRecords": [],
+    "followupRecords": [],
+    "followupLastUpdatedAt": "",
+    "financeSyncStatus": "已同步",
+    "financeSyncAt": "2026-03-05 21:02",
+    "financeSyncMessage": "TEST生成",
+    "financeExternalId": "FIN-TEST-007",
+    "financeLastEvent": "ORDER_UPDATED",
+    "priceSummary": {
+      "packagePrice": 3600,
+      "addOnFee": 0,
+      "totalPrice": 3600,
+      "deposit": 900
+    },
+    "finalPaymentPhotos": [
+      "https://example.com/final/TEST20260305007.jpg"
+    ],
+    "finalPaymentUploadedAt": "2026-03-05 21:02",
+    "version": 0
   },
   {
     "id": "TEST20260305006",
@@ -608,424 +982,25 @@
     "finalPaymentPhotos": [
       "https://example.com/final/TEST20260305006.jpg"
     ],
-    "finalPaymentUploadedAt": "2026-03-05 21:01"
+    "finalPaymentUploadedAt": "2026-03-05 21:01",
+    "version": 0
   },
   {
-    "id": "TEST20260305007",
+    "id": "TEST20260305005",
     "serviceType": "FILM",
     "serviceTypeLabel": "贴膜",
     "status": "未完工",
-    "createdAt": "2026-03-05 21:02",
-    "updatedAt": "2026-03-05 21:02",
-    "customerName": "测试客户07",
-    "phone": "13800000007",
-    "carModel": "Model Y",
-    "plateNumber": "沪TEST007",
-    "vinPhoto": "https://example.com/vin/TEST20260305007.jpg",
-    "sourceChannel": "门店自然进店",
-    "depositAmount": "900",
-    "depositProofPhotos": [
-      "https://example.com/deposit/TEST20260305007.jpg"
-    ],
-    "filmPackage": "FRONT",
-    "filmPackages": [
-      "FRONT"
-    ],
-    "packageDetails": [
-      {
-        "value": "FRONT",
-        "label": "BOP风狂者",
-        "desc": "整车",
-        "basePrice": 3600
-      }
-    ],
-    "packageLabel": "BOP风狂者",
-    "packageDesc": "整车",
-    "salesBrandText": "孟傲",
-    "store": "BOP 保镖上海工厂店",
-    "appointmentDate": "2026-03-12",
-    "appointmentTime": "15:00",
-    "addOns": [
-      "STERILIZATION"
-    ],
-    "remark": "TEST自动生成订单，保留用于权限联调",
-    "technicianName": "王澳",
-    "constructionPhotos": [],
-    "damagePhotos": [],
-    "workPartRecords": [
-      {
-        "id": "WPRTEST007",
-        "partType": "FULL_CAR",
-        "partTypeLabel": "整车提成",
-        "partCode": "FULL_LEFT_SIDE",
-        "partLabel": "左侧面",
-        "amount": 100,
-        "technicianAccountId": "tech_wangao",
-        "technicianAccountName": "王澳",
-        "technicianName": "王澳",
-        "photos": [
-          "https://example.com/work/TEST20260305007.jpg"
-        ],
-        "submittedAt": "2026-03-05 21:02"
-      }
-    ],
-    "dispatchInfo": {
-      "date": "2026-03-12",
-      "time": "15:00",
-      "workBay": "7号工位",
-      "technicianName": "王澳",
-      "technicianNames": [
-        "王澳",
-        "王迪"
-      ],
-      "technicianDisplay": "王澳 / 王迪",
-      "remark": "测试派工单",
-      "updatedAt": "2026-03-05 21:02"
-    },
-    "deliveryStatus": "交车通过",
-    "deliveryPassedAt": "2026-03-05 21:02",
-    "commissionStatus": "未生成",
-    "commissionGeneratedAt": "",
-    "commissionTotal": 0,
-    "commissionRecords": [],
-    "followupRecords": [],
-    "followupLastUpdatedAt": "",
-    "financeSyncStatus": "已同步",
-    "financeSyncAt": "2026-03-05 21:02",
-    "financeSyncMessage": "TEST生成",
-    "financeExternalId": "FIN-TEST-007",
-    "financeLastEvent": "ORDER_UPDATED",
-    "priceSummary": {
-      "packagePrice": 3600,
-      "addOnFee": 0,
-      "totalPrice": 3600,
-      "deposit": 900
-    },
-    "finalPaymentPhotos": [
-      "https://example.com/final/TEST20260305007.jpg"
-    ],
-    "finalPaymentUploadedAt": "2026-03-05 21:02"
-  },
-  {
-    "id": "TEST20260305008",
-    "serviceType": "FILM",
-    "serviceTypeLabel": "贴膜",
-    "status": "未完工",
-    "createdAt": "2026-03-05 21:03",
-    "updatedAt": "2026-03-05 21:03",
-    "customerName": "测试客户08",
-    "phone": "13800000008",
-    "carModel": "理想 L9",
-    "plateNumber": "沪TEST008",
-    "vinPhoto": "https://example.com/vin/TEST20260305008.jpg",
-    "sourceChannel": "小红书",
-    "depositAmount": "1100",
-    "depositProofPhotos": [
-      "https://example.com/deposit/TEST20260305008.jpg"
-    ],
-    "filmPackage": "FRONT",
-    "filmPackages": [
-      "FRONT"
-    ],
-    "packageDetails": [
-      {
-        "value": "FRONT",
-        "label": "BOP风狂者",
-        "desc": "整车",
-        "basePrice": 4400
-      }
-    ],
-    "packageLabel": "BOP风狂者",
-    "packageDesc": "整车",
-    "salesBrandText": "田佳佳",
-    "store": "龙膜精英店",
-    "appointmentDate": "2026-03-06",
-    "appointmentTime": "16:00",
-    "addOns": [
-      "FREE_PATCH_50"
-    ],
-    "remark": "TEST自动生成订单，保留用于权限联调",
-    "technicianName": "张霖",
-    "constructionPhotos": [
-      "https://example.com/construction/TEST20260305008.jpg"
-    ],
-    "damagePhotos": [],
-    "workPartRecords": [
-      {
-        "id": "WPRTEST008",
-        "partType": "FULL_CAR",
-        "partTypeLabel": "整车提成",
-        "partCode": "FULL_RIGHT_SIDE",
-        "partLabel": "右侧面",
-        "amount": 100,
-        "technicianAccountId": "tech_zhanglin",
-        "technicianAccountName": "张霖",
-        "technicianName": "张霖",
-        "photos": [
-          "https://example.com/work/TEST20260305008.jpg"
-        ],
-        "submittedAt": "2026-03-05 21:03"
-      }
-    ],
-    "dispatchInfo": {
-      "date": "2026-03-06",
-      "time": "16:00",
-      "workBay": "8号工位",
-      "technicianName": "张霖",
-      "technicianNames": [
-        "张霖",
-        "杨振东"
-      ],
-      "technicianDisplay": "张霖 / 杨振东",
-      "remark": "测试派工单",
-      "updatedAt": "2026-03-05 21:03"
-    },
-    "deliveryStatus": "待交车验收",
-    "deliveryPassedAt": "",
-    "commissionStatus": "未生成",
-    "commissionGeneratedAt": "",
-    "commissionTotal": 0,
-    "commissionRecords": [],
-    "followupRecords": [],
-    "followupLastUpdatedAt": "",
-    "financeSyncStatus": "未同步",
-    "financeSyncAt": "",
-    "financeSyncMessage": "待同步",
-    "financeExternalId": "",
-    "financeLastEvent": "",
-    "priceSummary": {
-      "packagePrice": 4400,
-      "addOnFee": 0,
-      "totalPrice": 4400,
-      "deposit": 1100
-    },
-    "finalPaymentPhotos": [],
-    "finalPaymentUploadedAt": ""
-  },
-  {
-    "id": "TEST20260305009",
-    "serviceType": "FILM",
-    "serviceTypeLabel": "贴膜",
-    "status": "已完工",
-    "createdAt": "2026-03-05 21:04",
-    "updatedAt": "2026-03-05 21:04",
-    "customerName": "测试客户09",
-    "phone": "13800000009",
-    "carModel": "极氪 009",
-    "plateNumber": "沪TEST009",
-    "vinPhoto": "https://example.com/vin/TEST20260305009.jpg",
+    "createdAt": "2026-03-05 21:00",
+    "updatedAt": "2026-03-05 21:00",
+    "customerName": "测试客户05",
+    "phone": "13800000005",
+    "carModel": "奔驰 GLC",
+    "plateNumber": "沪TEST005",
+    "vinPhoto": "https://example.com/vin/TEST20260305005.jpg",
     "sourceChannel": "抖音",
     "depositAmount": "500",
     "depositProofPhotos": [
-      "https://example.com/deposit/TEST20260305009.jpg"
-    ],
-    "filmPackage": "FRONT",
-    "filmPackages": [
-      "FRONT"
-    ],
-    "packageDetails": [
-      {
-        "value": "FRONT",
-        "label": "BOP风狂者",
-        "desc": "整车",
-        "basePrice": 5200
-      }
-    ],
-    "packageLabel": "BOP风狂者",
-    "packageDesc": "整车",
-    "salesBrandText": "周石磊",
-    "store": "BOP 保镖上海工厂店",
-    "appointmentDate": "2026-03-07",
-    "appointmentTime": "17:00",
-    "addOns": [
-      "STERILIZATION"
-    ],
-    "remark": "TEST自动生成订单，保留用于权限联调",
-    "technicianName": "张发强",
-    "constructionPhotos": [
-      "https://example.com/construction/TEST20260305009.jpg"
-    ],
-    "damagePhotos": [],
-    "workPartRecords": [
-      {
-        "id": "WPRTEST009",
-        "partType": "FULL_CAR",
-        "partTypeLabel": "整车提成",
-        "partCode": "FULL_FRONT_HOOD",
-        "partLabel": "前杠机盖",
-        "amount": 200,
-        "technicianAccountId": "tech_zhangfaqiang",
-        "technicianAccountName": "张发强",
-        "technicianName": "张发强",
-        "photos": [
-          "https://example.com/work/TEST20260305009.jpg"
-        ],
-        "submittedAt": "2026-03-05 21:04"
-      }
-    ],
-    "dispatchInfo": {
-      "date": "2026-03-07",
-      "time": "17:00",
-      "workBay": "9号工位",
-      "technicianName": "张发强",
-      "technicianNames": [
-        "张发强",
-        "林睿豪"
-      ],
-      "technicianDisplay": "张发强 / 林睿豪",
-      "remark": "测试派工单",
-      "updatedAt": "2026-03-05 21:04"
-    },
-    "deliveryStatus": "交车通过",
-    "deliveryPassedAt": "2026-03-05 21:04",
-    "commissionStatus": "已生成",
-    "commissionGeneratedAt": "2026-03-05 21:04",
-    "commissionTotal": 200,
-    "commissionRecords": [
-      {
-        "id": "WPRTEST009",
-        "partType": "FULL_CAR",
-        "partTypeLabel": "整车提成",
-        "partCode": "FULL_FRONT_HOOD",
-        "partLabel": "前杠机盖",
-        "amount": 200,
-        "technicianAccountId": "tech_zhangfaqiang",
-        "technicianAccountName": "张发强",
-        "technicianName": "张发强",
-        "photos": [
-          "https://example.com/work/TEST20260305009.jpg"
-        ],
-        "submittedAt": "2026-03-05 21:04"
-      }
-    ],
-    "followupRecords": [],
-    "followupLastUpdatedAt": "",
-    "financeSyncStatus": "已同步",
-    "financeSyncAt": "2026-03-05 21:04",
-    "financeSyncMessage": "TEST生成",
-    "financeExternalId": "FIN-TEST-009",
-    "financeLastEvent": "ORDER_UPDATED",
-    "priceSummary": {
-      "packagePrice": 5200,
-      "addOnFee": 0,
-      "totalPrice": 5200,
-      "deposit": 500
-    },
-    "finalPaymentPhotos": [
-      "https://example.com/final/TEST20260305009.jpg"
-    ],
-    "finalPaymentUploadedAt": "2026-03-05 21:04"
-  },
-  {
-    "id": "TEST20260305010",
-    "serviceType": "FILM",
-    "serviceTypeLabel": "贴膜",
-    "status": "未完工",
-    "createdAt": "2026-03-05 21:05",
-    "updatedAt": "2026-03-05 21:05",
-    "customerName": "测试客户10",
-    "phone": "13800000010",
-    "carModel": "宝马 X5",
-    "plateNumber": "沪TEST010",
-    "vinPhoto": "https://example.com/vin/TEST20260305010.jpg",
-    "sourceChannel": "老客户转介绍",
-    "depositAmount": "700",
-    "depositProofPhotos": [
-      "https://example.com/deposit/TEST20260305010.jpg"
-    ],
-    "filmPackage": "FRONT",
-    "filmPackages": [
-      "FRONT"
-    ],
-    "packageDetails": [
-      {
-        "value": "FRONT",
-        "label": "BOP风狂者",
-        "desc": "整车",
-        "basePrice": 6000
-      }
-    ],
-    "packageLabel": "BOP风狂者",
-    "packageDesc": "整车",
-    "salesBrandText": "崔庭廷",
-    "store": "龙膜精英店",
-    "appointmentDate": "2026-03-08",
-    "appointmentTime": "18:00",
-    "addOns": [
-      "FREE_PATCH_50"
-    ],
-    "remark": "TEST自动生成订单，保留用于权限联调",
-    "technicianName": "方圆",
-    "constructionPhotos": [],
-    "damagePhotos": [],
-    "workPartRecords": [
-      {
-        "id": "WPRTEST010",
-        "partType": "FULL_CAR",
-        "partTypeLabel": "整车提成",
-        "partCode": "FULL_REAR_TRUNK_WING",
-        "partLabel": "后杠后盖尾翼",
-        "amount": 200,
-        "technicianAccountId": "tech_fangyuan",
-        "technicianAccountName": "方圆",
-        "technicianName": "方圆",
-        "photos": [
-          "https://example.com/work/TEST20260305010.jpg"
-        ],
-        "submittedAt": "2026-03-05 21:05"
-      }
-    ],
-    "dispatchInfo": {
-      "date": "2026-03-08",
-      "time": "18:00",
-      "workBay": "10号工位",
-      "technicianName": "方圆",
-      "technicianNames": [
-        "方圆",
-        "范向阳"
-      ],
-      "technicianDisplay": "方圆 / 范向阳",
-      "remark": "测试派工单",
-      "updatedAt": "2026-03-05 21:05"
-    },
-    "deliveryStatus": "待交车验收",
-    "deliveryPassedAt": "",
-    "commissionStatus": "未生成",
-    "commissionGeneratedAt": "",
-    "commissionTotal": 0,
-    "commissionRecords": [],
-    "followupRecords": [],
-    "followupLastUpdatedAt": "",
-    "financeSyncStatus": "未同步",
-    "financeSyncAt": "",
-    "financeSyncMessage": "待同步",
-    "financeExternalId": "",
-    "financeLastEvent": "",
-    "priceSummary": {
-      "packagePrice": 6000,
-      "addOnFee": 0,
-      "totalPrice": 6000,
-      "deposit": 700
-    },
-    "finalPaymentPhotos": [],
-    "finalPaymentUploadedAt": ""
-  },
-  {
-    "id": "TEST20260305011",
-    "serviceType": "FILM",
-    "serviceTypeLabel": "贴膜",
-    "status": "已取消",
-    "createdAt": "2026-03-05 21:06",
-    "updatedAt": "2026-03-05 21:06",
-    "customerName": "测试客户11",
-    "phone": "13800000011",
-    "carModel": "奔驰 GLC",
-    "plateNumber": "沪TEST011",
-    "vinPhoto": "https://example.com/vin/TEST20260305011.jpg",
-    "sourceChannel": "门店自然进店",
-    "depositAmount": "900",
-    "depositProofPhotos": [
-      "https://example.com/deposit/TEST20260305011.jpg"
+      "https://example.com/deposit/TEST20260305005.jpg"
     ],
     "filmPackage": "FRONT",
     "filmPackages": [
@@ -1043,29 +1018,30 @@
     "packageDesc": "整车",
     "salesBrandText": "魏鹏",
     "store": "BOP 保镖上海工厂店",
-    "appointmentDate": "2026-03-09",
-    "appointmentTime": "09:00",
+    "appointmentDate": "2026-03-10",
+    "appointmentTime": "13:00",
     "addOns": [
       "STERILIZATION"
     ],
     "remark": "TEST自动生成订单，保留用于权限联调",
-    "technicianName": "",
+    "technicianName": "冯国豪",
     "constructionPhotos": [
-      "https://example.com/construction/TEST20260305011.jpg"
+      "https://example.com/construction/TEST20260305005.jpg"
     ],
-    "damagePhotos": [
-      "https://example.com/damage/TEST20260305011.jpg"
-    ],
+    "damagePhotos": [],
     "workPartRecords": [],
     "dispatchInfo": {
-      "date": "2026-03-09",
-      "time": "09:00",
-      "workBay": "",
-      "technicianName": "",
-      "technicianNames": [],
-      "technicianDisplay": "",
+      "date": "2026-03-10",
+      "time": "13:00",
+      "workBay": "5号工位",
+      "technicianName": "冯国豪",
+      "technicianNames": [
+        "冯国豪",
+        "姚遵义"
+      ],
+      "technicianDisplay": "冯国豪 / 姚遵义",
       "remark": "测试派工单",
-      "updatedAt": ""
+      "updatedAt": "2026-03-05 21:00"
     },
     "deliveryStatus": "待交车验收",
     "deliveryPassedAt": "",
@@ -1076,131 +1052,36 @@
     "followupRecords": [],
     "followupLastUpdatedAt": "",
     "financeSyncStatus": "已同步",
-    "financeSyncAt": "2026-03-05 21:06",
+    "financeSyncAt": "2026-03-05 21:00",
     "financeSyncMessage": "TEST生成",
-    "financeExternalId": "FIN-TEST-011",
+    "financeExternalId": "FIN-TEST-005",
     "financeLastEvent": "ORDER_UPDATED",
     "priceSummary": {
       "packagePrice": 6800,
       "addOnFee": 0,
       "totalPrice": 6800,
-      "deposit": 900
+      "deposit": 500
     },
     "finalPaymentPhotos": [],
-    "finalPaymentUploadedAt": ""
+    "finalPaymentUploadedAt": "",
+    "version": 0
   },
   {
-    "id": "TEST20260305012",
-    "serviceType": "FILM",
-    "serviceTypeLabel": "贴膜",
-    "status": "未完工",
-    "createdAt": "2026-03-05 21:07",
-    "updatedAt": "2026-03-05 21:07",
-    "customerName": "测试客户12",
-    "phone": "13800000012",
-    "carModel": "小米 SU7",
-    "plateNumber": "沪TEST012",
-    "vinPhoto": "https://example.com/vin/TEST20260305012.jpg",
-    "sourceChannel": "小红书",
-    "depositAmount": "1100",
-    "depositProofPhotos": [
-      "https://example.com/deposit/TEST20260305012.jpg"
-    ],
-    "filmPackage": "FRONT",
-    "filmPackages": [
-      "FRONT"
-    ],
-    "packageDetails": [
-      {
-        "value": "FRONT",
-        "label": "BOP风狂者",
-        "desc": "整车",
-        "basePrice": 7600
-      }
-    ],
-    "packageLabel": "BOP风狂者",
-    "packageDesc": "整车",
-    "salesBrandText": "李博超",
-    "store": "龙膜精英店",
-    "appointmentDate": "2026-03-10",
-    "appointmentTime": "10:00",
-    "addOns": [
-      "FREE_PATCH_50"
-    ],
-    "remark": "TEST自动生成订单，保留用于权限联调",
-    "technicianName": "张永志",
-    "constructionPhotos": [
-      "https://example.com/construction/TEST20260305012.jpg"
-    ],
-    "damagePhotos": [],
-    "workPartRecords": [
-      {
-        "id": "WPRTEST012",
-        "partType": "FULL_CAR",
-        "partTypeLabel": "整车提成",
-        "partCode": "FULL_RIGHT_SIDE",
-        "partLabel": "右侧面",
-        "amount": 100,
-        "technicianAccountId": "tech_zhangyongzhi",
-        "technicianAccountName": "张永志",
-        "technicianName": "张永志",
-        "photos": [
-          "https://example.com/work/TEST20260305012.jpg"
-        ],
-        "submittedAt": "2026-03-05 21:07"
-      }
-    ],
-    "dispatchInfo": {
-      "date": "2026-03-10",
-      "time": "10:00",
-      "workBay": "2号工位",
-      "technicianName": "张永志",
-      "technicianNames": [
-        "张永志",
-        "王澳"
-      ],
-      "technicianDisplay": "张永志 / 王澳",
-      "remark": "测试派工单",
-      "updatedAt": "2026-03-05 21:07"
-    },
-    "deliveryStatus": "待交车验收",
-    "deliveryPassedAt": "",
-    "commissionStatus": "未生成",
-    "commissionGeneratedAt": "",
-    "commissionTotal": 0,
-    "commissionRecords": [],
-    "followupRecords": [],
-    "followupLastUpdatedAt": "",
-    "financeSyncStatus": "未同步",
-    "financeSyncAt": "",
-    "financeSyncMessage": "待同步",
-    "financeExternalId": "",
-    "financeLastEvent": "",
-    "priceSummary": {
-      "packagePrice": 7600,
-      "addOnFee": 0,
-      "totalPrice": 7600,
-      "deposit": 1100
-    },
-    "finalPaymentPhotos": [],
-    "finalPaymentUploadedAt": ""
-  },
-  {
-    "id": "TEST20260305013",
+    "id": "TEST20260305004",
     "serviceType": "FILM",
     "serviceTypeLabel": "贴膜",
     "status": "已完工",
-    "createdAt": "2026-03-05 21:08",
-    "updatedAt": "2026-03-05 21:08",
-    "customerName": "测试客户13",
-    "phone": "13800000013",
-    "carModel": "Model Y",
-    "plateNumber": "沪TEST013",
-    "vinPhoto": "https://example.com/vin/TEST20260305013.jpg",
-    "sourceChannel": "抖音",
-    "depositAmount": "500",
+    "createdAt": "2026-03-05 20:59",
+    "updatedAt": "2026-03-05 20:59",
+    "customerName": "测试客户04",
+    "phone": "13800000004",
+    "carModel": "宝马 X5",
+    "plateNumber": "沪TEST004",
+    "vinPhoto": "https://example.com/vin/TEST20260305004.jpg",
+    "sourceChannel": "小红书",
+    "depositAmount": "1100",
     "depositProofPhotos": [
-      "https://example.com/deposit/TEST20260305013.jpg"
+      "https://example.com/deposit/TEST20260305004.jpg"
     ],
     "filmPackage": "FRONT",
     "filmPackages": [
@@ -1211,169 +1092,74 @@
         "value": "FRONT",
         "label": "BOP风狂者",
         "desc": "整车",
-        "basePrice": 3600
+        "basePrice": 6000
       }
     ],
     "packageLabel": "BOP风狂者",
     "packageDesc": "整车",
-    "salesBrandText": "孟傲",
-    "store": "BOP 保镖上海工厂店",
-    "appointmentDate": "2026-03-11",
-    "appointmentTime": "11:00",
-    "addOns": [
-      "STERILIZATION"
-    ],
-    "remark": "TEST自动生成订单，保留用于权限联调",
-    "technicianName": "王澳",
-    "constructionPhotos": [],
-    "damagePhotos": [],
-    "workPartRecords": [
-      {
-        "id": "WPRTEST013",
-        "partType": "FULL_CAR",
-        "partTypeLabel": "整车提成",
-        "partCode": "FULL_FRONT_HOOD",
-        "partLabel": "前杠机盖",
-        "amount": 200,
-        "technicianAccountId": "tech_wangao",
-        "technicianAccountName": "王澳",
-        "technicianName": "王澳",
-        "photos": [
-          "https://example.com/work/TEST20260305013.jpg"
-        ],
-        "submittedAt": "2026-03-05 21:08"
-      }
-    ],
-    "dispatchInfo": {
-      "date": "2026-03-11",
-      "time": "11:00",
-      "workBay": "3号工位",
-      "technicianName": "王澳",
-      "technicianNames": [
-        "王澳",
-        "王迪"
-      ],
-      "technicianDisplay": "王澳 / 王迪",
-      "remark": "测试派工单",
-      "updatedAt": "2026-03-05 21:08"
-    },
-    "deliveryStatus": "交车通过",
-    "deliveryPassedAt": "2026-03-05 21:08",
-    "commissionStatus": "已生成",
-    "commissionGeneratedAt": "2026-03-05 21:08",
-    "commissionTotal": 200,
-    "commissionRecords": [
-      {
-        "id": "WPRTEST013",
-        "partType": "FULL_CAR",
-        "partTypeLabel": "整车提成",
-        "partCode": "FULL_FRONT_HOOD",
-        "partLabel": "前杠机盖",
-        "amount": 200,
-        "technicianAccountId": "tech_wangao",
-        "technicianAccountName": "王澳",
-        "technicianName": "王澳",
-        "photos": [
-          "https://example.com/work/TEST20260305013.jpg"
-        ],
-        "submittedAt": "2026-03-05 21:08"
-      }
-    ],
-    "followupRecords": [],
-    "followupLastUpdatedAt": "",
-    "financeSyncStatus": "已同步",
-    "financeSyncAt": "2026-03-05 21:08",
-    "financeSyncMessage": "TEST生成",
-    "financeExternalId": "FIN-TEST-013",
-    "financeLastEvent": "ORDER_UPDATED",
-    "priceSummary": {
-      "packagePrice": 3600,
-      "addOnFee": 0,
-      "totalPrice": 3600,
-      "deposit": 500
-    },
-    "finalPaymentPhotos": [
-      "https://example.com/final/TEST20260305013.jpg"
-    ],
-    "finalPaymentUploadedAt": "2026-03-05 21:08"
-  },
-  {
-    "id": "TEST20260305014",
-    "serviceType": "FILM",
-    "serviceTypeLabel": "贴膜",
-    "status": "未完工",
-    "createdAt": "2026-03-05 21:09",
-    "updatedAt": "2026-03-05 21:09",
-    "customerName": "测试客户14",
-    "phone": "13800000014",
-    "carModel": "理想 L9",
-    "plateNumber": "沪TEST014",
-    "vinPhoto": "https://example.com/vin/TEST20260305014.jpg",
-    "sourceChannel": "老客户转介绍",
-    "depositAmount": "700",
-    "depositProofPhotos": [
-      "https://example.com/deposit/TEST20260305014.jpg"
-    ],
-    "filmPackage": "FRONT",
-    "filmPackages": [
-      "FRONT"
-    ],
-    "packageDetails": [
-      {
-        "value": "FRONT",
-        "label": "BOP风狂者",
-        "desc": "整车",
-        "basePrice": 4400
-      }
-    ],
-    "packageLabel": "BOP风狂者",
-    "packageDesc": "整车",
-    "salesBrandText": "田佳佳",
+    "salesBrandText": "崔庭廷",
     "store": "龙膜精英店",
-    "appointmentDate": "2026-03-12",
+    "appointmentDate": "2026-03-09",
     "appointmentTime": "12:00",
     "addOns": [
       "FREE_PATCH_50"
     ],
     "remark": "TEST自动生成订单，保留用于权限联调",
-    "technicianName": "",
-    "constructionPhotos": [
-      "https://example.com/construction/TEST20260305014.jpg"
-    ],
+    "technicianName": "方圆",
+    "constructionPhotos": [],
     "damagePhotos": [],
     "workPartRecords": [
       {
-        "id": "WPRTEST014",
+        "id": "WPRTEST004",
         "partType": "FULL_CAR",
         "partTypeLabel": "整车提成",
-        "partCode": "FULL_REAR_TRUNK_WING",
-        "partLabel": "后杠后盖尾翼",
-        "amount": 200,
-        "technicianAccountId": "tech_zhanglin",
-        "technicianAccountName": "张霖",
-        "technicianName": "张霖",
+        "partCode": "FULL_RIGHT_SIDE",
+        "partLabel": "右侧面",
+        "amount": 100,
+        "technicianAccountId": "tech_fangyuan",
+        "technicianAccountName": "方圆",
+        "technicianName": "方圆",
         "photos": [
-          "https://example.com/work/TEST20260305014.jpg"
+          "https://example.com/work/TEST20260305004.jpg"
         ],
-        "submittedAt": "2026-03-05 21:09"
+        "submittedAt": "2026-03-05 20:59"
       }
     ],
     "dispatchInfo": {
-      "date": "2026-03-12",
+      "date": "2026-03-09",
       "time": "12:00",
-      "workBay": "",
-      "technicianName": "",
-      "technicianNames": [],
-      "technicianDisplay": "",
+      "workBay": "4号工位",
+      "technicianName": "方圆",
+      "technicianNames": [
+        "方圆",
+        "范向阳"
+      ],
+      "technicianDisplay": "方圆 / 范向阳",
       "remark": "测试派工单",
-      "updatedAt": ""
+      "updatedAt": "2026-03-05 20:59"
     },
-    "deliveryStatus": "待交车验收",
-    "deliveryPassedAt": "",
-    "commissionStatus": "未生成",
-    "commissionGeneratedAt": "",
-    "commissionTotal": 0,
-    "commissionRecords": [],
+    "deliveryStatus": "交车通过",
+    "deliveryPassedAt": "2026-03-05 20:59",
+    "commissionStatus": "已生成",
+    "commissionGeneratedAt": "2026-03-05 20:59",
+    "commissionTotal": 100,
+    "commissionRecords": [
+      {
+        "id": "WPRTEST004",
+        "partType": "FULL_CAR",
+        "partTypeLabel": "整车提成",
+        "partCode": "FULL_RIGHT_SIDE",
+        "partLabel": "右侧面",
+        "amount": 100,
+        "technicianAccountId": "tech_fangyuan",
+        "technicianAccountName": "方圆",
+        "technicianName": "方圆",
+        "photos": [
+          "https://example.com/work/TEST20260305004.jpg"
+        ],
+        "submittedAt": "2026-03-05 20:59"
+      }
+    ],
     "followupRecords": [],
     "followupLastUpdatedAt": "",
     "financeSyncStatus": "未同步",
@@ -1382,30 +1168,33 @@
     "financeExternalId": "",
     "financeLastEvent": "",
     "priceSummary": {
-      "packagePrice": 4400,
+      "packagePrice": 6000,
       "addOnFee": 0,
-      "totalPrice": 4400,
-      "deposit": 700
+      "totalPrice": 6000,
+      "deposit": 1100
     },
-    "finalPaymentPhotos": [],
-    "finalPaymentUploadedAt": ""
+    "finalPaymentPhotos": [
+      "https://example.com/final/TEST20260305004.jpg"
+    ],
+    "finalPaymentUploadedAt": "2026-03-05 20:59",
+    "version": 0
   },
   {
-    "id": "TEST20260305015",
+    "id": "TEST20260305003",
     "serviceType": "FILM",
     "serviceTypeLabel": "贴膜",
     "status": "未完工",
-    "createdAt": "2026-03-05 21:10",
-    "updatedAt": "2026-03-05 21:10",
-    "customerName": "测试客户15",
-    "phone": "13800000015",
+    "createdAt": "2026-03-05 20:58",
+    "updatedAt": "2026-03-05 20:58",
+    "customerName": "测试客户03",
+    "phone": "13800000003",
     "carModel": "极氪 009",
-    "plateNumber": "沪TEST015",
-    "vinPhoto": "https://example.com/vin/TEST20260305015.jpg",
+    "plateNumber": "沪TEST003",
+    "vinPhoto": "https://example.com/vin/TEST20260305003.jpg",
     "sourceChannel": "门店自然进店",
     "depositAmount": "900",
     "depositProofPhotos": [
-      "https://example.com/deposit/TEST20260305015.jpg"
+      "https://example.com/deposit/TEST20260305003.jpg"
     ],
     "filmPackage": "FRONT",
     "filmPackages": [
@@ -1423,30 +1212,43 @@
     "packageDesc": "整车",
     "salesBrandText": "周石磊",
     "store": "BOP 保镖上海工厂店",
-    "appointmentDate": "2026-03-06",
-    "appointmentTime": "13:00",
+    "appointmentDate": "2026-03-08",
+    "appointmentTime": "11:00",
     "addOns": [
       "STERILIZATION"
     ],
     "remark": "TEST自动生成订单，保留用于权限联调",
-    "technicianName": "张发强",
+    "technicianName": "",
     "constructionPhotos": [
-      "https://example.com/construction/TEST20260305015.jpg"
+      "https://example.com/construction/TEST20260305003.jpg"
     ],
     "damagePhotos": [],
-    "workPartRecords": [],
+    "workPartRecords": [
+      {
+        "id": "WPRTEST003",
+        "partType": "FULL_CAR",
+        "partTypeLabel": "整车提成",
+        "partCode": "FULL_LEFT_SIDE",
+        "partLabel": "左侧面",
+        "amount": 100,
+        "technicianAccountId": "tech_zhangfaqiang",
+        "technicianAccountName": "张发强",
+        "technicianName": "张发强",
+        "photos": [
+          "https://example.com/work/TEST20260305003.jpg"
+        ],
+        "submittedAt": "2026-03-05 20:58"
+      }
+    ],
     "dispatchInfo": {
-      "date": "2026-03-06",
-      "time": "13:00",
-      "workBay": "5号工位",
-      "technicianName": "张发强",
-      "technicianNames": [
-        "张发强",
-        "林睿豪"
-      ],
-      "technicianDisplay": "张发强 / 林睿豪",
+      "date": "2026-03-08",
+      "time": "11:00",
+      "workBay": "",
+      "technicianName": "",
+      "technicianNames": [],
+      "technicianDisplay": "",
       "remark": "测试派工单",
-      "updatedAt": "2026-03-05 21:10"
+      "updatedAt": ""
     },
     "deliveryStatus": "待交车验收",
     "deliveryPassedAt": "",
@@ -1457,9 +1259,9 @@
     "followupRecords": [],
     "followupLastUpdatedAt": "",
     "financeSyncStatus": "已同步",
-    "financeSyncAt": "2026-03-05 21:10",
+    "financeSyncAt": "2026-03-05 20:58",
     "financeSyncMessage": "TEST生成",
-    "financeExternalId": "FIN-TEST-015",
+    "financeExternalId": "FIN-TEST-003",
     "financeLastEvent": "ORDER_UPDATED",
     "priceSummary": {
       "packagePrice": 5200,
@@ -1468,7 +1270,220 @@
       "deposit": 900
     },
     "finalPaymentPhotos": [],
-    "finalPaymentUploadedAt": ""
+    "finalPaymentUploadedAt": "",
+    "version": 0
+  },
+  {
+    "id": "TEST20260305002",
+    "serviceType": "FILM",
+    "serviceTypeLabel": "贴膜",
+    "status": "已完工",
+    "createdAt": "2026-03-05 20:57",
+    "updatedAt": "2026-03-05 20:57",
+    "customerName": "测试客户02",
+    "phone": "13800000002",
+    "carModel": "理想 L9",
+    "plateNumber": "沪TEST002",
+    "vinPhoto": "https://example.com/vin/TEST20260305002.jpg",
+    "sourceChannel": "老客户转介绍",
+    "depositAmount": "700",
+    "depositProofPhotos": [
+      "https://example.com/deposit/TEST20260305002.jpg"
+    ],
+    "filmPackage": "FRONT",
+    "filmPackages": [
+      "FRONT"
+    ],
+    "packageDetails": [
+      {
+        "value": "FRONT",
+        "label": "BOP风狂者",
+        "desc": "整车",
+        "basePrice": 4400
+      }
+    ],
+    "packageLabel": "BOP风狂者",
+    "packageDesc": "整车",
+    "salesBrandText": "田佳佳",
+    "store": "龙膜精英店",
+    "appointmentDate": "2026-03-07",
+    "appointmentTime": "10:00",
+    "addOns": [
+      "FREE_PATCH_50"
+    ],
+    "remark": "TEST自动生成订单，保留用于权限联调",
+    "technicianName": "张霖",
+    "constructionPhotos": [
+      "https://example.com/construction/TEST20260305002.jpg"
+    ],
+    "damagePhotos": [],
+    "workPartRecords": [
+      {
+        "id": "WPRTEST002",
+        "partType": "FULL_CAR",
+        "partTypeLabel": "整车提成",
+        "partCode": "FULL_REAR_TRUNK_WING",
+        "partLabel": "后杠后盖尾翼",
+        "amount": 200,
+        "technicianAccountId": "tech_zhanglin",
+        "technicianAccountName": "张霖",
+        "technicianName": "张霖",
+        "photos": [
+          "https://example.com/work/TEST20260305002.jpg"
+        ],
+        "submittedAt": "2026-03-05 20:57"
+      }
+    ],
+    "dispatchInfo": {
+      "date": "2026-03-07",
+      "time": "10:00",
+      "workBay": "2号工位",
+      "technicianName": "张霖",
+      "technicianNames": [
+        "张霖",
+        "杨振东"
+      ],
+      "technicianDisplay": "张霖 / 杨振东",
+      "remark": "测试派工单",
+      "updatedAt": "2026-03-05 20:57"
+    },
+    "deliveryStatus": "交车通过",
+    "deliveryPassedAt": "2026-03-05 20:57",
+    "commissionStatus": "已生成",
+    "commissionGeneratedAt": "2026-03-05 20:57",
+    "commissionTotal": 200,
+    "commissionRecords": [
+      {
+        "id": "WPRTEST002",
+        "partType": "FULL_CAR",
+        "partTypeLabel": "整车提成",
+        "partCode": "FULL_REAR_TRUNK_WING",
+        "partLabel": "后杠后盖尾翼",
+        "amount": 200,
+        "technicianAccountId": "tech_zhanglin",
+        "technicianAccountName": "张霖",
+        "technicianName": "张霖",
+        "photos": [
+          "https://example.com/work/TEST20260305002.jpg"
+        ],
+        "submittedAt": "2026-03-05 20:57"
+      }
+    ],
+    "followupRecords": [],
+    "followupLastUpdatedAt": "",
+    "financeSyncStatus": "未同步",
+    "financeSyncAt": "",
+    "financeSyncMessage": "待同步",
+    "financeExternalId": "",
+    "financeLastEvent": "",
+    "priceSummary": {
+      "packagePrice": 4400,
+      "addOnFee": 0,
+      "totalPrice": 4400,
+      "deposit": 700
+    },
+    "finalPaymentPhotos": [
+      "https://example.com/final/TEST20260305002.jpg"
+    ],
+    "finalPaymentUploadedAt": "2026-03-05 20:57",
+    "version": 0
+  },
+  {
+    "id": "TEST20260305001",
+    "serviceType": "FILM",
+    "serviceTypeLabel": "贴膜",
+    "status": "未完工",
+    "createdAt": "2026-03-05 20:56",
+    "updatedAt": "2026-03-05 20:56",
+    "customerName": "测试客户01",
+    "phone": "13800000001",
+    "carModel": "Model Y",
+    "plateNumber": "沪TEST001",
+    "vinPhoto": "https://example.com/vin/TEST20260305001.jpg",
+    "sourceChannel": "抖音",
+    "depositAmount": "500",
+    "depositProofPhotos": [
+      "https://example.com/deposit/TEST20260305001.jpg"
+    ],
+    "filmPackage": "FRONT",
+    "filmPackages": [
+      "FRONT"
+    ],
+    "packageDetails": [
+      {
+        "value": "FRONT",
+        "label": "BOP风狂者",
+        "desc": "整车",
+        "basePrice": 3600
+      }
+    ],
+    "packageLabel": "BOP风狂者",
+    "packageDesc": "整车",
+    "salesBrandText": "孟傲",
+    "store": "BOP 保镖上海工厂店",
+    "appointmentDate": "2026-03-06",
+    "appointmentTime": "09:00",
+    "addOns": [
+      "STERILIZATION"
+    ],
+    "remark": "TEST自动生成订单，保留用于权限联调",
+    "technicianName": "王澳",
+    "constructionPhotos": [],
+    "damagePhotos": [
+      "https://example.com/damage/TEST20260305001.jpg"
+    ],
+    "workPartRecords": [
+      {
+        "id": "WPRTEST001",
+        "partType": "FULL_CAR",
+        "partTypeLabel": "整车提成",
+        "partCode": "FULL_FRONT_HOOD",
+        "partLabel": "前杠机盖",
+        "amount": 200,
+        "technicianAccountId": "tech_wangao",
+        "technicianAccountName": "王澳",
+        "technicianName": "王澳",
+        "photos": [
+          "https://example.com/work/TEST20260305001.jpg"
+        ],
+        "submittedAt": "2026-03-05 20:56"
+      }
+    ],
+    "dispatchInfo": {
+      "date": "2026-03-06",
+      "time": "09:00",
+      "workBay": "1号工位",
+      "technicianName": "王澳",
+      "technicianNames": [
+        "王澳",
+        "王迪"
+      ],
+      "technicianDisplay": "王澳 / 王迪",
+      "remark": "测试派工单",
+      "updatedAt": "2026-03-05 20:56"
+    },
+    "deliveryStatus": "待交车验收",
+    "deliveryPassedAt": "",
+    "commissionStatus": "未生成",
+    "commissionGeneratedAt": "",
+    "commissionTotal": 0,
+    "commissionRecords": [],
+    "followupRecords": [],
+    "followupLastUpdatedAt": "",
+    "financeSyncStatus": "已同步",
+    "financeSyncAt": "2026-03-05 20:56",
+    "financeSyncMessage": "TEST生成",
+    "financeExternalId": "FIN-TEST-001",
+    "financeLastEvent": "ORDER_UPDATED",
+    "priceSummary": {
+      "packagePrice": 3600,
+      "addOnFee": 0,
+      "totalPrice": 3600,
+      "deposit": 500
+    },
+    "finalPaymentPhotos": [],
+    "finalPaymentUploadedAt": "",
+    "version": 0
   },
   {
     "id": "TM20260305022653439",
@@ -1592,7 +1607,8 @@
     "finalPaymentPhotos": [
       "http://tmp/rpGp64RtvNTC2c2de38c0a91ace33584fe27aebde222.png"
     ],
-    "finalPaymentUploadedAt": "2026-03-05 15:44"
+    "finalPaymentUploadedAt": "2026-03-05 15:44",
+    "version": 0
   },
   {
     "id": "TM20260304190741910",
@@ -1647,7 +1663,8 @@
     "commissionStatus": "未生成",
     "commissionGeneratedAt": "",
     "commissionTotal": 0,
-    "commissionRecords": []
+    "commissionRecords": [],
+    "version": 0
   },
   {
     "id": "TM20260304190525602",
@@ -1676,7 +1693,8 @@
       "addOnFee": 180,
       "totalPrice": 6980,
       "deposit": 698
-    }
+    },
+    "version": 0
   },
   {
     "id": "TM20260304190429357",
@@ -1705,7 +1723,8 @@
       "addOnFee": 180,
       "totalPrice": 6980,
       "deposit": 698
-    }
+    },
+    "version": 0
   },
   {
     "id": "TM20260304190255721",
@@ -1734,7 +1753,8 @@
       "addOnFee": 180,
       "totalPrice": 6980,
       "deposit": 698
-    }
+    },
+    "version": 0
   },
   {
     "id": "TM20260304180733296",
@@ -1765,7 +1785,8 @@
       "addOnFee": 180,
       "totalPrice": 3854,
       "deposit": 385
-    }
+    },
+    "version": 0
   },
   {
     "id": "TM20260304180019442",
@@ -1794,7 +1815,8 @@
       "addOnFee": 0,
       "totalPrice": 3280,
       "deposit": 328
-    }
+    },
+    "version": 0
   },
   {
     "id": "TM20260304100100123",
@@ -1830,7 +1852,8 @@
         "technicianName": "技师A",
         "partLabel": "前杠机盖"
       }
-    ]
+    ],
+    "version": 0
   },
   {
     "id": "TM20260301150000777",
@@ -1866,7 +1889,8 @@
         "technicianName": "技师A",
         "partLabel": "右侧面"
       }
-    ]
+    ],
+    "version": 0
   },
   {
     "id": "TM20260102103000321",
@@ -1909,6 +1933,7 @@
         "technicianName": "技师A",
         "partLabel": "左侧面"
       }
-    ]
+    ],
+    "version": 0
   }
 ]

@@ -1,122 +1,142 @@
 [
   {
     "username": "tech_wangao",
-    "password": "0000",
+    "password": "",
     "name": "王澳",
-    "role": "technician"
+    "role": "technician",
+    "passwordHash": "pbkdf2_sha256$260000$tech_wangao_migrated_20260309$4ec44c0333c0069de17d3984769559d4d895de59ab7ac62574ef2c86c04918ef"
   },
   {
     "username": "tech_wangdi",
-    "password": "0000",
+    "password": "",
     "name": "王迪",
-    "role": "technician"
+    "role": "technician",
+    "passwordHash": "pbkdf2_sha256$260000$tech_wangdi_migrated_20260309$06cabd6d3b5119c22c0299ffcac54790d8c59616fbc004be6df1131a729071e0"
   },
   {
     "username": "tech_zhanglin",
-    "password": "0000",
+    "password": "",
     "name": "张霖",
-    "role": "technician"
+    "role": "technician",
+    "passwordHash": "pbkdf2_sha256$260000$tech_zhanglin_migrated_20260309$ec1da3162f8e11ab7f9438cf7080fc606906ec9e852790a79d1e1e9daa3adb36"
   },
   {
     "username": "tech_yangzhendong",
-    "password": "0000",
+    "password": "",
     "name": "杨振东",
-    "role": "technician"
+    "role": "technician",
+    "passwordHash": "pbkdf2_sha256$260000$tech_yangzhendong_migrated_20260309$da33fbdcbf375e19e8e52eed50b1c6829e976230b102b12208256368d085dd24"
   },
   {
     "username": "tech_zhangfaqiang",
-    "password": "0000",
+    "password": "",
     "name": "张发强",
-    "role": "technician"
+    "role": "technician",
+    "passwordHash": "pbkdf2_sha256$260000$tech_zhangfaqiang_migrated_20260309$41d5f4c1784fc83dbf6327c48a24ef1e7176b6b1b4a1b0476e2fa042930620d7"
   },
   {
     "username": "tech_linruihao",
-    "password": "0000",
+    "password": "",
     "name": "林睿豪",
-    "role": "technician"
+    "role": "technician",
+    "passwordHash": "pbkdf2_sha256$260000$tech_linruihao_migrated_20260309$dbea67b73e2421acb8f956391c04ae25aabd691f474439b828a9aec4061da700"
   },
   {
     "username": "tech_fangyuan",
-    "password": "0000",
+    "password": "",
     "name": "方圆",
-    "role": "technician"
+    "role": "technician",
+    "passwordHash": "pbkdf2_sha256$260000$tech_fangyuan_migrated_20260309$58a75f63bc05227094424713e388182f54f0b53424de5557ea391645c9f2956f"
   },
   {
     "username": "tech_fanxiangyang",
-    "password": "0000",
+    "password": "",
     "name": "范向阳",
-    "role": "technician"
+    "role": "technician",
+    "passwordHash": "pbkdf2_sha256$260000$tech_fanxiangyang_migrated_20260309$a9afee7b85e3f17b4e5a1bbaaaa0c180f6250a62b40b0b56fb88fe983f9b929d"
   },
   {
     "username": "tech_fengguohao",
-    "password": "0000",
+    "password": "",
     "name": "冯国豪",
-    "role": "technician"
+    "role": "technician",
+    "passwordHash": "pbkdf2_sha256$260000$tech_fengguohao_migrated_20260309$39beb04d06602737d2a74717f49439e5dc846394c1778074ae3cce4dccd5ef5a"
   },
   {
     "username": "tech_yaozunyi",
-    "password": "0000",
+    "password": "",
     "name": "姚遵义",
-    "role": "technician"
+    "role": "technician",
+    "passwordHash": "pbkdf2_sha256$260000$tech_yaozunyi_migrated_20260309$b362ac1707329867d64310eb03dcaa4189ee1800288ca1f903f6b786b904a649"
   },
   {
     "username": "tech_zhangyongzhi",
-    "password": "0000",
+    "password": "",
     "name": "张永志",
-    "role": "technician"
+    "role": "technician",
+    "passwordHash": "pbkdf2_sha256$260000$tech_zhangyongzhi_migrated_20260309$b3b856efd9d7c64031dccddbe149001242723f83a1b6eecc7adf9b7fa00884a3"
   },
   {
     "username": "sales_mengao",
-    "password": "0000",
+    "password": "",
     "name": "孟傲",
-    "role": "sales"
+    "role": "sales",
+    "passwordHash": "pbkdf2_sha256$260000$sales_mengao_migrated_20260309$8591483c02cb53a4da9c5a171cf2cf27bb6bcb918b83c015afaeb939d5bdc67f"
   },
   {
     "username": "sales_tianjiajia",
-    "password": "0000",
+    "password": "",
     "name": "田佳佳",
-    "role": "sales"
+    "role": "sales",
+    "passwordHash": "pbkdf2_sha256$260000$sales_tianjiajia_migrated_20260309$04121ce24fed9c08c8d81afc68be4477ad701e81188b8badf4aeac1650a0fcf9"
   },
   {
     "username": "sales_zhoushilei",
-    "password": "0000",
+    "password": "",
     "name": "周石磊",
-    "role": "sales"
+    "role": "sales",
+    "passwordHash": "pbkdf2_sha256$260000$sales_zhoushilei_migrated_20260309$ee0bd7f430aec4553934f81e00a3aa235010c5b485846a7907e97ccd5e15cd65"
   },
   {
     "username": "sales_cuitingting",
-    "password": "0000",
+    "password": "",
     "name": "崔庭廷",
-    "role": "sales"
+    "role": "sales",
+    "passwordHash": "pbkdf2_sha256$260000$sales_cuitingting_migrated_20260309$7c3d8ba0a14f7b5831735834c4c3011bf309f71e5e9ac1cdb5fe21aa83862646"
   },
   {
     "username": "sales_weipeng",
-    "password": "0000",
+    "password": "",
     "name": "魏鹏",
-    "role": "sales"
+    "role": "sales",
+    "passwordHash": "pbkdf2_sha256$260000$sales_weipeng_migrated_20260309$c12bb9c6ada3e8a458aec9a0ad5ac1301b7e4fd0bf5dd20574c78ba36815c0fc"
   },
   {
     "username": "sales_libochao",
-    "password": "0000",
+    "password": "",
     "name": "李博超",
-    "role": "sales"
+    "role": "sales",
+    "passwordHash": "pbkdf2_sha256$260000$sales_libochao_migrated_20260309$70134a7c6771ac8950eef549a00abbe323f492be5ea3372fd8d01ff8c40fcf7d"
   },
   {
     "username": "finance_huangyanting",
-    "password": "0000",
+    "password": "",
     "name": "黄艳婷",
-    "role": "finance"
+    "role": "finance",
+    "passwordHash": "pbkdf2_sha256$260000$finance_huangyanting_migrated_20260309$ae0e186aa884f3945a0a7e18fa1a808c9a6c44aefac7e4d5ee1797ef21e1fd66"
   },
   {
     "username": "manager_wujiabin",
-    "password": "0000",
+    "password": "",
     "name": "吴佳彬",
-    "role": "manager"
+    "role": "manager",
+    "passwordHash": "pbkdf2_sha256$260000$manager_wujiabin_migrated_20260309$cdb525a772f8b1d88c417fad46a7c168abe0bb10453de590845ca1c247b6a4fc"
   },
   {
     "username": "manager_yushuai",
-    "password": "0000",
+    "password": "",
     "name": "余帅",
-    "role": "manager"
+    "role": "manager",
+    "passwordHash": "pbkdf2_sha256$260000$manager_yushuai_migrated_20260309$c32c046c996102cf9713677fc6212957d5fceda28356f52a8a3746302ea0f059"
   }
 ]

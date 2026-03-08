@@ -692,6 +692,10 @@ async function request(url, options = {}) {
   });
   const data = await response.json().catch(() => ({}));
   if (!response.ok || data.ok === false) {
+    if (response.status === 409 && data.code === "ORDER_VERSION_CONFLICT") {
+      const message = handleOrderVersionConflict(data);
+      throw new Error(message);
+    }
     const message = data.message || `请求失败 (${response.status})`;
     if (response.status === 401 && options.auth !== false) {
       localStorage.removeItem(TOKEN_KEY);
@@ -700,6 +704,25 @@ async function request(url, options = {}) {
     throw new Error(message);
   }
   return data;
+}
+
+function handleOrderVersionConflict(data) {
+  const currentVersion = Number.isFinite(Number(data && data.currentVersion))
+    ? Number(data.currentVersion)
+    : null;
+  const baseMessage = data && data.message ? data.message : "订单已被其他人更新";
+  const confirmMessage = `${baseMessage}\n${currentVersion !== null ? `最新版本：${currentVersion}\n` : ""}点击“确定”以服务器为准并刷新数据；点击“取消”手动重试。`;
+  const useServer = window.confirm(confirmMessage);
+  if (useServer) {
+    loadOrders();
+    loadDispatch();
+    loadFollowups();
+    if (isFinanceViewer(state.user && state.user.role)) {
+      loadFinanceLogs();
+    }
+    return "已按服务器最新数据刷新。";
+  }
+  return "已保留本地修改，请手动重试。";
 }
 
 function getRoleText(role) {

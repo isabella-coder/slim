@@ -1,4 +1,5 @@
 const FINANCE_BASE_URL_STORAGE_KEY = 'financeBaseUrl';
+const FINANCE_API_TOKEN_STORAGE_KEY = 'financeApiToken';
 
 const ENV_BASE_URL = {
   // 微信开发者工具本机联调。
@@ -14,6 +15,7 @@ const financeConfig = {
   // 全局兜底地址（优先级低于 runtime storage 和 ENV_BASE_URL）。
   baseUrl: '',
   syncPath: '/api/v1/internal/work-orders/sync',
+  // 不提交固定 token，按环境手动配置。
   apiToken: '',
   extraHeaders: {},
   timeout: 10000
@@ -22,9 +24,11 @@ const financeConfig = {
 function getFinanceConfig() {
   const envVersion = getEnvVersion();
   const baseUrl = resolveBaseUrl(envVersion);
+  const apiToken = resolveApiToken();
   return {
     ...financeConfig,
     baseUrl,
+    apiToken,
     envVersion
   };
 }
@@ -35,6 +39,15 @@ function setFinanceBaseUrl(url) {
     return normalized;
   }
   wx.setStorageSync(FINANCE_BASE_URL_STORAGE_KEY, normalized);
+  return normalized;
+}
+
+function setFinanceApiToken(token) {
+  const normalized = normalizeToken(token);
+  if (!canUseWxStorage()) {
+    return normalized;
+  }
+  wx.setStorageSync(FINANCE_API_TOKEN_STORAGE_KEY, normalized);
   return normalized;
 }
 
@@ -52,11 +65,26 @@ function resolveBaseUrl(envVersion) {
   return normalizeUrl(financeConfig.baseUrl);
 }
 
+function resolveApiToken() {
+  const runtimeToken = readRuntimeApiToken();
+  if (runtimeToken) {
+    return runtimeToken;
+  }
+  return normalizeToken(financeConfig.apiToken);
+}
+
 function readRuntimeBaseUrl() {
   if (!canUseWxStorage()) {
     return '';
   }
   return normalizeUrl(wx.getStorageSync(FINANCE_BASE_URL_STORAGE_KEY));
+}
+
+function readRuntimeApiToken() {
+  if (!canUseWxStorage()) {
+    return '';
+  }
+  return normalizeToken(wx.getStorageSync(FINANCE_API_TOKEN_STORAGE_KEY));
 }
 
 function getEnvVersion() {
@@ -89,8 +117,14 @@ function normalizeUrl(value) {
   return text.replace(/\/+$/, '');
 }
 
+function normalizeToken(value) {
+  return String(value || '').trim();
+}
+
 module.exports = {
   FINANCE_BASE_URL_STORAGE_KEY,
+  FINANCE_API_TOKEN_STORAGE_KEY,
   getFinanceConfig,
-  setFinanceBaseUrl
+  setFinanceBaseUrl,
+  setFinanceApiToken
 };
