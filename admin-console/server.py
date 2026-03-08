@@ -2,11 +2,17 @@
 import json
 import os
 import re
+import time
 import uuid
 from datetime import date, datetime, timedelta
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import parse_qs, urlparse
+
+try:
+    import psycopg
+except Exception:
+    psycopg = None
 
 BASE_DIR = Path(__file__).resolve().parent
 DATA_DIR = BASE_DIR / "data"
@@ -17,6 +23,15 @@ FINANCE_SYNC_LOG_FILE = DATA_DIR / "finance-sync-log.json"
 DEFAULT_PORT = 8080
 DAILY_WORK_BAY_LIMIT = 10
 INTERNAL_API_TOKEN = os.getenv("INTERNAL_API_TOKEN", "").strip()
+ENABLE_DB_STORAGE = os.getenv("ENABLE_DB_STORAGE", "0").strip().lower() in ("1", "true", "yes", "on")
+POSTGRES_DSN = os.getenv("POSTGRES_DSN", "").strip() or os.getenv("DATABASE_URL", "").strip()
+POSTGRES_HOST = os.getenv("POSTGRES_HOST", "127.0.0.1").strip()
+POSTGRES_PORT = int(os.getenv("POSTGRES_PORT", "5432").strip() or "5432")
+POSTGRES_DB = os.getenv("POSTGRES_DB", "slim").strip()
+POSTGRES_USER = os.getenv("POSTGRES_USER", "postgres").strip()
+POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD", "").strip()
+
+DB_INIT_ERROR = ""
 
 ORDER_STATUS_ALIAS = {
     "待确认": "未完工",
@@ -92,9 +107,17 @@ def normalize_order_status(value):
 
 def normalize_order_record(order):
     source = order if isinstance(order, dict) else {}
+    version = source.get("version")
+    try:
+        parsed_version = int(version)
+    except (TypeError, ValueError):
+        parsed_version = 0
+    if parsed_version < 0:
+        parsed_version = 0
     return {
         **source,
         "status": normalize_order_status(source.get("status")),
+        "version": parsed_version,
     }
 
 
@@ -156,6 +179,9 @@ def save_json(path, value):
 
 
 def load_orders():
+    if ENABLE_DB_STORAGE:
+        db_rows = load_orders_from_db()
+        return db_rows if isinstance(db_rows, list) else []
     source = load_json(ORDERS_FILE, [])
     if isinstance(source, list):
         return [normalize_order_record(item) for item in source if isinstance(item, dict)]
@@ -165,10 +191,16 @@ def load_orders():
 def save_orders(orders):
     source = orders if isinstance(orders, list) else []
     normalized = [normalize_order_record(item) for item in source if isinstance(item, dict)]
+    if ENABLE_DB_STORAGE:
+        save_orders_to_db(normalized)
+        return
     save_json(ORDERS_FILE, normalized)
 
 
 def load_users():
+    if ENABLE_DB_STORAGE:
+        db_rows = load_users_from_db()
+        return db_rows if isinstance(db_rows, list) else []
     source = load_json(USERS_FILE, [])
     if isinstance(source, list):
         return source
@@ -176,10 +208,16 @@ def load_users():
 
 def save_users(users):
     source = users if isinstance(users, list) else []
+    if ENABLE_DB_STORAGE:
+        save_users_to_db(source)
+        return
     save_json(USERS_FILE, source)
 
 
 def load_finance_sync_logs():
+    if ENABLE_DB_STORAGE:
+        db_rows = load_finance_sync_logs_from_db()
+        return db_rows if isinstance(db_rows, list) else []
     source = load_json(FINANCE_SYNC_LOG_FILE, [])
     if isinstance(source, list):
         return source
@@ -187,7 +225,222 @@ def load_finance_sync_logs():
 
 
 def save_finance_sync_logs(logs):
+    if ENABLE_DB_STORAGE:
+        save_finance_sync_logs_to_db(logs)
+        return
     save_json(FINANCE_SYNC_LOG_FILE, logs)
+
+
+def db_enabled():
+    return ENABLE_DB_STORAGE and psycopg is not None
+
+
+def build_db_connection_string():
+    if POSTGRES_DSN:
+        return POSTGRES_DSN
+    return (
+        f"host={POSTGRES_HOST} port={POSTGRES_PORT} dbname={POSTGRES_DB} "
+        f"user={POSTGRES_USER} password={POSTGRES_PASSWORD}"
+    )
+
+
+def get_db_connection():
+    if not db_enabled():
+        return None
+    return psycopg.connect(build_db_connection_string(), autocommit=True)
+
+
+def extract_updated_at_for_db(payload):
+    if not isinstance(payload, dict):
+        return datetime.now()
+    dt = parse_datetime_text(payload.get("updatedAt"))
+    if dt:
+        return dt
+    dt = parse_datetime_text(payload.get("createdAt"))
+    if dt:
+        return dt
+    return datetime.now()
+
+
+def init_database_if_needed():
+    global DB_INIT_ERROR
+    if not ENABLE_DB_STORAGE:
+        return
+    if psycopg is None:
+        DB_INIT_ERROR = "ENABLE_DB_STORAGE=1 但未安装 psycopg"
+        return
+    try:
+        with get_db_connection() as conn:
+            with conn.cursor() as cur:
+                cur.execute(
+                    """
+                    CREATE TABLE IF NOT EXISTS users (
+                        username TEXT PRIMARY KEY,
+                        payload JSONB NOT NULL,
+                        updated_at TIMESTAMP NOT NULL DEFAULT NOW()
+                    );
+                    """
+                )
+                cur.execute(
+                    """
+                    CREATE TABLE IF NOT EXISTS orders (
+                        order_id TEXT PRIMARY KEY,
+                        payload JSONB NOT NULL,
+                        updated_at TIMESTAMP NOT NULL DEFAULT NOW()
+                    );
+                    """
+                )
+                cur.execute(
+                    """
+                    CREATE TABLE IF NOT EXISTS finance_sync_logs (
+                        log_id TEXT PRIMARY KEY,
+                        payload JSONB NOT NULL,
+                        created_at TIMESTAMP NOT NULL DEFAULT NOW()
+                    );
+                    """
+                )
+
+            with conn.cursor() as cur:
+                cur.execute("SELECT COUNT(*) FROM users")
+                users_count = cur.fetchone()[0]
+            if users_count == 0:
+                save_users_to_db(load_json(USERS_FILE, []))
+
+            with conn.cursor() as cur:
+                cur.execute("SELECT COUNT(*) FROM orders")
+                orders_count = cur.fetchone()[0]
+            if orders_count == 0:
+                save_orders_to_db(load_json(ORDERS_FILE, []))
+
+            with conn.cursor() as cur:
+                cur.execute("SELECT COUNT(*) FROM finance_sync_logs")
+                logs_count = cur.fetchone()[0]
+            if logs_count == 0:
+                save_finance_sync_logs_to_db(load_json(FINANCE_SYNC_LOG_FILE, []))
+
+        DB_INIT_ERROR = ""
+    except Exception as error:
+        DB_INIT_ERROR = str(error)
+
+
+def load_users_from_db():
+    try:
+        with get_db_connection() as conn:
+            with conn.cursor() as cur:
+                cur.execute("SELECT payload FROM users ORDER BY username ASC")
+                return [row[0] for row in cur.fetchall() if isinstance(row[0], dict)]
+    except Exception:
+        return None
+
+
+def save_users_to_db(users):
+    if not isinstance(users, list):
+        users = []
+    try:
+        with get_db_connection() as conn:
+            with conn.cursor() as cur:
+                for user in users:
+                    if not isinstance(user, dict):
+                        continue
+                    username = normalize_text(user.get("username"))
+                    if not username:
+                        continue
+                    cur.execute(
+                        """
+                        INSERT INTO users (username, payload, updated_at)
+                        VALUES (%s, %s::jsonb, %s)
+                        ON CONFLICT (username)
+                        DO UPDATE SET payload = EXCLUDED.payload, updated_at = EXCLUDED.updated_at
+                        """,
+                        (username, json.dumps(user, ensure_ascii=False), datetime.now()),
+                    )
+        return True
+    except Exception:
+        return False
+
+
+def load_orders_from_db(updated_after_text=""):
+    updated_after = parse_datetime_text(updated_after_text)
+    try:
+        with get_db_connection() as conn:
+            with conn.cursor() as cur:
+                if updated_after:
+                    cur.execute(
+                        "SELECT payload FROM orders WHERE updated_at > %s ORDER BY updated_at ASC",
+                        (updated_after,),
+                    )
+                else:
+                    cur.execute("SELECT payload FROM orders ORDER BY updated_at DESC")
+                return [normalize_order_record(row[0]) for row in cur.fetchall() if isinstance(row[0], dict)]
+    except Exception:
+        return None
+
+
+def save_orders_to_db(orders):
+    if not isinstance(orders, list):
+        orders = []
+    try:
+        with get_db_connection() as conn:
+            with conn.cursor() as cur:
+                for order in orders:
+                    if not isinstance(order, dict):
+                        continue
+                    order_id = normalize_text(order.get("id"))
+                    if not order_id:
+                        continue
+                    payload = normalize_order_record(order)
+                    cur.execute(
+                        """
+                        INSERT INTO orders (order_id, payload, updated_at)
+                        VALUES (%s, %s::jsonb, %s)
+                        ON CONFLICT (order_id)
+                        DO UPDATE SET payload = EXCLUDED.payload, updated_at = EXCLUDED.updated_at
+                        """,
+                        (order_id, json.dumps(payload, ensure_ascii=False), extract_updated_at_for_db(payload)),
+                    )
+        return True
+    except Exception:
+        return False
+
+
+def save_order_to_db(order):
+    return save_orders_to_db([order])
+
+
+def load_finance_sync_logs_from_db():
+    try:
+        with get_db_connection() as conn:
+            with conn.cursor() as cur:
+                cur.execute("SELECT payload FROM finance_sync_logs ORDER BY created_at DESC")
+                return [row[0] for row in cur.fetchall() if isinstance(row[0], dict)]
+    except Exception:
+        return None
+
+
+def save_finance_sync_logs_to_db(logs):
+    if not isinstance(logs, list):
+        logs = []
+    try:
+        with get_db_connection() as conn:
+            with conn.cursor() as cur:
+                for item in logs:
+                    if not isinstance(item, dict):
+                        continue
+                    log_id = normalize_text(item.get("id")) or uuid.uuid4().hex
+                    payload = {**item, "id": log_id}
+                    created_at = parse_datetime_text(payload.get("receivedAt")) or datetime.now()
+                    cur.execute(
+                        """
+                        INSERT INTO finance_sync_logs (log_id, payload, created_at)
+                        VALUES (%s, %s::jsonb, %s)
+                        ON CONFLICT (log_id)
+                        DO UPDATE SET payload = EXCLUDED.payload
+                        """,
+                        (log_id, json.dumps(payload, ensure_ascii=False), created_at),
+                    )
+        return True
+    except Exception:
+        return False
 
 
 def build_finance_external_id(order_id):
@@ -263,7 +516,8 @@ def read_internal_api_token_from_headers(handler):
 
 def require_internal_api_token(handler):
     if not INTERNAL_API_TOKEN:
-        return True
+        handler.send_json(503, {"success": False, "message": "内部接口令牌未配置", "code": 503})
+        return False
 
     token = read_internal_api_token_from_headers(handler)
     if token == INTERNAL_API_TOKEN:
@@ -547,7 +801,7 @@ class AdminHandler(SimpleHTTPRequestHandler):
     def end_headers(self):
         self.send_header("Access-Control-Allow-Origin", "*")
         self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Api-Token")
-        self.send_header("Access-Control-Allow-Methods", "GET, POST, PUT, OPTIONS")
+        self.send_header("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, OPTIONS")
         super().end_headers()
 
     def do_OPTIONS(self):
@@ -577,9 +831,60 @@ class AdminHandler(SimpleHTTPRequestHandler):
             return
         self.send_json(404, {"ok": False, "message": "Not Found"})
 
+    def do_PATCH(self):
+        parsed = urlparse(self.path)
+        if parsed.path.startswith("/api/"):
+            self.handle_api_patch(parsed)
+            return
+        self.send_json(404, {"ok": False, "message": "Not Found"})
+
     def handle_api_get(self, parsed):
+        if parsed.path == "/api/health/db":
+            start = time.perf_counter()
+            if not ENABLE_DB_STORAGE:
+                self.send_json(200, {"ok": True, "dbEnabled": False, "message": "DB storage disabled"})
+                return
+            if psycopg is None:
+                self.send_json(500, {"ok": False, "dbEnabled": True, "message": "psycopg not installed"})
+                return
+            try:
+                with get_db_connection() as conn:
+                    with conn.cursor() as cur:
+                        cur.execute("SELECT 1")
+                        cur.fetchone()
+                latency_ms = round((time.perf_counter() - start) * 1000, 2)
+                self.send_json(200, {"ok": True, "dbEnabled": True, "latencyMs": latency_ms})
+                return
+            except Exception as error:
+                self.send_json(500, {"ok": False, "dbEnabled": True, "message": str(error)})
+                return
+
         if parsed.path == "/api/health":
             self.send_json(200, {"ok": True, "time": now_text()})
+            return
+
+        if parsed.path == "/api/v1/orders":
+            if not require_internal_api_token(self):
+                return
+
+            params = parse_qs(parsed.query)
+            updated_after = normalize_text(get_first(params, "updatedAfter", ""))
+            if ENABLE_DB_STORAGE:
+                rows = load_orders_from_db(updated_after)
+                if rows is None:
+                    self.send_json(500, {"success": False, "message": "数据库读取失败", "code": 500})
+                    return
+                items = rows
+            else:
+                items = load_orders()
+                threshold = parse_datetime_text(updated_after)
+                if threshold:
+                    items = [
+                        item for item in items
+                        if (parse_datetime_text(item.get("updatedAt")) or datetime.min) > threshold
+                    ]
+
+            self.send_json(200, {"success": True, "code": 0, "items": items, "count": len(items)})
             return
 
         if parsed.path == "/api/v1/internal/orders":
@@ -821,6 +1126,9 @@ class AdminHandler(SimpleHTTPRequestHandler):
             return
 
         if parsed.path == "/api/v1/internal/work-orders/sync":
+            if not require_internal_api_token(self):
+                return
+
             body = self.read_json_body()
             order = body.get("order") if isinstance(body, dict) else {}
             order_id = normalize_text(order.get("id")) if isinstance(order, dict) else ""
@@ -1008,6 +1316,7 @@ class AdminHandler(SimpleHTTPRequestHandler):
             target["followupRecords"] = next_records
             target["followupLastUpdatedAt"] = now_text()
             target["updatedAt"] = now_text()
+            target["version"] = int(target.get("version") or 0) + 1
             save_orders(orders)
             self.send_json(200, {"ok": True, "message": "回访已标记完成"})
             return
@@ -1062,10 +1371,86 @@ class AdminHandler(SimpleHTTPRequestHandler):
             self.send_json(400, {"ok": False, "message": "没有可更新字段"})
             return
 
+        incoming_version = body.get("version")
+        try:
+            incoming_version = int(incoming_version)
+        except (TypeError, ValueError):
+            self.send_json(400, {"ok": False, "message": "version 必须是数字"})
+            return
+
+        current_version = int(target.get("version") or 0)
+        if incoming_version != current_version:
+            self.send_json(
+                409,
+                {
+                    "ok": False,
+                    "code": "ORDER_VERSION_CONFLICT",
+                    "message": "订单已被更新，请刷新后重试",
+                    "currentVersion": current_version,
+                },
+            )
+            return
+
         target.update(patch)
         target["updatedAt"] = now_text()
+        target["version"] = current_version + 1
         save_orders(orders)
         self.send_json(200, {"ok": True, "item": target})
+
+    def handle_api_patch(self, parsed):
+        match = re.fullmatch(r"/api/v1/orders/([^/]+)", parsed.path)
+        if not match:
+            self.send_json(404, {"success": False, "message": "接口不存在", "code": 404})
+            return
+        if not require_internal_api_token(self):
+            return
+
+        order_id = match.group(1)
+        body = self.read_json_body()
+        if not isinstance(body, dict):
+            self.send_json(400, {"success": False, "message": "请求体必须是 JSON 对象", "code": 400})
+            return
+
+        incoming_version = body.get("version")
+        try:
+            incoming_version = int(incoming_version)
+        except (TypeError, ValueError):
+            self.send_json(400, {"success": False, "message": "version 必须是数字", "code": 400})
+            return
+
+        patch = sanitize_order_patch(body)
+        if len(patch) == 0:
+            self.send_json(400, {"success": False, "message": "没有可更新字段", "code": 400})
+            return
+
+        orders = load_orders()
+        target = None
+        for item in orders:
+            if normalize_text(item.get("id")) == normalize_text(order_id):
+                target = item
+                break
+        if not target:
+            self.send_json(404, {"success": False, "message": "订单不存在", "code": 404})
+            return
+
+        current_version = int(target.get("version") or 0)
+        if incoming_version != current_version:
+            self.send_json(
+                409,
+                {
+                    "success": False,
+                    "code": "ORDER_VERSION_CONFLICT",
+                    "message": "订单已被更新，请刷新后重试",
+                    "currentVersion": current_version,
+                },
+            )
+            return
+
+        target.update(patch)
+        target["updatedAt"] = now_text()
+        target["version"] = current_version + 1
+        save_orders(orders)
+        self.send_json(200, {"success": True, "code": 0, "item": target})
 
     def get_token_from_header(self):
         source = normalize_text(self.headers.get("Authorization"))
@@ -1249,6 +1634,7 @@ def ensure_seed_files():
 
 def run_server(port):
     ensure_seed_files()
+    init_database_if_needed()
     server = ThreadingHTTPServer(("0.0.0.0", port), AdminHandler)
     print(f"Admin console running: http://127.0.0.1:{port}")
     server.serve_forever()

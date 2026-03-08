@@ -10,7 +10,7 @@
 
 ## 目录
 
-- `server.py` 纯 Python 后端（无第三方依赖）
+- `server.py` 纯 Python 后端（启用 PostgreSQL 时需安装 `psycopg`）
 - `data/users.json` 后台账号
 - `data/orders.json` 后台订单数据
 - `web/` 前端页面
@@ -28,6 +28,16 @@ cd /Users/yushuai/Documents/Playground/car-film-mini-program/admin-console
 ```bash
 python3 server.py
 ```
+
+可选：启用 PostgreSQL 单一真源（启用后不再走 JSON 回退）：
+
+```bash
+export ENABLE_DB_STORAGE=1
+export POSTGRES_DSN='postgresql://postgres:password@127.0.0.1:5432/slim'
+python3 server.py
+```
+
+> 未安装 `psycopg` 时，`ENABLE_DB_STORAGE=1` 会导致 `/api/health/db` 返回错误。
 
 或一键脚本：
 
@@ -54,5 +64,26 @@ python3 server.py
 
 ## 数据说明
 
-- 当前订单数据独立存放在 `admin-console/data/orders.json`
-- 若要和小程序实时共享，需要再接统一数据库或 API 中台
+- 默认（`ENABLE_DB_STORAGE=0`）时，订单数据在 `admin-console/data/orders.json`
+- 开启 DB（`ENABLE_DB_STORAGE=1`）后，读写都走 PostgreSQL，不再回退 JSON
+
+
+## 迁移脚本（数据库切主前）
+
+- `python3 scripts/migrate/migrate_users.py --dry-run --limit 50`
+- `python3 scripts/migrate/migrate_orders.py --dry-run --since "2026-03-01 00:00"`
+- `python3 scripts/migrate/migrate_finance_logs.py --dry-run`
+
+执行正式迁移时补 `--dsn`：
+
+```bash
+python3 scripts/migrate/migrate_orders.py --dsn "$POSTGRES_DSN"
+```
+
+## 内部接口与并发控制
+
+- `INTERNAL_API_TOKEN` 现在是强制项：未配置时，内部接口返回 `503`。
+- 新增 DB 健康检查：`GET /api/health/db`
+- 新增增量拉取：`GET /api/v1/orders?updatedAfter=2026-03-01 00:00`
+- 新增增量更新：`PATCH /api/v1/orders/{id}`（必须携带 `version`，冲突返回 `409 ORDER_VERSION_CONFLICT`）
+- 管理台订单更新 `PUT /api/orders/{id}` 同样要求 `version`。
