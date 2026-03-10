@@ -33,7 +33,7 @@
 - **认证**: Bearer Token 支持
 
 #### 4. 小程序配置
-- **开发环境**: http://127.0.0.1:8080
+- **开发环境**: http://127.0.0.1:8000
 - **生产环境**: 配置模板已准备
 - **集成**: 自动识别运行环境
 
@@ -66,7 +66,7 @@
 ┌─────────────────────────────────────────────────────────────────┐
 │              后端 API 服务 (server.py)                          │
 │                                                                 │
-│  ├─ 端口: 8080                                                 │
+│  ├─ 端口: 8000                                                 │
 │  ├─ 协议: HTTP REST                                            │
 │  ├─ 认证: Bearer Token                                         │
 │  └─ 数据源: PostgreSQL (ENABLE_DB_STORAGE=True)               │
@@ -107,7 +107,7 @@
 
 ### 启动系统 (30 秒)
 ```bash
-cd /Users/yushuai/Documents/Playground/car-film-mini-program
+cd /Users/yushuai/Documents/Playground/养龙虾/car-film-mini-program
 bash START_SYSTEM.sh
 ```
 
@@ -245,7 +245,7 @@ A: 检查 Authorization header 是否为 `Bearer <YOUR_INTERNAL_API_TOKEN>`
 **Q: 小程序无法连接后端?**  
 A: 确保:
   - Docker 容器运行中 (`docker ps`)
-  - 后端服务使用 (`lsof -i :8080`)
+  - 后端服务使用 (`lsof -i :8000`)
   - 网络配置正确 (`config/finance.config.js`)
 
 **Q: 数据库连接超时?**  

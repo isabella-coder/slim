@@ -1,5 +1,8 @@
 # 电脑端后台（Admin Console）
 
+> ⚠️ Legacy 组件说明：本目录用于历史 `admin-console:8080` 兼容链路。
+> 当前统一发布标准为 `养龙虾/backend` 的 `8000` 服务入口（`/health` + `/api/v1/store/*`）。
+
 这是给门店内部使用的电脑端管理后台，包含：
 
 - 账号登录与角色权限（店长/销售/施工）
@@ -20,7 +23,7 @@
 1. 进入目录：
 
 ```bash
-cd /Users/yushuai/Documents/Playground/car-film-mini-program/admin-console
+cd /Users/yushuai/Documents/Playground/养龙虾/car-film-mini-program/admin-console
 ```
 
 2. 启动服务：

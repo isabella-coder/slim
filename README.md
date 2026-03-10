@@ -6,6 +6,7 @@
 
 - 全栈组件清单与项目现状：`docs/小程序全栈配套清单与现状.md`
 - 统一发布流程（唯一标准）：`docs/统一发布流程.md`
+- Legacy 发布归档：`DEPLOY_LEGACY.md`（`DEPLOY.sh` 默认阻断执行）
 - 系统设计与任务拆解：`SYSTEM_DESIGN_TASK_BREAKDOWN_SPEC.md`
 - 快速启动与检查：`QUICK_START.md`、`scripts/smoke_api.sh`、`scripts/release_preflight.sh`
 
@@ -104,13 +105,14 @@
 - `utils/staff-options.js` 固定人员名单（销售/派工技师）
 - `utils/finance-sync.js` 财务同步封装
 
-## 电脑端后台
+## 电脑端后台（Legacy 兼容）
 
 - 目录：`admin-console`
 - 启动：
   1. `cd admin-console`
   2. `python3 server.py`（或 `./start-admin.sh`）
   3. 浏览器打开 `http://127.0.0.1:8080`
+- 说明：该链路仅用于历史对照，不作为标准发布入口。
 - 功能：
   - 登录权限（店长/销售/施工）
   - 全部订单/我的订单视图切换
@@ -151,16 +153,16 @@
 - `enabled`: 设为 `true` 开启同步
 - `mockMode`: 联调阶段可设为 `true`（不发真实请求）
 - `baseUrl`: 财务系统域名，例如 `https://finance.xxx.com`
-- `syncPath`: 同步路径，例如 `/api/v1/internal/work-orders/sync`
+- `syncPath`: 同步路径，例如 `/api/v1/store/internal/work-orders/sync`
 - `apiToken`: 鉴权 token（可选）
 - `extraHeaders`: 自定义请求头（可选）
 
 当前默认行为：
 
-- 开发版（`develop`）默认走本机：`http://127.0.0.1:8080`
+- 开发版（`develop`）默认走本机：`http://127.0.0.1:8000`
 - 体验版/正式版（`trial`/`release`）默认不使用本机地址（避免手机端访问 `127.0.0.1` 导致不同步）
 - 可通过 `setFinanceBaseUrl('https://你的公网域名')` 写入运行时同步地址（Storage Key: `financeBaseUrl`）
-- `syncPath=/api/v1/internal/work-orders/sync`
+- `syncPath=/api/v1/store/internal/work-orders/sync`
 
 本地桥接由 `admin-console/server.py` 提供，会把每次同步请求写入：
 

@@ -33,14 +33,14 @@ finance-*.json  1300+ lines         12 logs
 - **命令**: `/Applications/Docker.app/Contents/Resources/bin/docker ps | grep postgres-slim`
 
 ### 后端 server.py
-- **地址**: http://127.0.0.1:8080
+- **地址**: http://127.0.0.1:8000
 - **状态**: 🟢 运行中
 - **配置**: ENABLE_DB_STORAGE = True
 - **Token**: <YOUR_INTERNAL_API_TOKEN>
 - **命令**: `INTERNAL_API_TOKEN="<YOUR_INTERNAL_API_TOKEN>" python3 admin-console/server.py`
 
 ### WeChat 小程序
-- **开发环境**: http://127.0.0.1:8080 (自动配置)
+- **开发环境**: http://127.0.0.1:8000 (自动配置)
 - **页面**: pages/order-list/order-list (订单列表)
 - **状态**: 就绪，等待启动
 
@@ -59,7 +59,7 @@ docker run --name postgres-slim -e POSTGRES_PASSWORD=<YOUR_POSTGRES_PASSWORD> \
 
 ### 2. 启动后端服务
 ```bash
-cd /Users/yushuai/Documents/Playground/car-film-mini-program
+cd /Users/yushuai/Documents/Playground/养龙虾/car-film-mini-program
 INTERNAL_API_TOKEN="<YOUR_INTERNAL_API_TOKEN>" python3 admin-console/server.py
 # 或在后台:
 INTERNAL_API_TOKEN="<YOUR_INTERNAL_API_TOKEN>" python3 admin-console/server.py > /tmp/server.log 2>&1 &
@@ -67,7 +67,7 @@ INTERNAL_API_TOKEN="<YOUR_INTERNAL_API_TOKEN>" python3 admin-console/server.py >
 
 ### 3. 验证服务
 ```bash
-curl -s http://127.0.0.1:8080/api/v1/internal/orders \
+curl -s http://127.0.0.1:8000/api/v1/store/internal/orders \
   -H "Authorization: Bearer <YOUR_INTERNAL_API_TOKEN>" | python3 -m json.tool | head -20
 ```
 
@@ -76,14 +76,14 @@ curl -s http://127.0.0.1:8080/api/v1/internal/orders \
 ## 📱 小程序测试
 
 ### 在微信开发者工具中
-1. **打开项目**: `/Users/yushuai/Documents/Playground/car-film-mini-program`
+1. **打开项目**: `/Users/yushuai/Documents/Playground/养龙虾/car-film-mini-program`
 2. **预览或编译**: Ctrl+Shift+P (或 Cmd+Shift+P 在Mac上)
 3. **导航到**: 订单列表页面 (pages/order-list)
 4. **检查**: 应该加载25个订单 (来自PostgreSQL)
 
 ### 验证功能
-- ✅ 订单列表显示 (GET /api/v1/internal/orders)
-- ✅ 订单详情 (GET /api/v1/internal/orders/{id})
+- ✅ 订单列表显示 (GET /api/v1/store/internal/orders)
+- ✅ 订单详情 (GET /api/v1/store/internal/orders/{id})
 - ✅ 状态筛选 (未完工/已完工)
 - ✅ 搜索功能
 
@@ -163,9 +163,9 @@ POSTGRES_PASSWORD = "postgres"  -- 设置默认密码
 
 ### 如果API返回错误
 
-**问题**: `Address already in use` (8080端口被占用)
+**问题**: `Address already in use` (8000端口被占用)
 ```bash
-lsof -i :8080 | grep Python | awk '{print $2}' | xargs kill -9
+lsof -i :8000 | grep Python | awk '{print $2}' | xargs kill -9
 ```
 
 **问题**: PostgreSQL连接失败

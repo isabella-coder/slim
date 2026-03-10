@@ -16,7 +16,7 @@
 
 ```bash
 # 一键启动所有服务
-cd /Users/yushuai/Documents/Playground/car-film-mini-program
+cd /Users/yushuai/Documents/Playground/养龙虾/car-film-mini-program
 bash START_SYSTEM.sh
 ```
 
@@ -34,15 +34,16 @@ docker run --name postgres-slim \
 
 #### 2. 启动后端服务
 ```bash
-cd /Users/yushuai/Documents/Playground/car-film-mini-program
+cd /Users/yushuai/Documents/Playground/养龙虾/backend
+source ../.venv/bin/activate
 INTERNAL_API_TOKEN="<YOUR_INTERNAL_API_TOKEN>" \
-  python3 admin-console/server.py
+  uvicorn app.main:app --host 0.0.0.0 --port 8000
 ```
 
 #### 3. 验证服务
 ```bash
 # 检查API
-curl -s http://127.0.0.1:8080/api/v1/internal/orders \
+curl -s http://127.0.0.1:8000/api/v1/store/internal/orders \
   -H "Authorization: Bearer <YOUR_INTERNAL_API_TOKEN>" | python3 -m json.tool
 
 # 系统健康检查
@@ -58,9 +59,9 @@ bash HEALTH_CHECK.sh
 **文件**: `config/finance.config.js`
 
 ```javascript
-// 自动使用 localhost:8080 (开发环境)
+// 自动使用 localhost:8000 (开发环境)
 const ENV_BASE_URL = {
-  develop: 'http://127.0.0.1:8080',  // ← 自动使用
+  develop: 'http://127.0.0.1:8000',  // ← 自动使用
   trial: 'https://your-domain.com',
   release: 'https://your-domain.com'
 };
@@ -70,7 +71,7 @@ const ENV_BASE_URL = {
 
 1. **打开项目**
    ```
-   项目路径: /Users/yushuai/Documents/Playground/car-film-mini-program
+  项目路径: /Users/yushuai/Documents/Playground/养龙虾/car-film-mini-program
    ```
 
 2. **配置代理域名（可选）**
@@ -132,29 +133,35 @@ const ENV_BASE_URL = {
 #### 推荐：一键发布脚本（本地执行）
 
 ```bash
-cd /Users/yushuai/Documents/Playground/car-film-mini-program
+cd /Users/yushuai/Documents/Playground/养龙虾/car-film-mini-program
 
 export DEPLOY_HOST="your-server-ip"
 export DEPLOY_USER="your-ssh-user"
 export INTERNAL_API_TOKEN="<YOUR_INTERNAL_API_TOKEN>"
-export POSTGRES_PASSWORD="<YOUR_POSTGRES_PASSWORD>"
 export DOMAIN="your-domain.com"   # 可选，但建议填写用于公网验活
 
-# 首次部署建议加 --bootstrap-db
-bash DEPLOY_PRODUCTION.sh --bootstrap-db
+# 如果数据库在云上（RDS/独立DB主机），额外设置：
+# export USE_EXTERNAL_DB=1
+# export POSTGRES_HOST="your-db-host"
+# export POSTGRES_PORT="5432"
+# export POSTGRES_DB="slim"
+# export POSTGRES_USER="postgres"
+
+bash DEPLOY_PRODUCTION.sh
 ```
 
 说明：
 - 脚本会先检查本地代码并 `git push origin main`（可用 `--no-push` 跳过）。
-- 远端会自动 `git pull`、启动/检查 PostgreSQL 容器、写入 `systemd`、重启服务并做 API 验活。
+- 远端会自动 `git pull`、创建/复用虚拟环境、安装依赖、写入 `systemd`、重启服务并做 `/health` 验活。
+- 数据库准备（RDS 或自建 PostgreSQL）需要提前完成，并通过 `DATABASE_URL` 或 `DB_*` 变量提供连接信息。
 - 若远端仓库目录有未提交改动，脚本会停止，避免覆盖线上手工改动。
 
 #### 发布前一键检查（建议先执行）
 
 ```bash
-cd /Users/yushuai/Documents/Playground/car-film-mini-program
+cd /Users/yushuai/Documents/Playground/养龙虾/car-film-mini-program
 export INTERNAL_API_TOKEN="<YOUR_INTERNAL_API_TOKEN>"
-export BASE_URL="http://127.0.0.1:8080"
+export BASE_URL="http://127.0.0.1:8000"
 MODE=release bash scripts/release_preflight.sh
 ```
 
@@ -165,11 +172,11 @@ MODE=release bash scripts/release_preflight.sh
 #### Step 1: 上传项目
 ```bash
 # 在你的开发机上
-scp -r /Users/yushuai/Documents/Playground/car-film-mini-program \
-  user@your-server:/opt/car-film-mini-program
+scp -r /Users/yushuai/Documents/Playground/养龙虾 \
+  user@your-server:/opt/ylx
 
 ssh user@your-server
-cd /opt/car-film-mini-program
+cd /opt/ylx
 ```
 
 #### Step 2: 启动PostgreSQL（推荐用Docker）
@@ -188,19 +195,21 @@ python3 admin-console/sql/migrations/delivery/migrate-all-data.py
 #### Step 3: 启动后端（使用systemd）
 ```bash
 # 创建systemd服务文件
-sudo tee /etc/systemd/system/car-film.service << EOF
+sudo tee /etc/systemd/system/ylx-backend.service << EOF
 [Unit]
-Description=Car Film Mini Program Backend
+Description=YLX Unified Backend
 After=network.target
 
 [Service]
 Type=simple
-WorkingDirectory=/opt/car-film-mini-program
+WorkingDirectory=/opt/ylx/backend
 Environment="INTERNAL_API_TOKEN=your_secure_token"
-Environment="POSTGRES_PASSWORD=your_secure_password"
-Environment="POSTGRES_HOST=localhost"
-User=www-data
-ExecStart=/usr/bin/python3 /opt/car-film-mini-program/admin-console/server.py
+Environment="DB_HOST=localhost"
+Environment="DB_PORT=5432"
+Environment="DB_USER=postgres"
+Environment="DB_PASSWORD=your_secure_password"
+Environment="DB_NAME=slim"
+ExecStart=/opt/ylx/.venv/bin/uvicorn app.main:app --host 0.0.0.0 --port 8000
 Restart=on-failure
 RestartSec=10s
 
@@ -210,8 +219,8 @@ EOF
 
 # 启动服务
 sudo systemctl daemon-reload
-sudo systemctl enable car-film
-sudo systemctl start car-film
+sudo systemctl enable ylx-backend
+sudo systemctl start ylx-backend
 ```
 
 #### Step 4: 配置Nginx反向代理
@@ -235,7 +244,7 @@ server {
     
     # 代理到后端
     location / {
-        proxy_pass http://127.0.0.1:8080;
+        proxy_pass http://127.0.0.1:8000;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -261,7 +270,7 @@ sudo certbot certonly --nginx -d your-domain.com
 修改 `config/finance.config.js`:
 ```javascript
 const ENV_BASE_URL = {
-  develop: 'http://127.0.0.1:8080',
+  develop: 'http://127.0.0.1:8000',
   trial: 'https://your-domain.com',     // ← 体验版
   release: 'https://your-domain.com'    // ← 正式版
 };
@@ -270,14 +279,14 @@ const ENV_BASE_URL = {
 #### Step 7: 验证部署
 ```bash
 # 检查服务状态
-sudo systemctl status car-film
+sudo systemctl status ylx-backend
 
 # 测试API
-curl https://your-domain.com/api/v1/internal/orders \
+curl https://your-domain.com/api/v1/store/internal/orders \
   -H "Authorization: Bearer <YOUR_INTERNAL_API_TOKEN>"
 
 # 查看日志
-sudo journalctl -u car-film -f
+sudo journalctl -u ylx-backend -f
 ```
 
 ---
@@ -313,9 +322,9 @@ WHERE datname = 'slim' AND pid != pg_backend_pid();
 
 ### 后端服务问题
 
-**问题**: Port 8080 already in use
+**问题**: Port 8000 already in use
 ```bash
-lsof -i :8080 | grep Python | awk '{print $2}' | xargs kill -9
+lsof -i :8000 | grep Python | awk '{print $2}' | xargs kill -9
 ```
 
 **问题**: 500 Internal Server Error
@@ -340,7 +349,7 @@ python3 admin-console/server.py
 ### 小程序问题
 
 **问题**: 小程序无法连接到后端
-- 确保后端正在运行: `sudo systemctl status car-film`
+- 确保后端正在运行: `sudo systemctl status ylx-backend`
 - 确保防火墙允许HTTPS (443端口): `sudo ufw allow 443`
 - 检查DNS: `nslookup your-domain.com`
 - 在微信开发者工具中启用"使用HTTP代理"进行调试
@@ -358,7 +367,7 @@ python3 admin-console/server.py
 
 ```bash
 # 每日备份（放入crontab）
-0 2 * * * bash /opt/car-film-mini-program/BACKUP_DATABASE.sh /backups
+0 2 * * * bash /opt/ylx/BACKUP_DATABASE.sh /backups
 
 # 或手动备份
 bash BACKUP_DATABASE.sh /backups
@@ -394,7 +403,7 @@ docker exec postgres-slim psql -U postgres --version
 pip3 install --upgrade psycopg requests
 
 # 检查代码更新
-cd /opt/car-film-mini-program
+cd /opt/ylx
 git status
 git pull  # 如果使用Git版本控制
 ```

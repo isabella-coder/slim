@@ -7,14 +7,14 @@
 | 组件 | 状态 | 详情 |
 |------|------|------|
 | PostgreSQL | 🟢 运行中 | postgres:15 (Docker) |
-| 后端 API | 🟢 运行中 | server.py (localhost:8080) |
+| 后端 API | 🟢 运行中 | FastAPI (localhost:8000) |
 | 数据完整性 | ✅ 验证通过 | 20 用户, 25 订单, 12 财务日志 |
 | 文档 | ✅ 完整 | 迁移指南, 部署指南 |
 
 ## ⚡ 一键启动
 
 ```bash
-cd /Users/yushuai/Documents/Playground/car-film-mini-program
+cd /Users/yushuai/Documents/Playground/养龙虾/car-film-mini-program
 bash START_SYSTEM.sh
 ```
 
@@ -24,7 +24,7 @@ bash START_SYSTEM.sh
 ✅ Docker 容器已启动 (postgres-slim)
 ✅ 数据库连接成功 - 等待就绪...
 ✅ 数据验证: users=20, orders=25, logs=12
-✅ 后端服务已启动 (localhost:8080)
+✅ 后端服务已启动 (localhost:8000)
 ✅ API 测试成功
 ```
 
@@ -41,7 +41,7 @@ bash HEALTH_CHECK.sh
 - ✅ 数据库连接能力
 - ✅ 数据表记录数量
 - ✅ 后端进程存活
-- ✅ 端口 8080 监听
+- ✅ 端口 8000 监听
 - ✅ API 端点响应
 
 ## 📱 小程序开发
@@ -55,7 +55,7 @@ open -a "微信开发者工具"
 
 ### 2. 导入项目
 
-- **项目路径**: `/Users/yushuai/Documents/Playground/car-film-mini-program`
+- **项目路径**: `/Users/yushuai/Documents/Playground/养龙虾/car-film-mini-program`
 - **AppID**: 自动读取 `project.config.json`
 
 ### 3. 测试关键页面
@@ -71,7 +71,7 @@ open -a "微信开发者工具"
 
 开发者工具 → 调试 → Network:
 ```
-域名:     127.0.0.1:8080
+域名:     127.0.0.1:8000
 协议:     HTTP
 认证:     Authorization: Bearer <YOUR_INTERNAL_API_TOKEN>
 ```
@@ -80,12 +80,15 @@ open -a "微信开发者工具"
 
 ### 查看后端日志
 ```bash
-tail -50 /tmp/car_film_server.log
+# 生产环境（systemd）
+sudo journalctl -u ylx-backend -f
+
+# 本地开发建议直接查看启动 uvicorn 的终端输出
 ```
 
 ### 测试 API 端点
 ```bash
-curl -X GET "http://127.0.0.1:8080/api/v1/internal/orders" \
+curl -X GET "http://127.0.0.1:8000/api/v1/store/internal/orders" \
   -H "Authorization: Bearer <YOUR_INTERNAL_API_TOKEN>" \
   -H "Content-Type: application/json"
 ```
@@ -93,15 +96,25 @@ curl -X GET "http://127.0.0.1:8080/api/v1/internal/orders" \
 ### 运行最小冒烟测试
 ```bash
 export INTERNAL_API_TOKEN="<YOUR_INTERNAL_API_TOKEN>"
-BASE_URL="http://127.0.0.1:8080" bash scripts/smoke_api.sh
+BASE_URL="http://127.0.0.1:8000" bash scripts/smoke_api.sh
 ```
 
 ### 运行发布前一键检查
 ```bash
 export INTERNAL_API_TOKEN="<YOUR_INTERNAL_API_TOKEN>"
-export BASE_URL="http://127.0.0.1:8080"
+export BASE_URL="http://127.0.0.1:8000"
 MODE=release bash scripts/release_preflight.sh
 ```
+
+### 统一生产部署入口
+```bash
+bash DEPLOY_PRODUCTION.sh
+```
+
+说明：
+- `DEPLOY_PRODUCTION.sh` 是唯一标准发布入口。
+- `DEPLOY.sh` 已默认阻断执行，历史内容请参考 `DEPLOY_LEGACY.md`。
+- 完整流程见 `docs/统一发布流程.md`。
 
 ### 数据库备份
 ```bash
@@ -116,7 +129,10 @@ bash RESTORE_DATABASE.sh slim_backup_20260309_*.sql
 
 ### 停止所有服务
 ```bash
-# 杀死后端进程
+# 杀死统一后端（8000）
+pkill -f "uvicorn app.main:app" || true
+
+# 可选：若在做 legacy 对照测试，再停 admin-console
 pkill -f "python3 admin-console/server.py" || true
 
 # 停止 Docker
@@ -128,7 +144,7 @@ docker stop postgres-slim
 
 ### 获取订单列表
 ```
-GET /api/v1/internal/orders
+GET /api/v1/store/internal/orders
 Header: Authorization: Bearer <YOUR_INTERNAL_API_TOKEN>
 Response: {
   "success": true,
@@ -167,14 +183,14 @@ docker start postgres-slim
 sleep 15
 ```
 
-### 问题: 端口 8080 被占用
+### 问题: 端口 8000 被占用
 
 **症状**: `Address already in use`
 
 **解决方案:**
 ```bash
 # 查找占用进程
-lsof -i :8080
+lsof -i :8000
 
 # 强制杀死
 kill -9 <PID>
