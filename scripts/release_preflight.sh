@@ -3,7 +3,7 @@
 set -euo pipefail
 
 MODE="${MODE:-release}"
-BASE_URL="${BASE_URL:-http://127.0.0.1:8080}"
+BASE_URL="${BASE_URL:-http://127.0.0.1:8000}"
 INTERNAL_API_TOKEN="${INTERNAL_API_TOKEN:-}"
 PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 CONFIG_FILE="${PROJECT_DIR}/config/finance.config.js"
@@ -141,14 +141,14 @@ check_mini_program_config() {
 check_api_connectivity() {
   log_info "检查后端接口连通 (${BASE_URL})..."
   local health_json
-  if ! health_json="$(curl -fsS --max-time 5 "${BASE_URL}/api/health")"; then
-    fail "无法访问 ${BASE_URL}/api/health"
+  if ! health_json="$(curl -fsS --max-time 5 "${BASE_URL}/health")"; then
+    fail "无法访问 ${BASE_URL}/health"
   fi
-  printf '%s' "${health_json}" | python3 -c "import json,sys; d=json.load(sys.stdin); assert d.get('ok') is True"
-  log_ok "/api/health 正常"
+  printf '%s' "${health_json}" | python3 -c "import json,sys; d=json.load(sys.stdin); assert d.get('status') == 'ok'"
+  log_ok "/health 正常"
 
   local orders_json
-  if ! orders_json="$(curl -fsS --max-time 10 "${BASE_URL}/api/v1/internal/orders" \
+  if ! orders_json="$(curl -fsS --max-time 10 "${BASE_URL}/api/v1/store/internal/orders" \
     -H "Authorization: Bearer ${INTERNAL_API_TOKEN}")"; then
     fail "无法访问内部订单接口，请检查 BASE_URL 和 INTERNAL_API_TOKEN"
   fi

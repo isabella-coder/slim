@@ -1,0 +1,26 @@
+<view class="container" wx:if="{{!checkingSession}}">
+  <view class="hero card">
+    <view class="hero-title">蔚蓝工单管理</view>
+    <view class="hero-subtitle">请先登录再进入业务模块</view>
+  </view>
+
+  <view class="card">
+    <view class="section-title">登录账号</view>
+
+    <view class="label">后端地址（Base URL）</view>
+    <input class="input" placeholder="https://api.example.com" value="{{baseUrlInput}}" bindinput="onBaseUrlInput" />
+    <view class="hint">开发环境可用 http://127.0.0.1:8000，线上必须使用 HTTPS 域名。</view>
+
+    <view class="label">账号</view>
+    <input class="input" placeholder="请输入账号" value="{{usernameInput}}" bindinput="onUsernameInput" />
+
+    <view class="label">密码</view>
+    <input class="input" password="true" placeholder="请输入密码" value="{{passwordInput}}" bindinput="onPasswordInput" />
+
+    <view wx:if="{{errorText}}" class="error-text">{{errorText}}</view>
+
+    <button class="button-primary" loading="{{submitting}}" disabled="{{submitting}}" bindtap="onLoginSubmit">
+      登录
+    </button>
+  </view>
+</view>

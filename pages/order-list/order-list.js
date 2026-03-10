@@ -1,5 +1,6 @@
 const { getOrders, syncOrdersNow } = require('../../utils/order');
 const { summarizeFollowupOrders } = require('../../utils/followup');
+const { getMiniAuthSession } = require('../../utils/mini-auth');
 const {
   getCurrentUserContext,
   getRoleLabel,
@@ -21,6 +22,7 @@ const VIEW_TABS = {
 
 Page({
   data: {
+    needLogin: false,
     viewTabs: VIEW_TABS.MANAGER,
     statusTabs: [
       { label: '全部', value: 'ALL' },
@@ -56,12 +58,39 @@ Page({
   },
 
   onLoad() {
+    if (!this.ensureLoggedInState()) {
+      return;
+    }
     this.loadUserContext();
   },
 
   onShow() {
+    if (!this.ensureLoggedInState()) {
+      return;
+    }
     this.loadUserContext();
     this.syncAndLoadOrders();
+  },
+
+  ensureLoggedInState() {
+    const session = getMiniAuthSession();
+    if (!session.token || !session.user) {
+      this.setData({
+        needLogin: true,
+        orders: [],
+        scopedOrders: [],
+        filteredOrders: []
+      });
+      return false;
+    }
+    this.setData({ needLogin: false });
+    return true;
+  },
+
+  goLogin() {
+    wx.navigateTo({
+      url: '/pages/login/login'
+    });
   },
 
   loadUserContext() {

@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-BASE_URL="${BASE_URL:-http://127.0.0.1:8080}"
+BASE_URL="${BASE_URL:-http://127.0.0.1:8000}"
 INTERNAL_API_TOKEN="${INTERNAL_API_TOKEN:-}"
 IDEMPOTENCY_KEY="smoke-$(date +%Y%m%d%H%M%S)"
 
@@ -15,22 +15,22 @@ echo "Smoke API check started"
 echo "BASE_URL=${BASE_URL}"
 echo ""
 
-echo "[1/4] GET /api/health"
-HEALTH_JSON="$(curl -fsS "${BASE_URL}/api/health")"
-printf '%s' "${HEALTH_JSON}" | python3 -c "import json,sys; d=json.load(sys.stdin); assert d.get('ok') is True"
+echo "[1/4] GET /health"
+HEALTH_JSON="$(curl -fsS "${BASE_URL}/health")"
+printf '%s' "${HEALTH_JSON}" | python3 -c "import json,sys; d=json.load(sys.stdin); assert d.get('status') == 'ok'"
 echo "  OK"
 echo ""
 
-echo "[2/4] GET /api/v1/internal/orders"
-ORDERS_JSON="$(curl -fsS "${BASE_URL}/api/v1/internal/orders" -H "Authorization: Bearer ${INTERNAL_API_TOKEN}")"
+echo "[2/4] GET /api/v1/store/internal/orders"
+ORDERS_JSON="$(curl -fsS "${BASE_URL}/api/v1/store/internal/orders" -H "Authorization: Bearer ${INTERNAL_API_TOKEN}")"
 printf '%s' "${ORDERS_JSON}" | python3 -c "import json,sys; d=json.load(sys.stdin); assert d.get('success') is True; assert isinstance(d.get('items'), list)"
 ORDER_COUNT="$(printf '%s' "${ORDERS_JSON}" | python3 -c "import json,sys; d=json.load(sys.stdin); print(len(d.get('items') or []))")"
 echo "  OK (orders=${ORDER_COUNT})"
 echo ""
 
-echo "[3/4] POST /api/v1/internal/orders/sync (idempotent empty push)"
+echo "[3/4] POST /api/v1/store/internal/orders/sync (idempotent empty push)"
 SYNC_PAYLOAD='{"orders":[]}'
-SYNC_JSON="$(curl -fsS "${BASE_URL}/api/v1/internal/orders/sync" \
+SYNC_JSON="$(curl -fsS "${BASE_URL}/api/v1/store/internal/orders/sync" \
   -H "Authorization: Bearer ${INTERNAL_API_TOKEN}" \
   -H "Content-Type: application/json" \
   -H "Idempotency-Key: ${IDEMPOTENCY_KEY}" \
@@ -39,7 +39,7 @@ printf '%s' "${SYNC_JSON}" | python3 -c "import json,sys; d=json.load(sys.stdin)
 echo "  OK"
 echo ""
 
-echo "[4/4] POST /api/v1/internal/work-orders/sync"
+echo "[4/4] POST /api/v1/store/internal/work-orders/sync"
 SMOKE_ORDER_ID="SMOKE-$(date +%Y%m%d%H%M%S)"
 FINANCE_PAYLOAD="$(cat <<EOF
 {
@@ -56,7 +56,7 @@ FINANCE_PAYLOAD="$(cat <<EOF
 }
 EOF
 )"
-FINANCE_JSON="$(curl -fsS "${BASE_URL}/api/v1/internal/work-orders/sync" \
+FINANCE_JSON="$(curl -fsS "${BASE_URL}/api/v1/store/internal/work-orders/sync" \
   -H "Authorization: Bearer ${INTERNAL_API_TOKEN}" \
   -H "Content-Type: application/json" \
   -H "Idempotency-Key: ${IDEMPOTENCY_KEY}-finance" \

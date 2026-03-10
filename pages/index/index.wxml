@@ -4,13 +4,21 @@
     <view class="hero-subtitle">请选择链路进入独立流程</view>
   </view>
 
+  <view wx:if="{{needLogin}}" class="card account-card">
+    <view class="account-title">当前未登录</view>
+    <view class="account-subtitle">登录后可访问抖音线索、订单和派工模块。</view>
+    <button class="button-primary" bindtap="goLogin">去登录</button>
+  </view>
+
+  <block wx:if="{{!needLogin}}">
+
   <view class="card account-card">
     <view class="account-title">当前账号：{{currentAccountLabel}}</view>
-    <view class="account-subtitle">切换到员工账号后会自动应用对应权限：店长最高权限，销售可看全部/我的订单，施工仅操作自己的施工记录。</view>
+    <view wx:if="{{sessionUserLabel}}" class="account-subtitle">登录用户：{{sessionUserLabel}}（{{sessionRoleLabel}}）</view>
+    <view class="account-subtitle">系统会按登录身份自动应用权限：店长最高权限，销售可看全部/我的订单，施工仅操作自己的施工记录。</view>
     <view wx:if="{{!canCreateOrder}}" class="account-subtitle">当前账号无下单权限，可进入“全部订单”处理施工记录。</view>
-    <picker mode="selector" range="{{accountOptions}}" value="{{accountIndex}}" bindchange="onAccountChange">
-      <view class="account-picker">切换使用账号</view>
-    </picker>
+    <view class="account-subtitle">当前版本按登录账号自动绑定角色，不允许手动切换。</view>
+    <button class="button-secondary logout-btn" bindtap="onLogout">退出登录</button>
   </view>
 
   <view class="card sync-card">
@@ -56,4 +64,5 @@
       <view class="quick-item {{canViewSalesBoard ? '' : 'quick-item-disabled'}}" bindtap="goSalesPerformance">销售业绩看板</view>
     </view>
   </view>
+  </block>
 </view>

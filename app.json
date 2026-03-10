@@ -1,6 +1,7 @@
 {
   "pages": [
     "pages/index/index",
+    "pages/login/login",
     "pages/film-order/film-order",
     "pages/wash-order/wash-order",
     "pages/wash-order-detail/wash-order-detail",
@@ -11,7 +12,8 @@
     "pages/dispatch-board/dispatch-board",
     "pages/wash-dispatch-board/wash-dispatch-board",
     "pages/sales-performance/sales-performance",
-    "pages/followup-reminder/followup-reminder"
+    "pages/followup-reminder/followup-reminder",
+    "pages/douyin-leads/douyin-leads"
   ],
   "window": {
     "navigationBarTitleText": "蔚蓝工单管理",
@@ -28,11 +30,21 @@
     "list": [
       {
         "pagePath": "pages/index/index",
-        "text": "下单入口"
+        "text": "下单入口",
+        "iconPath": "images/tab-order.png",
+        "selectedIconPath": "images/tab-order-active.png"
+      },
+      {
+        "pagePath": "pages/douyin-leads/douyin-leads",
+        "text": "抖音线索",
+        "iconPath": "images/tab-leads.png",
+        "selectedIconPath": "images/tab-leads-active.png"
       },
       {
         "pagePath": "pages/order-list/order-list",
-        "text": "全部订单"
+        "text": "全部订单",
+        "iconPath": "images/tab-list.png",
+        "selectedIconPath": "images/tab-list-active.png"
       }
     ]
   },

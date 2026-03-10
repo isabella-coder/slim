@@ -1,5 +1,8 @@
 # Server.py 代码改写指南 - 完全迁移到 PostgreSQL
 
+> ⚠️ Legacy 文档：本指南针对历史 `admin-console/server.py`（`8080`）改写流程。
+> 当前统一发布入口为 `养龙虾/backend`（`8000`）与 `/api/v1/store/*` 契约。
+
 ## 📋 概览
 
 将 `admin-console/server.py` 改写为**完全使用 PostgreSQL**，删除所有 JSON 存储代码。

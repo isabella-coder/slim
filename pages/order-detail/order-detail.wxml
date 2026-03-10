@@ -26,6 +26,43 @@
     </view>
   </view>
 
+  <!-- 抖音线索专属信息（仅线索订单显示） -->
+  <view class="card" wx:if="{{order.leadSource === 'douyin_ai'}}">
+    <view class="section-title">🔥 抖音线索信息</view>
+    <view class="line"><text>线索等级</text><text class="lead-grade-value">{{order.leadGrade}}级 · {{order.leadGradeScore}}分</text></view>
+    <view class="line"><text>线索状态</text><text>{{order.leadStatus || '待联系'}}</text></view>
+    <view class="line" wx:if="{{order.leadBudgetRange}}"><text>客户预算</text><text>{{order.leadBudgetRange}}</text></view>
+    <view class="line" wx:if="{{order.leadWechat}}"><text>微信号</text><text>{{order.leadWechat}}</text></view>
+    <view class="line"><text>来源平台</text><text>{{order.leadPlatform || '抖音'}} · {{order.leadAccountCode || '-'}}</text></view>
+    <view class="line"><text>跟进优先级</text><text>{{order.leadFollowupPriority === 'urgent' ? '🔴 紧急' : '🟡 正常'}}</text></view>
+
+    <!-- 分级理由 -->
+    <view wx:if="{{order.leadGradeReasons && order.leadGradeReasons.length > 0}}" class="lead-reasons-wrap">
+      <text class="small-label">评级理由</text>
+      <view class="lead-reasons-list">
+        <text wx:for="{{order.leadGradeReasons}}" wx:key="*this" class="lead-reason-tag">{{item}}</text>
+      </view>
+    </view>
+
+    <!-- 回访计划 -->
+    <view wx:if="{{order.followupRecords && order.followupRecords.length > 0}}" class="lead-followup-wrap">
+      <text class="small-label">回访计划</text>
+      <view class="lead-followup-list">
+        <view wx:for="{{order.followupRecords}}" wx:key="type" class="lead-followup-item {{item.done ? 'fu-item-done' : ''}}">
+          <text class="fu-type">{{item.type}}</text>
+          <text class="fu-status">{{item.done ? '✅ 已回访' : '⏳ 待回访'}}</text>
+          <text wx:if="{{item.doneAt}}" class="fu-time">{{item.doneAt}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- AI 对话摘要 -->
+    <view wx:if="{{order.leadConversationSummary}}" class="lead-summary-wrap">
+      <text class="small-label">💬 AI对话摘要</text>
+      <view class="lead-summary-content">{{order.leadConversationSummary}}</view>
+    </view>
+  </view>
+
   <view class="card">
     <view class="section-title">服务信息</view>
     <view class="line"><text>品牌型号</text><text>{{order.packageLabel || '未填写'}}</text></view>

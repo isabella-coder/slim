@@ -1,4 +1,11 @@
 <view class="container">
+  <view wx:if="{{needLogin}}" class="card empty-card">
+    <view class="empty-title">当前未登录</view>
+    <view class="empty-subtitle">请先登录后查看全部订单。</view>
+    <button class="button-primary" bindtap="goLogin">去登录</button>
+  </view>
+
+  <block wx:else>
   <view class="card scope-card">
     <view class="scope-tabs">
       <view
@@ -114,4 +121,5 @@
       <text class="order-price">¥{{item.priceSummary.totalPrice}}</text>
     </view>
   </view>
+  </block>
 </view>

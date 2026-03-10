@@ -1038,12 +1038,16 @@ def sanitize_user(user):
     if not isinstance(user, dict):
         return {}
     role = normalize_text(user.get("role")).lower() or "sales"
-    return {
+    result = {
         "username": normalize_text(user.get("username")),
         "name": normalize_text(user.get("name")),
         "role": role,
         "permissions": get_permissions(role),
     }
+    store = normalize_text(user.get("store"))
+    if store:
+        result["store"] = store
+    return result
 
 
 def get_permissions(role):
@@ -1413,6 +1417,15 @@ def scope_orders(orders, user, view):
 
     if not permissions.get("canViewAll"):
         raise PermissionError("当前账号无权查看全部订单")
+
+    # 销售用户按门店过滤（只看本店订单）
+    role = normalize_text(user.get("role")).lower()
+    user_store = normalize_text(user.get("store")).upper()
+    if role == "sales" and user_store:
+        store_map = {"BOP": "BOP保镖上海工厂店", "LM": "龙膜精英店"}
+        store_name = store_map.get(user_store, "")
+        if store_name:
+            return [item for item in orders if normalize_text(item.get("store")) == store_name]
     return orders
 
 
@@ -1624,6 +1637,42 @@ def build_dispatch_capacity(entries):
 
     result.sort(key=lambda x: x["store"])
     return result
+
+
+# ─── 线索推送辅助函数 ───
+
+def _build_lead_remark(lead):
+    """从线索数据构建备注文本"""
+    parts = []
+    grade = normalize_text(lead.get("grade"))
+    if grade:
+        parts.append(f"【{grade}级线索】")
+    score = lead.get("gradeScore")
+    if score:
+        parts.append(f"评分{score}分")
+    reasons = lead.get("gradeReasons", [])
+    if reasons:
+        parts.append(" / ".join(reasons[:3]))
+    budget = normalize_text(lead.get("budgetRange"))
+    if budget:
+        parts.append(f"预算: {budget}")
+    summary = normalize_text(lead.get("conversationSummary"))
+    if summary:
+        # 截取前200字
+        parts.append(f"\n--- AI对话摘要 ---\n{summary[:200]}")
+    return "\n".join(parts) if parts else ""
+
+
+def _build_followup_records(suggested_days):
+    """根据建议回访天数构建回访记录"""
+    if not isinstance(suggested_days, list):
+        return []
+    day_to_type = {1: "D1", 3: "D3", 7: "D7", 30: "D30", 60: "D60", 180: "D180"}
+    records = []
+    for d in suggested_days:
+        ftype = day_to_type.get(d, f"D{d}")
+        records.append({"type": ftype, "done": False, "doneAt": "", "remark": ""})
+    return records
 
 
 class AdminHandler(SimpleHTTPRequestHandler):
@@ -1842,6 +1891,89 @@ class AdminHandler(SimpleHTTPRequestHandler):
             )
             return
 
+        # ─── 抖音线索列表 ───
+        if parsed.path == "/api/leads":
+            params = parse_qs(parsed.query)
+            grade_filter = normalize_text(get_first(params, "grade", "ALL")).upper()
+            status_filter = normalize_text(get_first(params, "status", "ALL")).upper()
+            view = normalize_text(get_first(params, "view", "ALL")).upper()
+
+            orders = load_orders()
+            try:
+                scoped = scope_orders(orders, user, view)
+            except PermissionError as error:
+                self.send_json(403, {"ok": False, "message": str(error)})
+                return
+
+            # 只筛选来自抖音 AI 的线索
+            leads = [o for o in scoped if normalize_text(o.get("leadSource")) == "douyin_ai"]
+
+            if grade_filter and grade_filter != "ALL":
+                leads = [o for o in leads if normalize_text(o.get("leadGrade")).upper() == grade_filter]
+
+            if status_filter and status_filter != "ALL":
+                leads = [o for o in leads if normalize_text(o.get("status")) == ORDER_STATUS_ALIAS.get(status_filter, status_filter)]
+
+            # 按分级排序: S > A > B > C，同级按时间倒序
+            grade_order = {"S": 0, "A": 1, "B": 2, "C": 3}
+            leads.sort(key=lambda x: (grade_order.get(normalize_text(x.get("leadGrade")).upper(), 9), -(x.get("leadGradeScore") or 0)))
+
+            stats = {"total": len(leads)}
+            for g in ("S", "A", "B", "C"):
+                stats[g] = len([o for o in leads if normalize_text(o.get("leadGrade")).upper() == g])
+
+            # 兼容老数据：补 leadStatus 默认值
+            for o in leads:
+                if not o.get("leadStatus"):
+                    o["leadStatus"] = "待联系"
+
+            self.send_json(200, {"ok": True, "items": leads, "stats": stats})
+            return
+
+        # ─── 线索回访到期提醒 ───
+        if parsed.path == "/api/leads/followup-due":
+            orders = load_orders()
+            try:
+                scoped = scope_orders(orders, user, "ALL")
+            except PermissionError as error:
+                self.send_json(403, {"ok": False, "message": str(error)})
+                return
+
+            today = date.today()
+            leads = [o for o in scoped if normalize_text(o.get("leadSource")) == "douyin_ai"]
+            due_items = []
+            for lead in leads:
+                records = lead.get("followupRecords")
+                if not isinstance(records, list):
+                    continue
+                created = lead.get("createdAt", "")
+                try:
+                    base_date = datetime.strptime(created[:10], "%Y-%m-%d").date() if len(created) >= 10 else today
+                except (ValueError, TypeError):
+                    base_date = today
+                for rec in records:
+                    if rec.get("done"):
+                        continue
+                    ftype = rec.get("type", "")
+                    try:
+                        days = int(ftype.replace("D", ""))
+                    except (ValueError, TypeError):
+                        continue
+                    due_date = base_date + timedelta(days=days)
+                    if due_date <= today:
+                        due_items.append({
+                            "leadId": lead.get("id"),
+                            "customerName": lead.get("customerName", ""),
+                            "phone": lead.get("phone", ""),
+                            "leadGrade": lead.get("leadGrade", ""),
+                            "followupType": ftype,
+                            "dueDate": due_date.isoformat(),
+                            "overdueDays": (today - due_date).days,
+                        })
+            due_items.sort(key=lambda x: (-x["overdueDays"], x.get("leadGrade", "Z")))
+            self.send_json(200, {"ok": True, "items": due_items, "total": len(due_items)})
+            return
+
         if parsed.path == "/api/followups":
             params = parse_qs(parsed.query)
             status = normalize_text(get_first(params, "status", "ALL")).upper()
@@ -1950,6 +2082,122 @@ class AdminHandler(SimpleHTTPRequestHandler):
         self.send_json(404, {"ok": False, "message": "接口不存在"})
 
     def handle_api_post(self, parsed):
+        # ─── 抖音 AI 线索推送（养龙虾系统 → 蔚蓝） ───
+        if parsed.path == "/api/v1/internal/leads/push":
+            if not require_internal_api_token(self):
+                return
+            body = self.read_json_body()
+            lead = body.get("lead") if isinstance(body, dict) else None
+            if not isinstance(lead, dict) or not lead.get("customerName") and not lead.get("carModel"):
+                self.send_json(400, {"success": False, "message": "线索数据不完整"})
+                return
+
+            lead_id = normalize_text(lead.get("id")) or f"DY{now_text().replace('-','').replace(':','').replace(' ','')[:14]}{uuid.uuid4().hex[:4]}"
+            grade = normalize_text(lead.get("grade")) or "C"
+            store = normalize_text(lead.get("storeCode")) or "BOP保镖上海工厂店"
+            if "BOP" in store.upper():
+                store = "BOP保镖上海工厂店"
+            elif "LM" in store.upper() or "龙膜" in store:
+                store = "龙膜精英店"
+
+            # 构建蔚蓝标准订单对象
+            order_obj = {
+                "id": lead_id,
+                "serviceType": "FILM",
+                "status": "未完工",
+                "version": 0,
+                "customerName": normalize_text(lead.get("customerName")),
+                "phone": normalize_text(lead.get("phone")),
+                "carModel": normalize_text(lead.get("carModel")),
+                "plateNumber": "",
+                "sourceChannel": "抖音私信",
+                "store": store,
+                "salesBrandText": normalize_text(lead.get("assignedSales")),
+                "packageLabel": normalize_text(lead.get("serviceType")),
+                "packageDesc": "",
+                "appointmentDate": "",
+                "appointmentTime": "",
+                "depositAmount": 0,
+                "remark": _build_lead_remark(lead),
+                "priceSummary": {"packagePrice": 0, "addOnFee": 0, "totalPrice": 0, "deposit": 0},
+                "createdAt": lead.get("createdAt") or now_text(),
+                "updatedAt": now_text(),
+                # 线索专属字段存入 remark 和自定义字段
+                "leadSource": "douyin_ai",
+                "leadStatus": "待联系",
+                "leadGrade": grade,
+                "leadGradeScore": lead.get("gradeScore", 0),
+                "leadGradeReasons": lead.get("gradeReasons", []),
+                "leadBudgetRange": normalize_text(lead.get("budgetRange")),
+                "leadConversationSummary": normalize_text(lead.get("conversationSummary")),
+                "leadFollowupPriority": normalize_text(lead.get("followupPriority")),
+                "leadSuggestedFollowupDays": lead.get("suggestedFollowupDays", []),
+                "leadWechat": normalize_text(lead.get("wechat")),
+                "leadPlatform": normalize_text(lead.get("platform")),
+                "leadAccountCode": normalize_text(lead.get("accountCode")),
+                # 回访：如果是 S/A 级别，自动生成回访计划
+                "followupRecords": _build_followup_records(lead.get("suggestedFollowupDays", [])),
+                "followupLastUpdatedAt": now_text(),
+            }
+
+            # 用 apply_incremental_order_sync 写入（复用已有的存储逻辑）
+            try:
+                result = apply_incremental_order_sync([order_obj])
+            except RuntimeError as error:
+                self.send_json(500, {"success": False, "message": str(error)})
+                return
+
+            self.send_json(200, {
+                "success": True,
+                "code": 0,
+                "message": f"线索已接收 ({grade}级)",
+                "data": {
+                    "orderId": lead_id,
+                    "grade": grade,
+                    "assignedSales": order_obj.get("salesBrandText", ""),
+                    "receivedAt": now_text(),
+                },
+            })
+            return
+
+        # ─── 线索状态更新（小程序调用） ───
+        if parsed.path == "/api/leads/update-status":
+            user = self.require_auth()
+            if not user:
+                return
+            body = self.read_json_body()
+            if not isinstance(body, dict):
+                self.send_json(400, {"ok": False, "message": "请求体必须是 JSON 对象"})
+                return
+            lead_id = normalize_text(body.get("id"))
+            new_status = normalize_text(body.get("leadStatus"))
+            if not lead_id or not new_status:
+                self.send_json(400, {"ok": False, "message": "id 和 leadStatus 必填"})
+                return
+            valid_statuses = {"待联系", "已联系", "已到店", "已成交", "已流失"}
+            if new_status not in valid_statuses:
+                self.send_json(400, {"ok": False, "message": f"无效状态: {new_status}"})
+                return
+            orders = load_orders()
+            target = None
+            for item in orders:
+                if normalize_text(item.get("id")) == lead_id:
+                    target = item
+                    break
+            if not target:
+                self.send_json(404, {"ok": False, "message": "线索不存在"})
+                return
+            target["leadStatus"] = new_status
+            target["updatedAt"] = now_text()
+            target["version"] = int(target.get("version") or 0) + 1
+            try:
+                save_orders(orders)
+            except RuntimeError as error:
+                self.send_json(500, {"ok": False, "message": str(error)})
+                return
+            self.send_json(200, {"ok": True, "leadStatus": new_status})
+            return
+
         if parsed.path == "/api/v1/internal/orders/sync":
             if not require_internal_api_token(self):
                 return

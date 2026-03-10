@@ -1,20 +1,26 @@
 const { getFinanceConfig, setFinanceApiToken, setFinanceBaseUrl } = require('../../config/finance.config');
 const { getOrderSyncStatus, syncOrdersNow } = require('../../utils/order');
 const {
-  getAvailableAccounts,
   getCurrentUserContext,
   getRoleLabel,
   isManagerContext,
   isSalesContext,
-  isTechnicianContext,
-  setCurrentUserContextById
+  isTechnicianContext
 } = require('../../utils/user-context');
+const {
+  bindUserContextFromSessionUser,
+  ensureMiniAuthSession,
+  getMiniAuthSession,
+  getMiniRoleLabel,
+  logoutMiniProgram
+} = require('../../utils/mini-auth');
 
 Page({
   data: {
-    accountOptions: [],
-    accountIndex: 0,
     currentAccountLabel: '管理员',
+    sessionUserLabel: '',
+    sessionRoleLabel: '',
+    needLogin: false,
     canCreateOrder: true,
     canViewSalesBoard: true,
     syncBaseUrlInput: '',
@@ -26,23 +32,83 @@ Page({
     syncLastSuccessAt: ''
   },
 
+  onReady() {
+    this._pageReady = true;
+    this._doAuthCheck();
+  },
+
   onShow() {
+    if (!this._pageReady) return;
+    this._doAuthCheck();
+  },
+
+  _doAuthCheck() {
+    var session = getMiniAuthSession();
+    if (!session.token || !session.user) {
+      this.setData({
+        needLogin: true,
+        currentAccountLabel: '未登录',
+        sessionUserLabel: '',
+        sessionRoleLabel: '',
+        canCreateOrder: false,
+        canViewSalesBoard: false,
+        syncStatusLabel: '未登录',
+        syncStatusHint: '请先登录后再进入业务模块',
+        syncStatusClass: 'sync-warning',
+        syncLastSuccessAt: ''
+      });
+      return;
+    }
+
+    this.setData({ needLogin: false });
+    bindUserContextFromSessionUser(session.user);
+    this.setData({
+      sessionUserLabel: buildSessionUserLabel(session.user),
+      sessionRoleLabel: getMiniRoleLabel(session.user && session.user.role)
+    });
     this.loadAccountContext();
     this.loadSyncSettings();
+    var self = this;
+    ensureMiniAuthSession().then(function (s) {
+      if (!s) {
+        self.setData({
+          needLogin: true,
+          currentAccountLabel: '会话已过期',
+          sessionUserLabel: '',
+          sessionRoleLabel: '',
+          canCreateOrder: false,
+          canViewSalesBoard: false,
+          syncStatusLabel: '未登录',
+          syncStatusHint: '登录已过期，请重新登录',
+          syncStatusClass: 'sync-warning',
+          syncLastSuccessAt: ''
+        });
+        return;
+      }
+      self.setData({ needLogin: false });
+      bindUserContextFromSessionUser(s.user);
+      self.setData({
+        sessionUserLabel: buildSessionUserLabel(s.user),
+        sessionRoleLabel: getMiniRoleLabel(s.user && s.user.role)
+      });
+      self.loadAccountContext();
+    });
+  },
+
+  goLogin() {
+    wx.navigateTo({
+      url: '/pages/login/login'
+    });
   },
 
   loadAccountContext() {
-    const accounts = getAvailableAccounts();
     const context = getCurrentUserContext();
-    const matchedIndex = accounts.findIndex((item) => item.accountId === context.accountId);
-    const accountIndex = matchedIndex >= 0 ? matchedIndex : 0;
-    const current = accounts[accountIndex] || accounts[0] || context;
+    const current = context || {};
     const currentRoleLabel = getRoleLabel(current && current.role);
     const permissionState = buildPermissionState(current);
+    const accountName = String(current && current.accountName ? current.accountName : '').trim();
     this.setData({
-      accountOptions: accounts.map((item) => `${item.accountName} (${getRoleLabel(item.role)})`),
-      accountIndex,
-      currentAccountLabel: current ? `${current.accountName} · ${currentRoleLabel}` : '管理员 · 最高权限',
+      currentAccountLabel: accountName ? `${accountName} · ${currentRoleLabel}` : '管理员 · 最高权限',
       canCreateOrder: permissionState.canCreateOrder,
       canViewSalesBoard: permissionState.canViewSalesBoard
     });
@@ -128,26 +194,20 @@ Page({
       });
   },
 
-  onAccountChange(event) {
-    const index = Number(event.detail.value);
-    const accounts = getAvailableAccounts();
-    const selected = accounts[index] || accounts[0];
-    if (!selected) {
-      return;
-    }
-
-    setCurrentUserContextById(selected.accountId);
-    const roleLabel = getRoleLabel(selected.role);
-    const permissionState = buildPermissionState(selected);
-    this.setData({
-      accountIndex: index,
-      currentAccountLabel: `${selected.accountName} · ${roleLabel}`,
-      canCreateOrder: permissionState.canCreateOrder,
-      canViewSalesBoard: permissionState.canViewSalesBoard
-    });
-    wx.showToast({
-      title: `已切换为${selected.accountName}`,
-      icon: 'none'
+  onLogout() {
+    wx.showModal({
+      title: '退出登录',
+      content: '确认退出当前账号吗？',
+      success: (res) => {
+        if (!res.confirm) {
+          return;
+        }
+        logoutMiniProgram().finally(() => {
+          wx.reLaunch({
+            url: '/pages/login/login'
+          });
+        });
+      }
     });
   },
 
@@ -288,4 +348,14 @@ function formatSyncTime(timestamp) {
   const mm = String(date.getMinutes()).padStart(2, '0');
   const ss = String(date.getSeconds()).padStart(2, '0');
   return `${y}-${m}-${d} ${hh}:${mm}:${ss}`;
+}
+
+function buildSessionUserLabel(user) {
+  const source = user && typeof user === 'object' ? user : {};
+  const name = String(source.name || '').trim();
+  const username = String(source.username || '').trim();
+  if (name && username) {
+    return `${name} (${username})`;
+  }
+  return name || username || '';
 }

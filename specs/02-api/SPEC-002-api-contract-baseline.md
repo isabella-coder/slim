@@ -34,18 +34,18 @@ Current API behavior is defined by implementation only (`admin-console/server.py
 
 Covered endpoint groups:
 
-1. Health: `/api/health`, `/api/health/db`
+1. Health: `/health`
 2. Internal sync:
-   - `/api/v1/internal/orders`
-   - `/api/v1/internal/orders/sync`
-   - `/api/v1/internal/work-orders/sync`
+   - `/api/v1/store/internal/orders`
+   - `/api/v1/store/internal/orders/sync`
+   - `/api/v1/store/internal/work-orders/sync`
 3. Incremental order sync:
    - `GET /api/v1/orders`
    - `PATCH /api/v1/orders/{orderId}`
 4. Admin auth and update:
-   - `POST /api/login`
-   - `GET /api/me`
-   - `POST /api/logout`
+   - `POST /api/v1/store/login`
+   - `GET /api/v1/store/me`
+   - `POST /api/v1/store/logout`
    - `PUT /api/orders/{orderId}`
 
 ## 5. Requirements

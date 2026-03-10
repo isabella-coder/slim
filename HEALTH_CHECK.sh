@@ -61,9 +61,9 @@ else
 fi
 
 # 4. Backend Service
-echo -n "[Backend] server.py process: "
-if ps aux | grep -E "python3.*server.py" | grep -v grep > /dev/null; then
-    PID=$(ps aux | grep -E "python3.*server.py" | grep -v grep | awk '{print $2}')
+echo -n "[Backend] process (uvicorn/server.py): "
+if ps aux | grep -E "uvicorn.*app.main:app|python3.*server.py" | grep -v grep > /dev/null; then
+    PID=$(ps aux | grep -E "uvicorn.*app.main:app|python3.*server.py" | grep -v grep | awk '{print $2}' | head -1)
     echo -e "${GREEN}OK (PID: $PID)${NC}"
 else
     echo -e "${RED}DOWN${NC}"
@@ -71,8 +71,8 @@ else
 fi
 
 # 5. API Port
-echo -n "[Network] Port 8080 listening: "
-if netstat -an 2>/dev/null | grep -q "*.8080.*LISTEN"; then
+echo -n "[Network] Port 8000 listening: "
+if netstat -an 2>/dev/null | grep -q "*.8000.*LISTEN"; then
     echo -e "${GREEN}OK${NC}"
 else
     echo -e "${RED}CLOSED${NC}"
@@ -80,12 +80,12 @@ else
 fi
 
 # 6. API Endpoint
-echo -n "[API] GET /api/v1/internal/orders: "
+echo -n "[API] GET /api/v1/store/internal/orders: "
 python3 << 'PYEOF' 2>/dev/null
 import os
 import urllib.request, json
 try:
-    req = urllib.request.Request('http://127.0.0.1:8080/api/v1/internal/orders',
+    req = urllib.request.Request('http://127.0.0.1:8000/api/v1/store/internal/orders',
         headers={'Authorization': f"Bearer {os.environ['INTERNAL_API_TOKEN']}"})
     with urllib.request.urlopen(req, timeout=2) as r:
         data = json.load(r)

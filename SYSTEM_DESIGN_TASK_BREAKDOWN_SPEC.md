@@ -55,11 +55,11 @@ Revision focus in v1.1:
 1. Mini Program local order write:
    - Save to `wx` storage (`filmOrders`)
 2. Mini Program order sync:
-   - Pull: `GET /api/v1/internal/orders`
+   - Pull: `GET /api/v1/store/internal/orders`
    - Merge local/remote by timestamp
-   - Push merged list: `POST /api/v1/internal/orders/sync`
+   - Push merged list: `POST /api/v1/store/internal/orders/sync`
 3. Finance sync:
-   - Mini Program triggers `POST /api/v1/internal/work-orders/sync`
+   - Mini Program triggers `POST /api/v1/store/internal/work-orders/sync`
    - Backend writes finance sync logs
 4. Admin Console:
    - Login + token in memory
@@ -68,12 +68,12 @@ Revision focus in v1.1:
 ### 3.3 Existing API Surface (Implemented)
 
 1. Health:
-   - `GET /api/health`
-   - `GET /api/health/db`
+   - `GET /health`
+   - 无独立 `db` 健康子接口（数据库状态由统一健康检查覆盖）
 2. Internal APIs:
-   - `GET /api/v1/internal/orders`
-   - `POST /api/v1/internal/orders/sync`
-   - `POST /api/v1/internal/work-orders/sync`
+   - `GET /api/v1/store/internal/orders`
+   - `POST /api/v1/store/internal/orders/sync`
+   - `POST /api/v1/store/internal/work-orders/sync`
    - `GET /api/v1/orders?updatedAfter=...`
    - `PATCH /api/v1/orders/{id}`
 3. Admin APIs:

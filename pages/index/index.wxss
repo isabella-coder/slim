@@ -41,6 +41,10 @@
   background: #f9fafb;
 }
 
+.logout-btn {
+  margin-top: 16rpx;
+}
+
 .sync-card .section-title {
   margin-bottom: 12rpx;
 }

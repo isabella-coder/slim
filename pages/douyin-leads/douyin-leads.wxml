@@ -1,0 +1,162 @@
+<view class="leads-page container">
+  <view wx:if="{{needLogin}}" class="empty-box">
+    <text class="empty-text">登录已失效，请重新登录后查看抖音线索</text>
+    <button class="button-primary" bindtap="goLogin">去登录</button>
+  </view>
+
+  <block wx:else>
+  <!-- 回访到期提醒 -->
+  <view class="followup-alert" wx:if="{{followupDueCount > 0}}" bindtap="showFollowupDue">
+    <text class="alert-icon">⏰</text>
+    <text class="alert-text">{{followupDueCount}} 条线索需要回访</text>
+    <text class="alert-arrow">›</text>
+  </view>
+
+  <!-- 统计卡片 -->
+  <view class="stats-bar">
+    <view class="stat-item stat-s" bindtap="filterByGrade" data-grade="S">
+      <text class="stat-num">{{stats.S || 0}}</text>
+      <text class="stat-label">S级</text>
+    </view>
+    <view class="stat-item stat-a" bindtap="filterByGrade" data-grade="A">
+      <text class="stat-num">{{stats.A || 0}}</text>
+      <text class="stat-label">A级</text>
+    </view>
+    <view class="stat-item stat-b" bindtap="filterByGrade" data-grade="B">
+      <text class="stat-num">{{stats.B || 0}}</text>
+      <text class="stat-label">B级</text>
+    </view>
+    <view class="stat-item stat-c" bindtap="filterByGrade" data-grade="C">
+      <text class="stat-num">{{stats.C || 0}}</text>
+      <text class="stat-label">C级</text>
+    </view>
+  </view>
+
+  <!-- 搜索栏 -->
+  <view class="search-bar">
+    <input class="search-input" placeholder="搜客户名/车型/电话" value="{{keyword}}" bindinput="onSearchInput" confirm-type="search" bindconfirm="doSearch" />
+    <view class="search-btn" bindtap="doSearch">搜索</view>
+  </view>
+
+  <!-- 筛选标签 -->
+  <scroll-view scroll-x class="tab-bar">
+    <view class="tab-item {{gradeFilter === 'ALL' ? 'tab-active' : ''}}"
+      bindtap="filterByGrade" data-grade="ALL">全部 ({{stats.total || 0}})</view>
+    <view class="tab-item {{gradeFilter === 'S' ? 'tab-active' : ''}}"
+      bindtap="filterByGrade" data-grade="S">🔥 S级</view>
+    <view class="tab-item {{gradeFilter === 'A' ? 'tab-active' : ''}}"
+      bindtap="filterByGrade" data-grade="A">⭐ A级</view>
+    <view class="tab-item {{gradeFilter === 'B' ? 'tab-active' : ''}}"
+      bindtap="filterByGrade" data-grade="B">B级</view>
+    <view class="tab-item {{gradeFilter === 'C' ? 'tab-active' : ''}}"
+      bindtap="filterByGrade" data-grade="C">C级</view>
+  </scroll-view>
+
+  <!-- 线索状态筛选 -->
+  <scroll-view scroll-x class="tab-bar status-tab-bar">
+    <view class="tab-item tab-status {{statusFilter === 'ALL' ? 'tab-active' : ''}}"
+      bindtap="filterByStatus" data-status="ALL">全部状态</view>
+    <view class="tab-item tab-status {{statusFilter === '待联系' ? 'tab-active' : ''}}"
+      bindtap="filterByStatus" data-status="待联系">待联系</view>
+    <view class="tab-item tab-status {{statusFilter === '已联系' ? 'tab-active' : ''}}"
+      bindtap="filterByStatus" data-status="已联系">已联系</view>
+    <view class="tab-item tab-status {{statusFilter === '已到店' ? 'tab-active' : ''}}"
+      bindtap="filterByStatus" data-status="已到店">已到店</view>
+    <view class="tab-item tab-status {{statusFilter === '已成交' ? 'tab-active' : ''}}"
+      bindtap="filterByStatus" data-status="已成交">已成交</view>
+    <view class="tab-item tab-status {{statusFilter === '已流失' ? 'tab-active' : ''}}"
+      bindtap="filterByStatus" data-status="已流失">已流失</view>
+  </scroll-view>
+
+  <!-- 线索列表 -->
+  <view wx:if="{{loading}}" class="loading-box">
+    <text>加载中...</text>
+  </view>
+
+  <view wx:elif="{{filteredLeads.length === 0}}" class="empty-box">
+    <text class="empty-icon">📭</text>
+    <text class="empty-text">暂无线索</text>
+  </view>
+
+  <view wx:else class="lead-list">
+    <view class="lead-card card" wx:for="{{filteredLeads}}" wx:key="id">
+
+      <!-- 卡片头部：客户名 + 等级标签 + 线索状态 -->
+      <view class="card-header" bindtap="goToDetail" data-id="{{item.id}}">
+        <view class="card-left">
+          <text class="customer-name">{{item.customerName || '未知客户'}}</text>
+          <text class="grade-tag grade-{{item.leadGrade || 'C'}}">{{item.leadGrade || 'C'}}级</text>
+          <text class="source-tag">抖音</text>
+        </view>
+        <view class="card-right">
+          <text class="lead-status {{item._statusClass || 'status-pending'}}">{{item.leadStatus || '待联系'}}</text>
+          <text class="score-text">{{item.leadGradeScore || 0}}分</text>
+        </view>
+      </view>
+
+      <!-- 客户信息 -->
+      <view class="card-body" bindtap="goToDetail" data-id="{{item.id}}">
+        <view class="info-row">
+          <text class="info-item" wx:if="{{item.carModel}}">🚗 {{item.carModel}}</text>
+          <text class="info-item" wx:if="{{item.packageLabel}}">🔧 {{item.packageLabel}}</text>
+        </view>
+        <view class="info-row" wx:if="{{item.leadBudgetRange}}">
+          <text class="info-item">💰 {{item.leadBudgetRange}}</text>
+        </view>
+        <view class="info-row" wx:if="{{item.phone}}">
+          <text class="info-item">📞 {{item.phone}}</text>
+        </view>
+      </view>
+
+      <!-- 分级理由 -->
+      <view class="grade-reasons" wx:if="{{item.leadGradeReasons && item.leadGradeReasons.length > 0}}">
+        <text class="reason-tag" wx:for="{{item.leadGradeReasons}}" wx:key="*this" wx:for-item="reason">{{reason}}</text>
+      </view>
+
+      <!-- 回访进度 -->
+      <view class="followup-bar" wx:if="{{item.followupRecords && item.followupRecords.length > 0}}">
+        <text class="followup-label">回访:</text>
+        <view class="followup-dots">
+          <text wx:for="{{item.followupRecords}}" wx:key="type" wx:for-item="fu"
+            class="followup-dot {{fu.done ? 'fu-done' : 'fu-pending'}}">{{fu.type}}</text>
+        </view>
+      </view>
+
+      <!-- 底部：分配销售 + 时间 -->
+      <view class="card-footer">
+        <text class="sales-text" wx:if="{{item.salesBrandText}}">👤 {{item.salesBrandText}}</text>
+        <text class="time-text">{{item.createdAt}}</text>
+      </view>
+
+      <!-- 操作按钮行 -->
+      <view class="action-bar" catchtap="">
+        <view class="action-btn action-call" catchtap="callCustomer" data-phone="{{item.phone}}" wx:if="{{item.phone}}">
+          <text>📞 电话</text>
+        </view>
+        <view class="action-btn action-wechat" catchtap="copyWechat" data-wechat="{{item.leadWechat}}" wx:if="{{item.leadWechat}}">
+          <text>💬 微信</text>
+        </view>
+        <view class="action-btn action-status" catchtap="showStatusPicker" data-id="{{item.id}}" data-index="{{index}}">
+          <text>📋 改状态</text>
+        </view>
+        <view class="action-btn action-convert" catchtap="convertToOrder" data-item="{{item}}">
+          <text>📝 转工单</text>
+        </view>
+      </view>
+
+      <!-- AI 对话摘要（点击展开） -->
+      <view class="summary-preview" wx:if="{{item.leadConversationSummary}}" bindtap="toggleSummary" data-index="{{index}}">
+        <text class="summary-label">💬 AI对话摘要</text>
+        <text class="summary-text {{item._expanded ? 'summary-expanded' : ''}}">{{item.leadConversationSummary}}</text>
+      </view>
+    </view>
+
+    <!-- 分页 -->
+    <view class="pagination" wx:if="{{totalPages > 1}}">
+      <view class="page-btn {{page <= 1 ? 'page-disabled' : ''}}" bindtap="prevPage">上一页</view>
+      <text class="page-info">{{page}} / {{totalPages}}</text>
+      <view class="page-btn {{page >= totalPages ? 'page-disabled' : ''}}" bindtap="nextPage">下一页</view>
+    </view>
+  </view>
+  </block>
+</view>

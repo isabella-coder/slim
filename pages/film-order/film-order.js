@@ -53,9 +53,18 @@ Page({
     }
   },
 
-  onLoad() {
+  onLoad(options) {
     this.setDefaultDate();
     this.loadProductCatalog();
+    // 从线索转工单：预填客户信息
+    if (options && (options.customerName || options.phone || options.carModel)) {
+      const patch = {};
+      if (options.customerName) patch['formData.customerName'] = decodeURIComponent(options.customerName);
+      if (options.phone) patch['formData.phone'] = decodeURIComponent(options.phone);
+      if (options.carModel) patch['formData.carModel'] = decodeURIComponent(options.carModel);
+      if (options.fromLead) patch['formData.remark'] = `来自抖音线索: ${decodeURIComponent(options.fromLead)}`;
+      this.setData(patch);
+    }
   },
 
   onShow() {
