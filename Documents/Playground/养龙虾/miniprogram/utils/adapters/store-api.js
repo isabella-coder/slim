@@ -1,48 +1,59 @@
+const { getFinanceConfig } = require('../../config/finance.config')
+const { getMiniAuthSession } = require('../mini-auth')
 const { isVersionConflictError, getCurrentVersion } = require('./store-error')
 
 function getStoreApiBaseUrl() {
-  const customBaseUrl = wx.getStorageSync('store_api_base_url')
-  return String(customBaseUrl || 'http://127.0.0.1:8080').replace(/\/+$/, '')
-}
+  const unifiedApiBase = String(wx.getStorageSync('api_base_url') || '').trim()
+  if (unifiedApiBase) {
+    return unifiedApiBase.replace(/\/+$/, '').replace(/\/api\/v1$/i, '')
+  }
 
-function getStoreInternalToken() {
-  return String(wx.getStorageSync('store_internal_api_token') || '').trim()
+  const financeConfig = getFinanceConfig()
+  const source = String((financeConfig && financeConfig.baseUrl) || 'http://127.0.0.1:8000').replace(/\/+$/, '')
+  const normalized = source.replace(/\/api\/v1$/i, '')
+  return normalized
+    .replace(/^http:\/\/127\.0\.0\.1:8080$/i, 'http://127.0.0.1:8000')
+    .replace(/^http:\/\/localhost:8080$/i, 'http://localhost:8000')
 }
 
 function requestStore(path, options = {}) {
   return new Promise((resolve, reject) => {
-    const token = getStoreInternalToken()
+    const session = getMiniAuthSession()
+    const token = String(session && session.token ? session.token : '').trim()
     if (!token) {
-      reject(new Error('未配置经营系统令牌，请先设置 store_internal_api_token'))
+      reject(new Error('登录状态失效，请重新登录'))
       return
     }
 
     const headers = {
       'Content-Type': 'application/json',
-      'X-Api-Token': token,
+      Authorization: `Bearer ${token}`,
     }
 
     wx.request({
-      url: `${getStoreApiBaseUrl()}${path}`,
+      url: `${getStoreApiBaseUrl()}/api/v1/store${path}`,
       method: options.method || 'GET',
       header: headers,
       data: options.data || {},
       timeout: 12000,
       success: (res) => {
         const body = res && res.data ? res.data : {}
-        const ok = (res.statusCode >= 200 && res.statusCode < 300) && (body.success === true || body.ok === true || body.code === 0)
+        const ok = (res.statusCode >= 200 && res.statusCode < 300) && Number(body.code) === 0
         if (!ok) {
           const err = new Error(body.message || `经营系统请求失败(${res.statusCode})`)
           err.statusCode = Number(res.statusCode || 0)
           err.code = body.code
-          err.response = body
-          if (body.currentVersion !== undefined) {
-            err.currentVersion = Number(body.currentVersion)
+          err.response = body && typeof body === 'object' ? (body.data || body) : {}
+          const currentVersion = body && body.data && body.data.currentVersion !== undefined
+            ? body.data.currentVersion
+            : body.currentVersion
+          if (currentVersion !== undefined) {
+            err.currentVersion = Number(currentVersion)
           }
           reject(err)
           return
         }
-        resolve(body)
+        resolve(body.data || {})
       },
       fail: (error) => {
         reject(new Error((error && error.errMsg) || '经营系统网络请求失败'))
@@ -146,7 +157,7 @@ const storeApi = {
     const keyword = String(params.keyword || '')
     const salesName = String(params.salesName || wx.getStorageSync('sales_name') || '')
 
-    const data = await requestStore('/api/v1/orders', { method: 'GET' })
+    const data = await requestStore('/orders', { method: 'GET' })
     const source = Array.isArray(data.items) ? data.items : []
     const normalized = source.map(normalizeOrderItem).filter((item) => item.id)
 
@@ -217,7 +228,7 @@ const storeApi = {
 
     let data
     try {
-      data = await requestStore(`/api/v1/orders/${encodeURIComponent(targetId)}`, {
+      data = await requestStore(`/orders/${encodeURIComponent(targetId)}`, {
         method: 'PATCH',
         data: patch,
       })

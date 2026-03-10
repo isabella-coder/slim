@@ -1,12 +1,13 @@
 const { getFinanceConfig } = require('../config/finance.config');
+const { getMiniAuthSession } = require('./mini-auth');
 
 const ORDER_STORAGE_KEY = 'filmOrders';
 const ORDER_DIRTY_IDS_KEY = 'filmOrderDirtyIds';
 const ORDER_SYNC_CURSOR_KEY = 'filmOrderSyncCursor';
 const ORDER_SYNC_CONFLICTS_KEY = 'filmOrderSyncConflicts';
 const ORDER_SYNC_STATE_KEY = 'filmOrderSyncState';
-const ORDER_SYNC_PULL_PATH = '/api/v1/internal/orders';
-const ORDER_SYNC_PUSH_PATH = '/api/v1/internal/orders/sync';
+const ORDER_SYNC_PULL_PATH = '/api/v1/store/internal/orders';
+const ORDER_SYNC_PUSH_PATH = '/api/v1/store/internal/orders/sync';
 let orderSyncPromise = null;
 let lastSyncToastAt = 0;
 
@@ -358,7 +359,10 @@ function syncOrdersWithServer(localOrders) {
 function getOrderSyncConfig() {
   const financeConfig = getFinanceConfig();
   const baseUrl = normalizeBaseUrl(financeConfig && financeConfig.baseUrl);
-  const apiToken = String(financeConfig && financeConfig.apiToken ? financeConfig.apiToken : '').trim();
+  const configuredToken = String(financeConfig && financeConfig.apiToken ? financeConfig.apiToken : '').trim();
+  const session = getMiniAuthSession();
+  const sessionToken = String(session && session.token ? session.token : '').trim();
+  const apiToken = configuredToken || sessionToken;
   const syncEnabled = Boolean(financeConfig && financeConfig.enabled);
   const timeoutValue = Number(financeConfig && financeConfig.timeout);
   const envVersion = String(financeConfig && financeConfig.envVersion ? financeConfig.envVersion : '').trim() || 'develop';
@@ -377,6 +381,8 @@ function getOrderSyncConfig() {
     envVersion,
     baseUrl,
     apiToken,
+    configuredToken,
+    sessionToken,
     timeout: Number.isFinite(timeoutValue) && timeoutValue > 0 ? timeoutValue : 10000,
     extraHeaders: financeConfig && typeof financeConfig.extraHeaders === 'object'
       ? financeConfig.extraHeaders

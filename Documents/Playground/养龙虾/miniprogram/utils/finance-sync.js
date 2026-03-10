@@ -1,4 +1,5 @@
 const { getFinanceConfig } = require('../config/finance.config');
+const { getMiniAuthSession } = require('./mini-auth');
 
 function syncOrderToFinance(params) {
   const payloadParams = params || {};
@@ -114,9 +115,12 @@ function requestJSON(params) {
       'content-type': 'application/json'
     };
 
-    if (params.apiToken) {
-      headers.Authorization = `Bearer ${params.apiToken}`;
-      headers['X-Api-Token'] = params.apiToken;
+    const session = getMiniAuthSession();
+    const fallbackToken = String(session && session.token ? session.token : '').trim();
+    const apiToken = String(params.apiToken || fallbackToken || '').trim();
+    if (apiToken) {
+      headers.Authorization = `Bearer ${apiToken}`;
+      headers['X-Api-Token'] = apiToken;
     }
     if (params.idempotencyKey) {
       headers['Idempotency-Key'] = params.idempotencyKey;

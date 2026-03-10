@@ -6,14 +6,14 @@
 
 本目录是“养龙虾”主小程序，已并入“蔚蓝工单模块”页面与工具。
 
-当前有两条业务链路：
+当前采用“统一后端入口”模式：
 
-1. 线索中台链路（后端 8000）
-	- API 前缀：`/api/v1/*`
-	- 登录入口：`/pages/login`
-2. 经营工单链路（admin-console 8080）
-	- API 前缀：`/api/*`、`/api/v1/internal/*`
-	- 推荐入口：`/pages/login?scene=store`（内部会分流到 `pages/login/login`）
+1. 小程序前端统一请求 `8000`（`/api/v1/*`）
+	- 线索链路：`/api/v1/leads/*`、`/api/v1/stats/*`
+	- 经营链路桥接：`/api/v1/store/*`
+2. `8080` 仍运行，但仅作为后端内部依赖
+	- 小程序不再直接请求 `8080`
+	- 小程序不再依赖前端配置 `store_internal_api_token`
 
 ## 2. 关键目录
 
@@ -30,26 +30,28 @@ miniprogram/
 │   └── pages/ops-home/index    # 经营中心入口
 ├── utils/
 │   ├── api.js                  # 线索中台 API（8000）
-│   ├── mini-auth.js            # 经营链路会话
-│   ├── order.js                # 工单同步逻辑
-│   └── adapters/store-api.js   # 经营系统 API 适配（8080）
-└── config/finance.config.js    # 经营链路配置聚合
+│   ├── mini-auth.js            # 经营链路会话（已支持 8000 桥接）
+│   ├── order.js                # 工单同步逻辑（已走 /api/v1/store/internal/*）
+│   └── adapters/store-api.js   # 经营系统 API 适配（统一走 8000 /api/v1/store）
+└── config/finance.config.js    # 经营链路配置聚合（develop 默认 8000）
 ```
 
-## 3. 统一配置键（推荐）
+## 3. 推荐配置（新手版）
 
-请优先使用以下键，避免混用导致联调不稳定。
+请优先只维护以下 1 个键：
 
 1. `api_base_url`
-	- 线索中台后端地址
-	- 默认：`http://127.0.0.1:8000/api/v1`
-2. `store_api_base_url`
-	- 经营系统地址
-	- 默认：`http://127.0.0.1:8080`
-3. `store_internal_api_token`
-	- 经营系统内部接口令牌（必填）
+	- 统一后端地址
+	- 推荐：`http://127.0.0.1:8000/api/v1`
 
-兼容说明：`finance.config.js` 会对 `financeBaseUrl/financeApiToken` 与上述 store 键做兼容读取与同步，建议新流程只维护 store 键。
+兼容键（可不配）：
+
+1. `store_api_base_url`
+	- 旧键，若仍是本地 `8080` 会自动映射为 `8000`
+2. `store_internal_api_token`
+	- 旧键，统一模式下前端无需依赖
+
+兼容说明：`finance.config.js` 仍兼容旧键读取与同步，但新流程建议只维护 `api_base_url`。
 
 ## 4. 本地启动流程（联调）
 
@@ -61,7 +63,7 @@ source ../.venv/bin/activate
 uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
-2. 启动 8080 经营系统
+2. 启动 8080 经营系统（作为 8000 桥接的上游）
 
 ```bash
 cd /Users/yushuai/Documents/Playground/养龙虾/car-film-mini-program/admin-console
@@ -72,8 +74,6 @@ INTERNAL_API_TOKEN='<YOUR_TOKEN>' python3 server.py
 
 4. 在 Storage 中确认：
 	- `api_base_url`
-	- `store_api_base_url`
-	- `store_internal_api_token`
 
 ## 5. 快速冒烟
 
@@ -107,7 +107,7 @@ INTERNAL_API_TOKEN='<YOUR_TOKEN>' python3 server.py
 
 1. `GET /api/leads` 返回 401
 	- 该接口走登录会话鉴权，不接受 `store_internal_api_token`。
-2. 工单同步接口 401
-	- 检查 `store_internal_api_token` 是否配置且与 8080 的 `INTERNAL_API_TOKEN` 一致。
+2. 工单同步接口异常
+	- 先检查 `api_base_url` 是否指向 8000，再检查 8080 服务是否在线。
 3. 部分页面白屏
 	- 先检查 `app.json` 页面注册与 Storage 配置，再看开发者工具 Console 报错。
