@@ -67,3 +67,4 @@ Thumbs.db
 # 项目特定
 .vscode/settings.json
 .editorconfig
+miniprogram/project.private.config.json
