@@ -59,8 +59,8 @@
     <view class="section-title">常用入口</view>
     <view class="quick-grid">
       <view class="quick-item" bindtap="goOrderList">全部订单</view>
-      <view class="quick-item" bindtap="goFilmDispatchBoard">贴膜派工看板</view>
-      <view class="quick-item" bindtap="goWashDispatchBoard">洗车派工看板</view>
+      <view class="quick-item {{canDispatchOrder ? '' : 'quick-item-disabled'}}" bindtap="goFilmDispatchBoard">贴膜派工看板</view>
+      <view class="quick-item {{canDispatchOrder ? '' : 'quick-item-disabled'}}" bindtap="goWashDispatchBoard">洗车派工看板</view>
       <view class="quick-item {{canViewSalesBoard ? '' : 'quick-item-disabled'}}" bindtap="goSalesPerformance">销售业绩看板</view>
     </view>
   </view>

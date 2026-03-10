@@ -11,7 +11,14 @@ Page({
     loading: false,
   },
 
-  async onLoad() {
+  async onLoad(options) {
+    const scene = String(options && options.scene ? options.scene : '').trim().toLowerCase()
+    if (scene === 'store') {
+      // Unified entry: keep store login flow available behind scene routing.
+      wx.redirectTo({ url: '/pages/login/login' })
+      return
+    }
+
     const remembered = wx.getStorageSync('remember_login_account')
     const rememberEnabled = wx.getStorageSync('remember_login_enabled')
 

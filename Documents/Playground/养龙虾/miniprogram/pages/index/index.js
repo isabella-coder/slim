@@ -1,11 +1,11 @@
 const { getFinanceConfig, setFinanceApiToken, setFinanceBaseUrl } = require('../../config/finance.config');
 const { getOrderSyncStatus, syncOrdersNow } = require('../../utils/order');
 const {
+  canCreateOrderContext,
+  canDispatchOrderContext,
+  canViewSalesBoardContext,
   getCurrentUserContext,
   getRoleLabel,
-  isManagerContext,
-  isSalesContext,
-  isTechnicianContext
 } = require('../../utils/user-context');
 const {
   bindUserContextFromSessionUser,
@@ -22,6 +22,7 @@ Page({
     sessionRoleLabel: '',
     needLogin: false,
     canCreateOrder: true,
+    canDispatchOrder: true,
     canViewSalesBoard: true,
     syncBaseUrlInput: '',
     syncApiTokenInput: '',
@@ -51,6 +52,7 @@ Page({
         sessionUserLabel: '',
         sessionRoleLabel: '',
         canCreateOrder: false,
+        canDispatchOrder: false,
         canViewSalesBoard: false,
         syncStatusLabel: '未登录',
         syncStatusHint: '请先登录后再进入业务模块',
@@ -77,6 +79,7 @@ Page({
           sessionUserLabel: '',
           sessionRoleLabel: '',
           canCreateOrder: false,
+          canDispatchOrder: false,
           canViewSalesBoard: false,
           syncStatusLabel: '未登录',
           syncStatusHint: '登录已过期，请重新登录',
@@ -97,7 +100,7 @@ Page({
 
   goLogin() {
     wx.navigateTo({
-      url: '/pages/login/login'
+      url: '/pages/login?scene=store'
     });
   },
 
@@ -110,6 +113,7 @@ Page({
     this.setData({
       currentAccountLabel: accountName ? `${accountName} · ${currentRoleLabel}` : '管理员 · 最高权限',
       canCreateOrder: permissionState.canCreateOrder,
+      canDispatchOrder: permissionState.canDispatchOrder,
       canViewSalesBoard: permissionState.canViewSalesBoard
     });
   },
@@ -204,7 +208,7 @@ Page({
         }
         logoutMiniProgram().finally(() => {
           wx.reLaunch({
-            url: '/pages/login/login'
+            url: '/pages/login?scene=store'
           });
         });
       }
@@ -238,12 +242,20 @@ Page({
   },
 
   goFilmDispatchBoard() {
+    if (!this.data.canDispatchOrder) {
+      wx.showToast({ title: '当前账号无派工权限', icon: 'none' });
+      return;
+    }
     wx.navigateTo({
       url: '/pages/dispatch-board/dispatch-board'
     });
   },
 
   goWashDispatchBoard() {
+    if (!this.data.canDispatchOrder) {
+      wx.showToast({ title: '当前账号无派工权限', icon: 'none' });
+      return;
+    }
     wx.navigateTo({
       url: '/pages/wash-dispatch-board/wash-dispatch-board'
     });
@@ -261,28 +273,10 @@ Page({
 });
 
 function buildPermissionState(user) {
-  if (isManagerContext(user)) {
-    return {
-      canCreateOrder: true,
-      canViewSalesBoard: true
-    };
-  }
-  if (isSalesContext(user)) {
-    return {
-      canCreateOrder: true,
-      canViewSalesBoard: true
-    };
-  }
-  if (isTechnicianContext(user)) {
-    return {
-      canCreateOrder: false,
-      canViewSalesBoard: false
-    };
-  }
-
   return {
-    canCreateOrder: false,
-    canViewSalesBoard: false
+    canCreateOrder: canCreateOrderContext(user),
+    canDispatchOrder: canDispatchOrderContext(user),
+    canViewSalesBoard: canViewSalesBoardContext(user)
   };
 }
 

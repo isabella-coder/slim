@@ -2,6 +2,10 @@ const { getOrders, syncOrdersNow } = require('../../utils/order');
 const { summarizeFollowupOrders } = require('../../utils/followup');
 const { getMiniAuthSession } = require('../../utils/mini-auth');
 const {
+  canEditOrderContext,
+  canCreateOrderContext,
+  canDispatchOrderContext,
+  canViewSalesBoardContext,
   getCurrentUserContext,
   getRoleLabel,
   isFinanceContext,
@@ -37,6 +41,8 @@ Page({
     scopeHint: '',
     canEditOrder: true,
     canCreateOrder: true,
+    canDispatchOrder: true,
+    canViewSalesBoard: true,
     orders: [],
     scopedOrders: [],
     filteredOrders: [],
@@ -89,7 +95,7 @@ Page({
 
   goLogin() {
     wx.navigateTo({
-      url: '/pages/login/login'
+      url: '/pages/login?scene=store'
     });
   },
 
@@ -107,7 +113,9 @@ Page({
       currentView,
       scopeHint: buildScopeHint(currentUser, roleLabel),
       canEditOrder: isManagerContext(currentUser) || isSalesContext(currentUser),
-      canCreateOrder: isManagerContext(currentUser) || isSalesContext(currentUser)
+      canCreateOrder: canCreateOrderContext(currentUser),
+      canDispatchOrder: canDispatchOrderContext(currentUser),
+      canViewSalesBoard: canViewSalesBoardContext(currentUser)
     });
   },
 
@@ -129,6 +137,7 @@ Page({
   },
 
   loadOrders() {
+    const currentUser = this.data.currentUser || {};
     const orders = getOrders().map((item) => {
       const summary = item.priceSummary || {};
       const totalPrice = Number(summary.totalPrice);
@@ -149,6 +158,7 @@ Page({
 
       return {
         ...item,
+        canEdit: canEditOrderContext(currentUser, item),
         serviceType: item.serviceType === 'WASH' ? 'WASH' : 'FILM',
         serviceTypeLabel: item.serviceType === 'WASH' ? '洗车' : '贴膜',
         dispatchInfo: {
@@ -260,11 +270,13 @@ Page({
   },
 
   editOrder(event) {
-    if (!this.data.canEditOrder) {
+    const orderId = event.currentTarget.dataset.id;
+    const target = (this.data.filteredOrders || []).find((item) => item.id === orderId) || null;
+    if (!this.data.canEditOrder || !target || !target.canEdit) {
       wx.showToast({ title: '当前账号无编辑权限', icon: 'none' });
       return;
     }
-    const orderId = event.currentTarget.dataset.id;
+
     const serviceType = String(event.currentTarget.dataset.serviceType || '').toUpperCase();
     if (serviceType === 'WASH') {
       wx.navigateTo({
@@ -279,18 +291,30 @@ Page({
   },
 
   goDispatchBoard() {
+    if (!this.data.canDispatchOrder) {
+      wx.showToast({ title: '当前账号无派工权限', icon: 'none' });
+      return;
+    }
     wx.navigateTo({
       url: '/pages/dispatch-board/dispatch-board'
     });
   },
 
   goWashDispatchBoard() {
+    if (!this.data.canDispatchOrder) {
+      wx.showToast({ title: '当前账号无派工权限', icon: 'none' });
+      return;
+    }
     wx.navigateTo({
       url: '/pages/wash-dispatch-board/wash-dispatch-board'
     });
   },
 
   goSalesPerformance() {
+    if (!this.data.canViewSalesBoard) {
+      wx.showToast({ title: '当前账号无销售看板权限', icon: 'none' });
+      return;
+    }
     wx.navigateTo({
       url: '/pages/sales-performance/sales-performance'
     });

@@ -74,6 +74,10 @@
   background: #f8fafc;
 }
 
+.tool-item-disabled {
+  opacity: 0.55;
+}
+
 .tool-title-row {
   display: flex;
   align-items: center;

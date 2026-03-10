@@ -38,15 +38,15 @@
   </view>
 
   <view class="card tool-card">
-    <view class="tool-item" bindtap="goDispatchBoard">
+    <view class="tool-item {{canDispatchOrder ? '' : 'tool-item-disabled'}}" bindtap="goDispatchBoard">
       <text class="tool-title">贴膜派工看板</text>
       <text class="tool-subtitle">贴膜排班（日期/工位/技师）</text>
     </view>
-    <view class="tool-item" bindtap="goWashDispatchBoard">
+    <view class="tool-item {{canDispatchOrder ? '' : 'tool-item-disabled'}}" bindtap="goWashDispatchBoard">
       <text class="tool-title">洗车派工看板</text>
       <text class="tool-subtitle">洗车排班（日期/时段/技师）</text>
     </view>
-    <view class="tool-item" bindtap="goSalesPerformance">
+    <view class="tool-item {{canViewSalesBoard ? '' : 'tool-item-disabled'}}" bindtap="goSalesPerformance">
       <text class="tool-title">销售业绩看板</text>
       <text class="tool-subtitle">按日/周/月统计客单价</text>
     </view>
@@ -114,7 +114,7 @@
     <view class="order-line">支付凭证：定金{{item.depositProofPhotos ? item.depositProofPhotos.length : 0}}张 / 尾款{{item.finalPaymentPhotos ? item.finalPaymentPhotos.length : 0}}张</view>
     <view class="order-line">财务同步：{{item.financeSyncStatus || '未同步'}}</view>
     <view class="order-actions">
-      <button class="order-edit-btn" size="mini" data-id="{{item.id}}" data-service-type="{{item.serviceType || 'FILM'}}" catchtap="editOrder" disabled="{{!canEditOrder}}">{{item.serviceType === 'WASH' ? '编辑洗车单' : '编辑订单'}}</button>
+      <button class="order-edit-btn" size="mini" data-id="{{item.id}}" data-service-type="{{item.serviceType || 'FILM'}}" catchtap="editOrder" disabled="{{!item.canEdit}}">{{item.serviceType === 'WASH' ? '编辑洗车单' : '编辑订单'}}</button>
     </view>
     <view class="order-bottom">
       <text>{{item.appointmentDate}} {{item.appointmentTime}}</text>

@@ -69,6 +69,34 @@ function isFinanceContext(context) {
   return normalizeRole(context && context.role) === 'FINANCE';
 }
 
+function canCreateOrderContext(context) {
+  return isManagerContext(context) || isSalesContext(context);
+}
+
+function canDispatchOrderContext(context) {
+  return isManagerContext(context) || isSalesContext(context);
+}
+
+function canViewSalesBoardContext(context) {
+  return isManagerContext(context) || isSalesContext(context);
+}
+
+function canEditOrderContext(context, order) {
+  if (isManagerContext(context)) {
+    return true;
+  }
+  if (!isSalesContext(context)) {
+    return false;
+  }
+
+  const accountName = String(context && context.accountName ? context.accountName : '').trim().toLowerCase();
+  const owner = String(order && order.salesBrandText ? order.salesBrandText : '').trim().toLowerCase();
+  if (!accountName || !owner) {
+    return false;
+  }
+  return owner === accountName;
+}
+
 function normalizeUserContext(source) {
   const raw = source && typeof source === 'object' ? source : {};
   const accountId = String(raw.accountId || '').trim();
@@ -110,6 +138,10 @@ function buildAccount(source, role) {
 
 module.exports = {
   MANAGER_ACCOUNT,
+  canCreateOrderContext,
+  canDispatchOrderContext,
+  canEditOrderContext,
+  canViewSalesBoardContext,
   getAvailableAccounts,
   getCurrentUserContext,
   getRoleLabel,
