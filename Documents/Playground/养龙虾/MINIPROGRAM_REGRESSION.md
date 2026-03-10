@@ -31,16 +31,21 @@
 
 ## 5. 已执行自动冒烟结果
 
-执行时间：`2026-03-10`
+执行时间：`2026-03-10`（最新复测）
 
-1. `GET /health` -> `status=ok`
-2. `GET /api/v1/auth/sales` -> `code=0`
-3. `POST /api/v1/auth/login`（正确密码）-> `code=0`，返回 `token`
-4. `GET /api/v1/leads`（无 token）-> `code=401`
-5. `GET /api/v1/leads`（有 token + 时间筛选）-> `code=0`
-6. `GET /api/v1/stats/daily-by-sales`（合法日期）-> `code=0`
-7. `GET /api/v1/stats/daily-by-sales`（错误日期）-> `code=400`
-8. `GET /api/v1/stats/daily-by-sales`（跨门店）-> `code=403`
+1. `GET /health` -> `200`（PASS）
+2. `GET /api/v1/auth/sales` -> `code=0`（PASS）
+3. `POST /api/v1/auth/login`（正确密码 `sale123`）-> `code=0`（PASS）
+4. `GET /api/v1/auth/me`（Bearer）-> `code=0`（PASS）
+5. `GET /api/v1/leads`（Bearer）-> `code=0`（PASS）
+6. `GET /api/v1/stats/daily-by-sales`（合法日期）-> `code=0`（PASS）
+7. `GET /api/v1/audit/order-ops/summary`（Bearer）-> `code=0`（PASS）
+8. `GET /api/v1/audit/order-ops/export`（Bearer）-> `code=0`（PASS）
+9. `POST /api/v1/audit/order-ops`（Bearer）-> `code=0`（PASS）
+
+补充说明：
+1. 审计写入接口必须传 `action` 字段，不是 `action_type`。
+2. 推荐测试值：`action=quick_status_update`、`result=success`、`target_id=<marker>`。
 
 ## 6. 微信开发者工具手工回归用例
 

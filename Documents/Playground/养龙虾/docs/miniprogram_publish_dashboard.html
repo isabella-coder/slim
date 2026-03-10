@@ -193,6 +193,18 @@
       color: var(--sub);
     }
 
+    .smoke {
+      margin: 0 0 12px;
+      padding-left: 18px;
+      line-height: 1.7;
+      font-size: 13px;
+    }
+
+    .smoke code {
+      color: var(--brand);
+      font-weight: 600;
+    }
+
     @media (max-width: 860px) {
       .grid { grid-template-columns: 1fr; }
       .row { grid-template-columns: 1fr; }
@@ -204,7 +216,7 @@
   <div class="wrap">
     <section class="hero">
       <h1>微信小程序发布面板</h1>
-      <p>给当前项目使用：填完信息 -> 逐项检查 -> 复制提审说明 -> 上传/提审/发布</p>
+      <p>填完信息 -> 执行自动回归 -> 真机逐项验收 -> 复制提审说明 -> 上传/提审/发布</p>
     </section>
 
     <section class="grid">
@@ -233,6 +245,7 @@
         <p class="hint">提示：这个页面仅做发布信息整理，不会自动上传微信后台。</p>
 
         <div class="actions">
+          <button class="btn-ghost" id="fillPresetBtn">填入本轮模板</button>
           <button class="btn-primary" id="genSummaryBtn">生成提审说明</button>
           <button class="btn-accent" id="copySummaryBtn">复制提审说明</button>
           <button class="btn-ghost" id="saveDraftBtn">保存草稿</button>
@@ -242,6 +255,15 @@
       </article>
 
       <article class="card">
+        <h2>本轮自动回归快照（2026-03-10）</h2>
+        <ul class="smoke">
+          <li><code>PASS</code> `GET /health`</li>
+          <li><code>PASS</code> `GET /api/v1/auth/sales`、`POST /api/v1/auth/login`、`GET /api/v1/auth/me`</li>
+          <li><code>PASS</code> `GET /api/v1/leads`、`GET /api/v1/stats/daily-by-sales`</li>
+          <li><code>PASS</code> `GET /api/v1/audit/order-ops/summary`、`GET /api/v1/audit/order-ops/export`</li>
+          <li><code>PASS</code> `POST /api/v1/audit/order-ops`（注意参数字段是 `action`）</li>
+        </ul>
+
         <h2>发布前检查清单</h2>
         <ul class="checklist" id="checklist">
           <li><input type="checkbox" data-key="c1" />已确认微信开发者工具打开的是当前项目目录（养龙虾/miniprogram）</li>
@@ -249,10 +271,14 @@
           <li><input type="checkbox" data-key="c3" />前端 API 指向正式 HTTPS 域名，不是 localhost/tunnel</li>
           <li><input type="checkbox" data-key="c4" />微信公众平台已配置 request 合法域名</li>
           <li><input type="checkbox" data-key="c5" />已真机验证：登录、线索页、我的页日报、退出登录</li>
-          <li><input type="checkbox" data-key="c6" />后端生产配置已加固：`JWT_SECRET_KEY` 与默认密码</li>
+          <li><input type="checkbox" data-key="c6" />已真机验证：经营中心 -> 审计页列表筛选与分页</li>
+          <li><input type="checkbox" data-key="c7" />已真机验证：导出全部 CSV（可预览或可复制）</li>
+          <li><input type="checkbox" data-key="c8" />已真机验证：仅导出失败项 CSV</li>
+          <li><input type="checkbox" data-key="c9" />已真机验证：仅导出跳过项 CSV</li>
+          <li><input type="checkbox" data-key="c10" />后端生产配置已加固：`JWT_SECRET_KEY` 与默认密码</li>
         </ul>
 
-        <div class="status" id="progressBox">完成进度：0 / 6</div>
+        <div class="status" id="progressBox">完成进度：0 / 10</div>
 
         <h2 style="margin-top:14px;">标准流程</h2>
         <ol class="steps">
@@ -340,7 +366,7 @@
         `线上 API：${s.apiDomain || "(未填)"}`,
         "",
         "本次提审说明：",
-        s.releaseNotes || "1. 修复已知问题\n2. 优化稳定性\n3. 增强登录与日报展示",
+        s.releaseNotes || "1. 合并提交：bbc07ac、c45798b、878663d\n2. 新增经营中心审计能力（筛选/汇总/CSV导出）\n3. 已完成自动回归：登录、线索、日报、审计导出\n4. 真机重点验收：审计导出（全部/失败/跳过）",
       ].join("\n");
 
       ids.summaryBox.textContent = text;
@@ -351,6 +377,20 @@
     document.getElementById("genSummaryBtn").addEventListener("click", () => {
       generateSummary();
       saveState();
+    });
+
+    document.getElementById("fillPresetBtn").addEventListener("click", () => {
+      if (!ids.version.value.trim()) ids.version.value = "1.0.0";
+      if (!ids.owner.value.trim()) ids.owner.value = "待填写";
+      ids.releaseNotes.value = [
+        "1. 合并提交：bbc07ac、c45798b、878663d",
+        "2. 新增经营中心操作审计页面与 CSV 导出（全部/失败/跳过）",
+        "3. 自动回归通过：health、auth、leads、stats/daily-by-sales、audit summary/export",
+        "4. 已确认审计写入接口字段为 action（非 action_type）",
+      ].join("\n");
+      saveState();
+      ids.summaryBox.className = "status ok";
+      ids.summaryBox.textContent = "已填入本轮模板，请补充版本号/AppID/域名后生成提审说明。";
     });
 
     document.getElementById("copySummaryBtn").addEventListener("click", async () => {
