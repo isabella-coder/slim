@@ -1,5 +1,6 @@
 const { getOrderById, syncOrdersNow, updateOrder, updateOrderStatus } = require('../../utils/order');
 const { syncOrderToFinance } = require('../../utils/finance-sync');
+const { getMiniAuthSession } = require('../../utils/mini-auth');
 
 Page({
   data: {
@@ -10,6 +11,10 @@ Page({
   },
 
   onLoad(options) {
+    if (!this.ensureLoggedInSession()) {
+      return;
+    }
+
     const orderId = options && options.id ? String(options.id) : '';
     this.setData({ orderId });
     if (!orderId) {
@@ -23,6 +28,10 @@ Page({
   },
 
   onShow() {
+    if (!this.ensureLoggedInSession()) {
+      return;
+    }
+
     if (!this.data.orderId) {
       return;
     }
@@ -47,6 +56,17 @@ Page({
       hasOrder: true,
       order: normalizeOrder(order)
     });
+  },
+
+  ensureLoggedInSession() {
+    const session = getMiniAuthSession();
+    if (session.token && session.user) {
+      return true;
+    }
+    wx.navigateTo({
+      url: '/pages/login?scene=store'
+    });
+    return false;
   },
 
   previewConstructionPhoto(event) {
@@ -127,6 +147,9 @@ Page({
   },
 
   editOrder() {
+    if (!this.ensureLoggedInSession()) {
+      return;
+    }
     if (!this.data.hasOrder) {
       return;
     }
@@ -137,6 +160,9 @@ Page({
   },
 
   cancelOrder() {
+    if (!this.ensureLoggedInSession()) {
+      return;
+    }
     if (!this.data.hasOrder) {
       return;
     }

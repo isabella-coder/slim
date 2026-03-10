@@ -11,6 +11,7 @@ const {
   findTechnicianAccountById,
   findTechnicianAccountByName
 } = require('../../utils/staff-options');
+const { getMiniAuthSession } = require('../../utils/mini-auth');
 const {
   getCurrentUserContext,
   isManagerContext,
@@ -90,6 +91,10 @@ Page({
   },
 
   onLoad(options) {
+    if (!this.ensureLoggedInSession()) {
+      return;
+    }
+
     const app = getApp();
     const orderId = options.id || '';
     const currentUser = getCurrentUserContext();
@@ -119,6 +124,10 @@ Page({
   },
 
   onShow() {
+    if (!this.ensureLoggedInSession()) {
+      return;
+    }
+
     const currentUser = getCurrentUserContext();
     const managerMode = isManagerContext(currentUser);
     this.setData({
@@ -135,6 +144,17 @@ Page({
           this.loadOrder(this.data.orderId);
         });
     }
+  },
+
+  ensureLoggedInSession() {
+    const session = getMiniAuthSession();
+    if (session.token && session.user) {
+      return true;
+    }
+    wx.navigateTo({
+      url: '/pages/login?scene=store'
+    });
+    return false;
   },
 
   loadOrder(orderId) {

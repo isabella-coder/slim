@@ -1,6 +1,8 @@
 const { calculatePrice, getOrderById, getOrders, updateOrder } = require('../../utils/order');
 const { getProductCatalog } = require('../../utils/product-catalog');
 const { syncOrderToFinance } = require('../../utils/finance-sync');
+const { getMiniAuthSession } = require('../../utils/mini-auth');
+const { canEditOrderContext, getCurrentUserContext } = require('../../utils/user-context');
 const {
   DAILY_WORK_BAY_LIMIT,
   getDailyCapacityMessage,
@@ -50,6 +52,10 @@ Page({
   },
 
   onLoad(options) {
+    if (!this.ensureLoggedInSession()) {
+      return;
+    }
+
     const orderId = options.id || '';
     const catalog = getProductCatalog();
     this.setData({
@@ -63,6 +69,32 @@ Page({
     }
 
     this.loadOrder(orderId, catalog);
+  },
+
+  ensureLoggedInSession() {
+    const session = getMiniAuthSession();
+    if (session.token && session.user) {
+      return true;
+    }
+    wx.navigateTo({
+      url: '/pages/login?scene=store'
+    });
+    return false;
+  },
+
+  ensureEditAccess(order) {
+    if (!this.ensureLoggedInSession()) {
+      return false;
+    }
+    const user = getCurrentUserContext();
+    if (canEditOrderContext(user, order)) {
+      return true;
+    }
+    wx.showToast({
+      title: '当前账号无编辑权限',
+      icon: 'none'
+    });
+    return false;
   },
 
   initCatalog(catalog) {
@@ -88,6 +120,11 @@ Page({
   loadOrder(orderId, filmPackages) {
     const order = getOrderById(orderId);
     if (!order) {
+      this.setData({ hasOrder: false });
+      return;
+    }
+
+    if (!this.ensureEditAccess(order)) {
       this.setData({ hasOrder: false });
       return;
     }
@@ -269,6 +306,11 @@ Page({
 
   saveOrder() {
     if (!this.data.hasOrder || this.data.saving) {
+      return;
+    }
+
+    const order = getOrderById(this.data.orderId);
+    if (!order || !this.ensureEditAccess(order)) {
       return;
     }
 

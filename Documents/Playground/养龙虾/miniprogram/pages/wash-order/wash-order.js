@@ -7,6 +7,8 @@ const {
   updateOrder
 } = require('../../utils/order');
 const { syncOrderToFinance } = require('../../utils/finance-sync');
+const { getMiniAuthSession } = require('../../utils/mini-auth');
+const { canCreateOrderContext, canEditOrderContext, getCurrentUserContext } = require('../../utils/user-context');
 const { TECHNICIAN_OPTIONS } = require('../../utils/staff-options');
 
 const DAILY_WORK_BAY_LIMIT = 10;
@@ -46,9 +48,14 @@ Page({
   },
 
   onLoad(options) {
+    if (!this.ensureLoggedInSession()) {
+      return;
+    }
+
     this.setDefaultDate();
     const orderId = options && options.id ? String(options.id) : '';
     if (!orderId) {
+      this.ensureCreateAccess();
       return;
     }
 
@@ -57,6 +64,47 @@ Page({
       orderId
     });
     this.loadOrder(orderId);
+  },
+
+  ensureLoggedInSession() {
+    const session = getMiniAuthSession();
+    if (session.token && session.user) {
+      return true;
+    }
+    wx.navigateTo({
+      url: '/pages/login?scene=store'
+    });
+    return false;
+  },
+
+  ensureCreateAccess() {
+    if (!this.ensureLoggedInSession()) {
+      return false;
+    }
+    const user = getCurrentUserContext();
+    if (canCreateOrderContext(user)) {
+      return true;
+    }
+    wx.showToast({
+      title: '当前账号无下单权限',
+      icon: 'none'
+    });
+    return false;
+  },
+
+  ensureEditAccess(order) {
+    if (!this.ensureLoggedInSession()) {
+      return false;
+    }
+    const user = getCurrentUserContext();
+    if (canEditOrderContext(user, order)) {
+      return true;
+    }
+    wx.showToast({
+      title: '当前账号无编辑权限',
+      icon: 'none'
+    });
+    return false;
   },
 
   setDefaultDate() {
@@ -72,6 +120,10 @@ Page({
     const order = getOrderById(orderId);
     if (!order || order.serviceType !== 'WASH') {
       wx.showToast({ title: '洗车订单不存在', icon: 'none' });
+      return;
+    }
+
+    if (!this.ensureEditAccess(order)) {
       return;
     }
 
@@ -231,6 +283,15 @@ Page({
 
   submitOrder() {
     if (this.data.saving) {
+      return;
+    }
+
+    if (this.data.isEdit) {
+      const currentOrder = getOrderById(this.data.orderId);
+      if (!currentOrder || !this.ensureEditAccess(currentOrder)) {
+        return;
+      }
+    } else if (!this.ensureCreateAccess()) {
       return;
     }
 

@@ -8,6 +8,8 @@ const {
 } = require('../../utils/order');
 const { getProductCatalog } = require('../../utils/product-catalog');
 const { syncOrderToFinance } = require('../../utils/finance-sync');
+const { getMiniAuthSession } = require('../../utils/mini-auth');
+const { canCreateOrderContext, getCurrentUserContext } = require('../../utils/user-context');
 const {
   DAILY_WORK_BAY_LIMIT,
   getDailyCapacityMessage,
@@ -54,6 +56,9 @@ Page({
   },
 
   onLoad(options) {
+    if (!this.ensureCreateAccess()) {
+      return;
+    }
     this.setDefaultDate();
     this.loadProductCatalog();
     // 从线索转工单：预填客户信息
@@ -68,7 +73,31 @@ Page({
   },
 
   onShow() {
+    if (!this.ensureCreateAccess()) {
+      return;
+    }
     this.loadProductCatalog();
+  },
+
+  ensureCreateAccess() {
+    const session = getMiniAuthSession();
+    if (!session.token || !session.user) {
+      wx.navigateTo({
+        url: '/pages/login?scene=store'
+      });
+      return false;
+    }
+
+    const user = getCurrentUserContext();
+    if (!canCreateOrderContext(user)) {
+      wx.showToast({
+        title: '当前账号无下单权限',
+        icon: 'none'
+      });
+      return false;
+    }
+
+    return true;
   },
 
   loadProductCatalog() {
@@ -390,6 +419,9 @@ Page({
   },
 
   submitOrder() {
+    if (!this.ensureCreateAccess()) {
+      return;
+    }
     const error = this.validateForm();
     if (error) {
       wx.showToast({
