@@ -17,6 +17,6 @@
 
   <view class="hint-box">
     <text class="hint-title">当前阶段</text>
-    <text class="hint-text">已完成首批迁移：订单列表、订单详情、操作审计。</text>
+    <text class="hint-text">已完成首批迁移：订单列表、订单详情、操作审计，并提供蔚蓝工单兼容入口。</text>
   </view>
 </view>
