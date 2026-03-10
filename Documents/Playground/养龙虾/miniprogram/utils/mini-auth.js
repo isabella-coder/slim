@@ -26,27 +26,24 @@ function loginMiniProgram(options) {
 
   setFinanceBaseUrl(baseUrl);
 
-  return requestStoreAuthWithFallback({
+  return requestAuthJson({
     baseUrl,
-    primaryPath: '/api/v1/store/auth/login',
-    legacyPath: '/api/login',
+    path: '/api/login',
     method: 'POST',
     body: {
       username,
       password
     }
   }).then((payload) => {
-    const data = unwrapResponseData(payload);
     const token = normalizeText(payload && payload.token);
-    const user = data && typeof data.user === 'object' ? data.user : null;
-    const resolvedToken = normalizeText(data && data.token ? data.token : token);
-    if (!resolvedToken || !user) {
+    const user = payload && typeof payload.user === 'object' ? payload.user : null;
+    if (!token || !user) {
       throw new Error('登录响应缺少会话信息');
     }
-    saveMiniAuthSession(resolvedToken, user);
+    saveMiniAuthSession(token, user);
     bindUserContextFromSessionUser(user);
     return {
-      token: resolvedToken,
+      token,
       user
     };
   });
@@ -68,16 +65,14 @@ function ensureMiniAuthSession() {
     return Promise.resolve(session);
   }
 
-  return requestStoreAuthWithFallback({
+  return requestAuthJson({
     baseUrl,
-    primaryPath: '/api/v1/store/auth/me',
-    legacyPath: '/api/me',
+    path: '/api/me',
     method: 'GET',
     token: session.token
   })
     .then((payload) => {
-      const data = unwrapResponseData(payload);
-      const user = data && typeof data.user === 'object' ? data.user : (payload && typeof payload.user === 'object' ? payload.user : session.user);
+      const user = payload && typeof payload.user === 'object' ? payload.user : session.user;
       saveMiniAuthSession(session.token, user);
       bindUserContextFromSessionUser(user);
       return {
@@ -102,10 +97,9 @@ function logoutMiniProgram() {
     return Promise.resolve();
   }
 
-  return requestStoreAuthWithFallback({
+  return requestAuthJson({
     baseUrl,
-    primaryPath: '/api/v1/store/auth/logout',
-    legacyPath: '/api/logout',
+    path: '/api/logout',
     method: 'POST',
     token: session.token
   })
@@ -263,39 +257,6 @@ function requestAuthJson(options) {
   });
 }
 
-function requestStoreAuthWithFallback(options) {
-  const source = options && typeof options === 'object' ? options : {};
-  const primaryPath = String(source.primaryPath || '');
-  const legacyPath = String(source.legacyPath || '');
-  const shared = {
-    baseUrl: source.baseUrl,
-    method: source.method,
-    token: source.token,
-    body: source.body
-  };
-
-  return requestAuthJson({
-    ...shared,
-    path: primaryPath
-  }).catch((error) => {
-    if (!legacyPath || Number(error && error.statusCode) !== 404) {
-      return Promise.reject(error);
-    }
-    return requestAuthJson({
-      ...shared,
-      path: legacyPath
-    });
-  });
-}
-
-function unwrapResponseData(payload) {
-  const source = payload && typeof payload === 'object' ? payload : {};
-  if (Number(source.code) === 0 && source.data && typeof source.data === 'object') {
-    return source.data;
-  }
-  return source;
-}
-
 function canUseWxStorage() {
   return typeof wx !== 'undefined'
     && wx
@@ -304,11 +265,7 @@ function canUseWxStorage() {
 }
 
 function normalizeBaseUrl(value) {
-  return normalizeText(value)
-    .replace(/\/+$/, '')
-    .replace(/\/api\/v1$/i, '')
-    .replace(/^http:\/\/127\.0\.0\.1:8080$/i, 'http://127.0.0.1:8000')
-    .replace(/^http:\/\/localhost:8080$/i, 'http://localhost:8000');
+  return normalizeText(value).replace(/\/+$/, '');
 }
 
 function normalizeRole(value) {

@@ -5,7 +5,7 @@ const STORE_API_TOKEN_STORAGE_KEY = 'store_internal_api_token';
 
 const ENV_BASE_URL = {
   // 微信开发者工具本机联调。
-  develop: 'http://127.0.0.1:8000',
+  develop: 'http://127.0.0.1:8080',
   // 体验版/正式版请写入公网 HTTPS 域名（可通过 setFinanceBaseUrl 设置）。
   trial: 'https://a3f1be6049a27d.lhr.life',
   release: 'https://a3f1be6049a27d.lhr.life'
@@ -16,7 +16,7 @@ const financeConfig = {
   mockMode: false,
   // 全局兜底地址（优先级低于 runtime storage 和 ENV_BASE_URL）。
   baseUrl: '',
-  syncPath: '/api/v1/store/internal/work-orders/sync',
+  syncPath: '/api/v1/internal/work-orders/sync',
   // 不提交固定 token，按环境手动配置。
   apiToken: '',
   extraHeaders: {},
@@ -144,9 +144,7 @@ function normalizeUrl(value) {
   if (!text) {
     return '';
   }
-  return text.replace(/\/+$/, '')
-    .replace(/^http:\/\/127\.0\.0\.1:8080$/i, 'http://127.0.0.1:8000')
-    .replace(/^http:\/\/localhost:8080$/i, 'http://localhost:8000');
+  return text.replace(/\/+$/, '');
 }
 
 function normalizeToken(value) {
