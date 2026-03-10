@@ -1,0 +1,132 @@
+<view class="container" wx:if="{{hasOrder}}">
+  <view class="hero card">
+    <view class="hero-title">编辑订单</view>
+    <view class="hero-subtitle">{{orderId}} · {{orderStatus}}</view>
+  </view>
+
+  <view class="card">
+    <view class="section-title">工单标识（选填）</view>
+    <view class="hint">仅供门店内部联络，请勿录入身份证号等敏感身份信息。</view>
+    <view class="form-item">
+      <text class="label">客户称呼（选填）</text>
+      <input class="input" maxlength="30" placeholder="如：王总 / 张先生（非实名）" value="{{formData.customerName}}" data-field="customerName" bindinput="onInputChange" />
+    </view>
+    <view class="form-item">
+      <text class="label">联系方式（选填）</text>
+      <input class="input" maxlength="20" placeholder="仅内部联络使用，可填后4位" value="{{formData.phone}}" data-field="phone" bindinput="onInputChange" />
+    </view>
+  </view>
+
+  <view class="card">
+    <view class="section-title">车辆信息</view>
+    <view class="form-item">
+      <text class="label">车型</text>
+      <input class="input" placeholder="如：特斯拉 Model Y" value="{{formData.carModel}}" data-field="carModel" bindinput="onInputChange" />
+    </view>
+    <view class="form-item">
+      <text class="label">车牌号（选填）</text>
+      <input class="input" placeholder="如：沪A12345" value="{{formData.plateNumber}}" data-field="plateNumber" bindinput="onInputChange" />
+    </view>
+    <view class="form-item">
+      <text class="label">来源渠道</text>
+      <input class="input" placeholder="请输入来源渠道（手动填写）" value="{{formData.sourceChannel}}" data-field="sourceChannel" bindinput="onInputChange" />
+    </view>
+  </view>
+
+  <view class="card">
+    <view class="section-head">
+      <view class="section-title section-title-no-margin">贴膜套餐</view>
+      <button class="edit-btn" size="mini" bindtap="goProductConfig">编辑产品价格</button>
+    </view>
+    <view class="package-list">
+      <view
+        wx:for="{{filmPackages}}"
+        wx:key="value"
+        class="package-item {{item.checked ? 'active' : ''}}"
+        data-value="{{item.value}}"
+        bindtap="selectPackage"
+      >
+        <view wx:if="{{item.checked}}" class="package-selected-tag">
+          <text class="package-selected-icon">✓</text>
+          <text>已选</text>
+        </view>
+        <view class="package-name">{{item.label}}</view>
+        <view class="package-desc">施工部位：{{item.desc || '未填写'}}</view>
+        <view class="package-price">¥{{item.basePrice}}</view>
+      </view>
+    </view>
+    <view wx:if="{{filmPackages.length === 0}}" class="hint">暂无产品，请先点击“编辑产品价格”新增。</view>
+    <view wx:else class="hint">可多选，已选 {{selectedPackageCount}} 项</view>
+
+    <view class="form-item">
+      <text class="label">销售负责人</text>
+      <picker mode="selector" range="{{salesOptions}}" value="{{salesIndex >= 0 ? salesIndex : 0}}" bindchange="onSalesChange">
+        <view class="picker">{{salesIndex >= 0 ? salesOptions[salesIndex] : '请选择销售负责人'}}</view>
+      </picker>
+    </view>
+
+    <view class="form-item">
+      <text class="label">选择门店</text>
+      <picker mode="selector" range="{{storeOptions}}" value="{{storeIndex}}" bindchange="onStoreChange">
+        <view class="picker">{{storeOptions[storeIndex]}}</view>
+      </picker>
+    </view>
+  </view>
+
+  <view class="card">
+    <view class="section-title">预约时间</view>
+    <view class="row">
+      <view class="row-item">
+        <text class="label">日期</text>
+        <picker mode="date" value="{{formData.appointmentDate}}" bindchange="onDateChange">
+          <view class="picker">{{formData.appointmentDate}}</view>
+        </picker>
+      </view>
+      <view class="row-item">
+        <text class="label">时间</text>
+        <picker mode="time" value="{{formData.appointmentTime}}" bindchange="onTimeChange">
+          <view class="picker">{{formData.appointmentTime}}</view>
+        </picker>
+      </view>
+    </view>
+
+    <view class="form-item add-ons">
+      <text class="label">增值服务（可选）</text>
+      <checkbox-group bindchange="onAddOnsChange">
+        <label wx:for="{{addOnOptions}}" wx:key="value" class="addon-item">
+          <checkbox value="{{item.value}}" checked="{{item.checked}}" color="#0f172a" />
+          <text>{{item.label}}</text>
+          <text class="addon-fee {{item.isFree ? 'addon-fee-free' : ''}}">{{item.feeText}}</text>
+        </label>
+      </checkbox-group>
+    </view>
+
+    <view class="form-item">
+      <text class="label">备注（选填）</text>
+      <textarea class="textarea" placeholder="如：希望上午施工，优先高隔热方案" value="{{formData.remark}}" data-field="remark" bindinput="onInputChange" maxlength="200" />
+    </view>
+
+    <view class="form-item">
+      <text class="label">定金金额（手动填写）</text>
+      <input class="input" type="digit" placeholder="请输入定金金额" value="{{formData.depositAmount}}" bindinput="onDepositAmountInput" />
+    </view>
+  </view>
+
+  <view class="card price-card">
+    <view class="section-title">费用预估</view>
+    <view class="price-line"><text>套餐价格</text><text>¥{{priceSummary.packagePrice}}</text></view>
+    <view class="price-line"><text>增值服务</text><text>¥{{priceSummary.addOnFee}}</text></view>
+    <view class="price-total"><text>预估总价</text><text>¥{{priceSummary.totalPrice}}</text></view>
+    <view class="hint">保存后会更新订单金额，交车状态和施工提成会重置为未完工，并同步到财务系统。</view>
+  </view>
+
+  <button class="button-primary" loading="{{saving}}" bindtap="saveOrder">保存订单</button>
+  <button class="button-secondary" bindtap="goBack">返回</button>
+</view>
+
+<view class="container" wx:else>
+  <view class="card empty-card">
+    <view class="empty-title">订单不存在或已删除</view>
+    <button class="button-primary" bindtap="goBack">返回全部订单</button>
+  </view>
+</view>

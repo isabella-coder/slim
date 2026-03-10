@@ -1,0 +1,150 @@
+.top-card {
+  background: linear-gradient(140deg, #1d4ed8, #1e3a8a);
+  color: #eff6ff;
+}
+
+.top-card .hint {
+  color: #dbeafe;
+  margin-bottom: 12rpx;
+}
+
+.form-item {
+  margin-top: 12rpx;
+}
+
+.stats-card {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12rpx;
+}
+
+.stat-item {
+  border: 2rpx solid #dbeafe;
+  border-radius: 14rpx;
+  padding: 14rpx;
+  background: #f8fafc;
+}
+
+.stat-label {
+  color: #64748b;
+  font-size: 24rpx;
+}
+
+.stat-value {
+  display: block;
+  margin-top: 8rpx;
+  font-size: 34rpx;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.stat-value.primary {
+  color: #1d4ed8;
+}
+
+.stat-value.warning {
+  color: #92400e;
+}
+
+.stat-value.success {
+  color: #166534;
+}
+
+.stat-value.danger {
+  color: #991b1b;
+}
+
+.slot-card {
+  border: 2rpx solid #dbeafe;
+}
+
+.slot-card-conflict {
+  border-color: #fca5a5;
+  background: #fff1f2;
+}
+
+.slot-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12rpx;
+}
+
+.slot-time {
+  font-size: 34rpx;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.slot-status {
+  color: #334155;
+}
+
+.slot-empty {
+  color: #64748b;
+}
+
+.order-item {
+  border: 2rpx solid #e2e8f0;
+  border-radius: 12rpx;
+  padding: 14rpx;
+  margin-bottom: 12rpx;
+  background: #ffffff;
+}
+
+.order-item:last-child {
+  margin-bottom: 0;
+}
+
+.order-line {
+  color: #1f2937;
+  margin-bottom: 8rpx;
+}
+
+.status-row {
+  margin-bottom: 10rpx;
+}
+
+.status-tag {
+  display: inline-block;
+  border-radius: 999rpx;
+  padding: 4rpx 14rpx;
+  font-size: 22rpx;
+}
+
+.status-pending {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.status-assigned {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.status-completed {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.status-cancelled {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.button-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10rpx;
+  margin-top: 10rpx;
+}
+
+.mini-btn {
+  margin: 0;
+  line-height: 1.8;
+  border: none;
+  border-radius: 999rpx;
+  background: #0f172a;
+  color: #ffffff;
+  padding: 0 18rpx;
+}

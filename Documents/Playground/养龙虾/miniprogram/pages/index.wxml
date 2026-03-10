@@ -40,6 +40,17 @@
     </view>
   </view>
 
+  <view class="ops-entry legacy-entry" bindtap="goToCarFilmOps">
+    <view class="ops-entry-main">
+      <text class="ops-entry-title">{{carFilmTitle}}</text>
+      <text class="ops-entry-subtitle">{{carFilmSubtitle}}</text>
+    </view>
+    <view class="ops-entry-side">
+      <text class="ops-role-tag">兼容入口</text>
+      <text class="ops-entry-arrow">进入 ›</text>
+    </view>
+  </view>
+
   <!-- 待处理线索 -->
   <view class="section">
     <view class="section-header">

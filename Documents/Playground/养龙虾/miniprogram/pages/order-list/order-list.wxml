@@ -1,0 +1,125 @@
+<view class="container">
+  <view wx:if="{{needLogin}}" class="card empty-card">
+    <view class="empty-title">当前未登录</view>
+    <view class="empty-subtitle">请先登录后查看全部订单。</view>
+    <button class="button-primary" bindtap="goLogin">去登录</button>
+  </view>
+
+  <block wx:else>
+  <view class="card scope-card">
+    <view class="scope-tabs">
+      <view
+        wx:for="{{viewTabs}}"
+        wx:key="value"
+        class="scope-tab-item {{currentView === item.value ? 'active' : ''}}"
+        data-view="{{item.value}}"
+        bindtap="onViewTabChange"
+      >
+        {{item.label}}
+      </view>
+    </view>
+
+    <view class="scope-hint">{{scopeHint}}</view>
+  </view>
+
+  <view class="card stat-card">
+    <view class="stat-item">
+      <text class="stat-label">订单总数</text>
+      <text class="stat-value">{{stats.total}}</text>
+    </view>
+    <view class="stat-item">
+      <text class="stat-label">未完工</text>
+      <text class="stat-value warning">{{stats.pending}}</text>
+    </view>
+    <view class="stat-item">
+      <text class="stat-label">已完工</text>
+      <text class="stat-value success">{{stats.confirmed}}</text>
+    </view>
+  </view>
+
+  <view class="card tool-card">
+    <view class="tool-item" bindtap="goDispatchBoard">
+      <text class="tool-title">贴膜派工看板</text>
+      <text class="tool-subtitle">贴膜排班（日期/工位/技师）</text>
+    </view>
+    <view class="tool-item" bindtap="goWashDispatchBoard">
+      <text class="tool-title">洗车派工看板</text>
+      <text class="tool-subtitle">洗车排班（日期/时段/技师）</text>
+    </view>
+    <view class="tool-item" bindtap="goSalesPerformance">
+      <text class="tool-title">销售业绩看板</text>
+      <text class="tool-subtitle">按日/周/月统计客单价</text>
+    </view>
+    <view class="tool-item" bindtap="goFollowupReminders">
+      <view class="tool-title-row">
+        <text class="tool-title">回访提醒</text>
+        <text wx:if="{{reminderAlertCount > 0}}" class="tool-badge">{{reminderAlertCount}}</text>
+      </view>
+      <text class="tool-subtitle">今日{{reminderStats.dueToday}} · 逾期{{reminderStats.overdue}}</text>
+    </view>
+  </view>
+
+  <view class="card search-card">
+    <input
+      class="search-input"
+      placeholder="搜索称呼/联系方式/车牌号/车型"
+      value="{{searchKeyword}}"
+      bindinput="onSearchInput"
+      confirm-type="search"
+    />
+    <view wx:if="{{searchKeyword}}" class="search-clear" bindtap="clearSearch">清空</view>
+  </view>
+
+  <view class="tabs card">
+    <view
+      wx:for="{{statusTabs}}"
+      wx:key="value"
+      class="tab-item {{currentStatus === item.value ? 'active' : ''}}"
+      data-status="{{item.value}}"
+      bindtap="onTabChange"
+    >
+      {{item.label}}
+    </view>
+  </view>
+
+  <view wx:if="{{filteredOrders.length === 0}}" class="card empty-card">
+    <view class="empty-title">{{emptyTitle}}</view>
+    <view class="empty-subtitle">{{emptySubtitle}}</view>
+    <button class="button-secondary" bindtap="goCreateOrder" disabled="{{!canCreateOrder}}">新建订单</button>
+  </view>
+
+  <view
+    wx:for="{{filteredOrders}}"
+    wx:key="id"
+    class="card order-card"
+    data-id="{{item.id}}"
+    data-service-type="{{item.serviceType || 'FILM'}}"
+    bindtap="viewOrderDetail"
+  >
+    <view class="order-top">
+      <text class="order-id">{{item.id}}</text>
+      <text class="status-badge {{item.status === '未完工' ? 'status-pending' : item.status === '已完工' ? 'status-confirmed' : 'status-cancelled'}}">{{item.status}}</text>
+    </view>
+    <view class="order-line">业务类型：{{item.serviceType === 'WASH' ? '洗车' : '贴膜'}}</view>
+    <view class="order-line">{{item.customerName || '未填写称呼'}} · {{item.phone || '未填写联系方式'}}</view>
+    <view class="order-line">{{item.carModel}}</view>
+    <view class="order-line">来源渠道：{{item.sourceChannel || '未填写'}}</view>
+    <view class="order-line">{{item.serviceType === 'WASH' ? '服务项目' : '品牌型号'}}：{{item.packageLabel || '未填写'}}</view>
+    <view class="order-line">{{item.serviceType === 'WASH' ? '服务说明' : '施工部位'}}：{{item.packageDesc || '未填写'}}</view>
+    <view class="order-line">销售负责人：{{item.salesBrandText || '未填写'}}</view>
+    <view class="order-line">派工：{{item.dispatchDisplay}}</view>
+    <view class="order-line">施工人员：{{item.technicianNameView}}</view>
+    <view class="order-line">交车状态：{{item.deliveryStatus || '待交车验收'}}</view>
+    <view class="order-line">施工提成：{{item.commissionStatus || '未生成'}} / ¥{{item.commissionTotal || 0}}</view>
+    <view class="order-line">支付凭证：定金{{item.depositProofPhotos ? item.depositProofPhotos.length : 0}}张 / 尾款{{item.finalPaymentPhotos ? item.finalPaymentPhotos.length : 0}}张</view>
+    <view class="order-line">财务同步：{{item.financeSyncStatus || '未同步'}}</view>
+    <view class="order-actions">
+      <button class="order-edit-btn" size="mini" data-id="{{item.id}}" data-service-type="{{item.serviceType || 'FILM'}}" catchtap="editOrder" disabled="{{!canEditOrder}}">{{item.serviceType === 'WASH' ? '编辑洗车单' : '编辑订单'}}</button>
+    </view>
+    <view class="order-bottom">
+      <text>{{item.appointmentDate}} {{item.appointmentTime}}</text>
+      <text class="order-price">¥{{item.priceSummary.totalPrice}}</text>
+    </view>
+  </view>
+  </block>
+</view>

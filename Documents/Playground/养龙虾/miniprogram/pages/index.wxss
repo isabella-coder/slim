@@ -121,6 +121,11 @@
   opacity: 0.95;
 }
 
+.legacy-entry {
+  background: linear-gradient(135deg, #2c3250, #4a5f9a);
+  margin-top: -6rpx;
+}
+
 /* 区块 */
 .section {
   background: #fff;

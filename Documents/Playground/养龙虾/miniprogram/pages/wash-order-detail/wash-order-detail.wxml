@@ -1,0 +1,68 @@
+<view class="container" wx:if="{{hasOrder}}">
+  <view class="card top-card">
+    <view class="order-id-row">
+      <text class="small-label">订单号</text>
+      <text class="order-id">{{order.id}}</text>
+    </view>
+    <view class="status-row">
+      <text class="status-badge {{order.status === '未完工' ? 'status-pending' : order.status === '已完工' ? 'status-confirmed' : 'status-cancelled'}}">{{order.status}}</text>
+      <text class="time-text">下单时间 {{order.createdAt}}</text>
+    </view>
+  </view>
+
+  <view class="card">
+    <view class="section-title">客户信息</view>
+    <view class="line"><text>姓名</text><text>{{order.customerName || '未填写'}}</text></view>
+    <view class="line"><text>电话</text><text>{{order.phone || '未填写'}}</text></view>
+  </view>
+
+  <view class="card">
+    <view class="section-title">洗车服务信息</view>
+    <view class="line"><text>服务类型</text><text>{{order.serviceTypeLabel || '洗车'}}</text></view>
+    <view class="line"><text>门店</text><text>{{order.store || '未填写'}}</text></view>
+    <view class="line"><text>预约时间</text><text>{{order.appointmentDate}} {{order.appointmentTime}}</text></view>
+    <view class="line"><text>预约工位</text><text>{{order.dispatchInfo.workBay || '未分配'}}</text></view>
+    <view class="line"><text>施工人员</text><text>{{order.dispatchInfo.technicianName || order.technicianName || '未分配'}}</text></view>
+    <view class="line"><text>总价格</text><text>¥{{order.priceSummary.totalPrice}}</text></view>
+    <view class="line"><text>固定提成比例</text><text>8%</text></view>
+    <view class="line"><text>施工提成</text><text>¥{{order.commissionTotal || 0}}</text></view>
+    <view class="line"><text>提成状态</text><text>{{order.commissionStatus || '未生成'}}</text></view>
+    <view class="line"><text>提成时间</text><text>{{order.commissionGeneratedAt || '未记录'}}</text></view>
+    <view class="line"><text>备注</text><text>{{order.remark || '无'}}</text></view>
+  </view>
+
+  <view class="card">
+    <view class="section-title">施工图片</view>
+    <view class="line"><text>图片数量</text><text>{{order.constructionPhotos.length}} 张</text></view>
+    <view wx:if="{{order.constructionPhotos.length === 0}}" class="photo-empty">暂无施工图片</view>
+    <view class="photo-grid">
+      <view wx:for="{{order.constructionPhotos}}" wx:key="*this" class="photo-card">
+        <image class="photo-image" src="{{item}}" mode="aspectFill" data-index="{{index}}" bindtap="previewConstructionPhoto" />
+        <view class="photo-remove" data-index="{{index}}" bindtap="removeConstructionPhoto">删除</view>
+      </view>
+    </view>
+    <button class="button-primary" bindtap="chooseConstructionPhotos">上传施工图片</button>
+  </view>
+
+  <view class="card">
+    <view class="section-title">财务同步</view>
+    <view class="line"><text>同步状态</text><text>{{order.financeSyncStatus || '未同步'}}</text></view>
+    <view class="line"><text>最后同步时间</text><text>{{order.financeSyncAt || '未同步'}}</text></view>
+    <view class="line"><text>同步事件</text><text>{{order.financeLastEvent || '暂无'}}</text></view>
+    <view class="line"><text>财务单号</text><text>{{order.financeExternalId || '未返回'}}</text></view>
+    <view class="line"><text>同步信息</text><text>{{order.financeSyncMessage || '暂无'}}</text></view>
+    <button class="button-primary" loading="{{financeSyncLoading}}" bindtap="syncFinanceNow">同步到财务系统</button>
+  </view>
+
+  <button class="button-secondary" bindtap="editOrder">编辑洗车订单</button>
+  <button class="button-secondary" bindtap="goWashDispatchBoard">洗车派工看板</button>
+  <button class="button-secondary" bindtap="cancelOrder">取消订单</button>
+  <button class="button-secondary" bindtap="goOrderList">返回全部订单</button>
+</view>
+
+<view class="container" wx:else>
+  <view class="card empty-card">
+    <view class="empty-title">洗车订单不存在或已删除</view>
+    <button class="button-primary" bindtap="goOrderList">返回全部订单</button>
+  </view>
+</view>

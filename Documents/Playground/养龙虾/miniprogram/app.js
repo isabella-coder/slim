@@ -26,6 +26,7 @@ App({
 
   // 全局数据
   globalData: {
+    servicePhone: '4008008899',
     userInfo: null,
     token: null,
     storeCode: null,

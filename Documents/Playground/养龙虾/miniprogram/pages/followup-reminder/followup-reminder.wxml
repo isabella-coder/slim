@@ -1,0 +1,70 @@
+<view class="container">
+  <view class="card top-card">
+    <view class="section-title">保养回访提醒</view>
+    <view class="hint">订单交车后自动生成 7 天 / 30 天 / 60 天 / 180 天回访节点。</view>
+  </view>
+
+  <view class="card stats-card">
+    <view class="stat-item">
+      <text class="stat-label">总节点</text>
+      <text class="stat-value">{{stats.total}}</text>
+    </view>
+    <view class="stat-item">
+      <text class="stat-label">今日到期</text>
+      <text class="stat-value due">{{stats.dueToday}}</text>
+    </view>
+    <view class="stat-item">
+      <text class="stat-label">已逾期</text>
+      <text class="stat-value overdue">{{stats.overdue}}</text>
+    </view>
+    <view class="stat-item">
+      <text class="stat-label">已完成</text>
+      <text class="stat-value done">{{stats.done}}</text>
+    </view>
+  </view>
+
+  <view class="tabs card">
+    <view
+      wx:for="{{tabs}}"
+      wx:key="value"
+      class="tab-item {{currentTab === item.value ? 'active' : ''}}"
+      data-tab="{{item.value}}"
+      bindtap="onTabChange"
+    >
+      {{item.label}}
+    </view>
+  </view>
+
+  <view wx:if="{{filteredItems.length === 0}}" class="card empty-card">
+    <view class="empty-title">暂无回访任务</view>
+    <view class="empty-subtitle">可等待交车后自动生成提醒，或切换筛选查看。</view>
+    <button class="button-secondary" bindtap="goOrderList">返回订单列表</button>
+  </view>
+
+  <view wx:for="{{filteredItems}}" wx:key="reminderId" class="card reminder-card">
+    <view class="reminder-top">
+      <text class="reminder-id">{{item.orderId}} · {{item.label}}</text>
+      <text class="status-pill {{item.statusClass}}">{{item.statusText}}</text>
+    </view>
+    <view class="reminder-line">{{item.customerName}} · {{item.phone}}</view>
+    <view class="reminder-line">{{item.carModel}} {{item.plateNumber}}</view>
+    <view class="reminder-line">销售负责人：{{item.salesOwner}}</view>
+    <view class="reminder-line">交车时间：{{item.deliveryPassedAt || '未记录'}}</view>
+    <view class="reminder-line">回访到期：{{item.dueDateText}}</view>
+    <view wx:if="{{item.doneAt}}" class="reminder-line">完成时间：{{item.doneAt}}</view>
+
+    <view class="action-row">
+      <button class="mini-btn secondary" size="mini" data-id="{{item.orderId}}" bindtap="viewOrderDetail">查看订单</button>
+      <button
+        wx:if="{{!item.done}}"
+        class="mini-btn primary"
+        size="mini"
+        data-id="{{item.orderId}}"
+        data-type="{{item.type}}"
+        bindtap="markDone"
+      >
+        标记已回访
+      </button>
+    </view>
+  </view>
+</view>

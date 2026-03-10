@@ -16,6 +16,8 @@ Page({
     canAccessStoreOps: true,
     storeOpsTitle: '经营中心',
     storeOpsSubtitle: '订单、调度、绩效模块将迁入这里',
+    carFilmTitle: '蔚蓝工单模块',
+    carFilmSubtitle: '兼容原工单端页面：下单、派工、绩效、回访',
     recentLeads: [],
     loading: true
   },
@@ -94,6 +96,10 @@ Page({
       return
     }
     wx.navigateTo({ url: '/subpackages/store/pages/ops-home/index' })
+  },
+
+  goToCarFilmOps() {
+    wx.navigateTo({ url: '/pages/index/index' })
   },
 
   resolveRoleAccess() {

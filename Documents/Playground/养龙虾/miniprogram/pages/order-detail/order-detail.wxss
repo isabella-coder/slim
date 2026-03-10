@@ -1,0 +1,260 @@
+.top-card {
+  background: linear-gradient(140deg, #111827, #1e293b);
+  color: #f8fafc;
+}
+
+.small-label {
+  color: #cbd5e1;
+  font-size: 24rpx;
+}
+
+.order-id {
+  margin-top: 6rpx;
+  display: block;
+  font-size: 28rpx;
+  font-weight: 600;
+}
+
+.status-row {
+  margin-top: 16rpx;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.time-text {
+  color: #cbd5e1;
+  font-size: 22rpx;
+}
+
+.role-hint {
+  margin-top: 12rpx;
+  color: #cbd5e1;
+}
+
+.status-badge {
+  border-radius: 999rpx;
+  padding: 6rpx 16rpx;
+  font-size: 22rpx;
+}
+
+.status-pending {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.status-confirmed {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.status-cancelled {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.line {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 14rpx;
+  color: #1f2937;
+  gap: 28rpx;
+}
+
+.line text:last-child {
+  text-align: right;
+  word-break: break-all;
+}
+
+.total {
+  margin-top: 8rpx;
+  padding-top: 10rpx;
+  border-top: 2rpx dashed #d1d5db;
+  font-weight: 700;
+}
+
+.form-item {
+  margin-bottom: 18rpx;
+}
+
+.multi-check-item {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  padding: 10rpx 0;
+}
+
+.picker-readonly {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+.photo-section {
+  margin-top: 18rpx;
+}
+
+.photo-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12rpx;
+}
+
+.upload-btn {
+  margin: 0;
+  background: #e2e8f0;
+  color: #1f2937;
+  border: none;
+  border-radius: 999rpx;
+  padding: 0 18rpx;
+}
+
+.photo-empty {
+  color: #6b7280;
+  font-size: 24rpx;
+  margin-bottom: 10rpx;
+}
+
+.photo-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12rpx;
+}
+
+.photo-card {
+  position: relative;
+}
+
+.photo-image {
+  width: 100%;
+  height: 180rpx;
+  border-radius: 10rpx;
+  background: #f3f4f6;
+}
+
+.photo-remove {
+  position: absolute;
+  right: 6rpx;
+  top: 6rpx;
+  background: rgba(17, 24, 39, 0.75);
+  color: #ffffff;
+  border-radius: 999rpx;
+  font-size: 20rpx;
+  padding: 2rpx 10rpx;
+}
+
+.part-record {
+  margin-top: 14rpx;
+  padding: 16rpx;
+  border: 2rpx solid #e5e7eb;
+  border-radius: 12rpx;
+  background: #f8fafc;
+}
+
+.part-record-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12rpx;
+}
+
+.part-record-title {
+  color: #0f172a;
+  font-weight: 600;
+}
+
+.part-record-time {
+  color: #6b7280;
+  font-size: 22rpx;
+}
+
+.part-record-line {
+  margin-top: 8rpx;
+  color: #334155;
+  font-size: 24rpx;
+}
+
+.record-remove-btn {
+  margin-top: 12rpx;
+  margin-left: 0;
+  background: #fee2e2;
+  color: #991b1b;
+  border: none;
+  border-radius: 999rpx;
+  line-height: 1.8;
+  padding: 0 18rpx;
+}
+
+.commission-list {
+  margin: 8rpx 0 10rpx;
+  padding-top: 10rpx;
+  border-top: 2rpx dashed #d1d5db;
+}
+
+.commission-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 16rpx;
+  color: #1f2937;
+  margin-bottom: 8rpx;
+}
+
+.empty-card {
+  text-align: center;
+  padding-top: 60rpx;
+  padding-bottom: 60rpx;
+}
+
+.empty-title {
+  margin-bottom: 20rpx;
+  font-size: 32rpx;
+  font-weight: 600;
+}
+
+/* ─── 抖音线索专属区块 ─── */
+.lead-grade-value { font-weight: 700; color: #dc2626; }
+
+.lead-reasons-wrap, .lead-followup-wrap, .lead-summary-wrap {
+  margin-top: 20rpx;
+  padding-top: 16rpx;
+  border-top: 1rpx solid #f1f5f9;
+}
+.lead-reasons-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8rpx;
+  margin-top: 8rpx;
+}
+.lead-reason-tag {
+  display: inline-block;
+  padding: 4rpx 14rpx;
+  background: #fef3c7;
+  color: #92400e;
+  font-size: 22rpx;
+  border-radius: 8rpx;
+}
+.lead-followup-list { margin-top: 8rpx; }
+.lead-followup-item {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  padding: 10rpx 0;
+  font-size: 24rpx;
+  color: #6b7280;
+}
+.fu-item-done { color: #065f46; }
+.fu-type { font-weight: 600; min-width: 60rpx; }
+.fu-status { flex: 1; }
+.fu-time { font-size: 22rpx; color: #9ca3af; }
+
+.lead-summary-wrap { margin-top: 20rpx; }
+.lead-summary-content {
+  margin-top: 8rpx;
+  padding: 16rpx;
+  background: #f8fafc;
+  border-radius: 12rpx;
+  font-size: 24rpx;
+  color: #374151;
+  line-height: 1.6;
+  white-space: pre-wrap;
+}

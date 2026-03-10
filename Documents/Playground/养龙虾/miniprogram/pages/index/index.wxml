@@ -1,0 +1,68 @@
+<view class="container">
+  <view class="hero card">
+    <view class="hero-title">蔚蓝工单管理</view>
+    <view class="hero-subtitle">请选择链路进入独立流程</view>
+  </view>
+
+  <view wx:if="{{needLogin}}" class="card account-card">
+    <view class="account-title">当前未登录</view>
+    <view class="account-subtitle">登录后可访问抖音线索、订单和派工模块。</view>
+    <button class="button-primary" bindtap="goLogin">去登录</button>
+  </view>
+
+  <block wx:if="{{!needLogin}}">
+
+  <view class="card account-card">
+    <view class="account-title">当前账号：{{currentAccountLabel}}</view>
+    <view wx:if="{{sessionUserLabel}}" class="account-subtitle">登录用户：{{sessionUserLabel}}（{{sessionRoleLabel}}）</view>
+    <view class="account-subtitle">系统会按登录身份自动应用权限：店长最高权限，销售可看全部/我的订单，施工仅操作自己的施工记录。</view>
+    <view wx:if="{{!canCreateOrder}}" class="account-subtitle">当前账号无下单权限，可进入“全部订单”处理施工记录。</view>
+    <view class="account-subtitle">当前版本按登录账号自动绑定角色，不允许手动切换。</view>
+    <button class="button-secondary logout-btn" bindtap="onLogout">退出登录</button>
+  </view>
+
+  <view class="card sync-card">
+    <view class="section-title">订单同步配置</view>
+    <view class="sync-status {{syncStatusClass}}">{{syncStatusLabel}}</view>
+    <view class="account-subtitle">{{syncStatusHint}}</view>
+    <view wx:if="{{syncLastSuccessAt}}" class="account-subtitle">最近成功：{{syncLastSuccessAt}}</view>
+    <view class="label">同步地址（Base URL）</view>
+    <input class="input" placeholder="https://api.example.com" value="{{syncBaseUrlInput}}" bindinput="onSyncBaseUrlInput" />
+    <view class="label">同步令牌（API Token，仅保存在本机）</view>
+    <input class="input" password="true" placeholder="{{syncTokenReady ? '已配置，可留空不改' : '请输入API Token'}}" value="{{syncApiTokenInput}}" bindinput="onSyncApiTokenInput" />
+    <view class="sync-actions">
+      <button class="button-secondary sync-btn" bindtap="saveSyncSettings">保存配置</button>
+      <button class="button-secondary sync-btn" bindtap="clearSyncToken">清除Token</button>
+    </view>
+    <button class="button-primary" bindtap="triggerManualSync">立即同步订单</button>
+  </view>
+
+  <view class="card entry-card film-entry {{canCreateOrder ? '' : 'entry-card-disabled'}}" bindtap="goFilmOrder">
+    <view class="entry-top">
+      <view class="entry-title">贴膜链路</view>
+      <view class="entry-type">FILM</view>
+    </view>
+    <view class="entry-subtitle">贴膜下单、派工、提成、回访、销售业绩</view>
+    <view class="entry-action">进入贴膜链路 <text class="entry-arrow">></text></view>
+  </view>
+
+  <view class="card entry-card wash-entry {{canCreateOrder ? '' : 'entry-card-disabled'}}" bindtap="goWashOrder">
+    <view class="entry-top">
+      <view class="entry-title">洗车链路</view>
+      <view class="entry-type">WASH</view>
+    </view>
+    <view class="entry-subtitle">整点预约、洗车派工、施工图片、固定提成</view>
+    <view class="entry-action">进入洗车链路 <text class="entry-arrow">></text></view>
+  </view>
+
+  <view class="card quick-card">
+    <view class="section-title">常用入口</view>
+    <view class="quick-grid">
+      <view class="quick-item" bindtap="goOrderList">全部订单</view>
+      <view class="quick-item" bindtap="goFilmDispatchBoard">贴膜派工看板</view>
+      <view class="quick-item" bindtap="goWashDispatchBoard">洗车派工看板</view>
+      <view class="quick-item {{canViewSalesBoard ? '' : 'quick-item-disabled'}}" bindtap="goSalesPerformance">销售业绩看板</view>
+    </view>
+  </view>
+  </block>
+</view>

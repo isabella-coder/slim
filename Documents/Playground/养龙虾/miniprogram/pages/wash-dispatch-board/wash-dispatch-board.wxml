@@ -1,0 +1,84 @@
+<view class="container">
+  <view class="card top-card">
+    <view class="section-title">洗车派工看板</view>
+    <view class="hint">按日期/时段/技师/状态管理，支持一键派工、改派、完工和上传施工图。</view>
+    <view class="form-item">
+      <text class="label">排班日期</text>
+      <picker mode="date" value="{{selectedDate}}" bindchange="onDateChange">
+        <view class="picker">{{selectedDate}}</view>
+      </picker>
+    </view>
+  </view>
+
+  <view class="card stats-card">
+    <view class="stat-item">
+      <text class="stat-label">总单量</text>
+      <text class="stat-value">{{stats.total}}</text>
+    </view>
+    <view class="stat-item">
+      <text class="stat-label">待派工</text>
+      <text class="stat-value warning">{{stats.unassigned}}</text>
+    </view>
+    <view class="stat-item">
+      <text class="stat-label">已派工</text>
+      <text class="stat-value primary">{{stats.assigned}}</text>
+    </view>
+    <view class="stat-item">
+      <text class="stat-label">已完工</text>
+      <text class="stat-value success">{{stats.completed}}</text>
+    </view>
+    <view class="stat-item">
+      <text class="stat-label">冲突时段</text>
+      <text class="stat-value danger">{{stats.conflict}}</text>
+    </view>
+  </view>
+
+  <view wx:for="{{slotRows}}" wx:key="time" wx:for-index="rowIndex" class="card slot-card {{item.conflict ? 'slot-card-conflict' : ''}}">
+    <view class="slot-head">
+      <text class="slot-time">{{item.time}}</text>
+      <text class="slot-status">{{item.hasOrder ? (item.conflict ? '时段冲突' : '已预约') : '可预约'}}</text>
+    </view>
+
+    <view wx:if="{{!item.hasOrder}}" class="slot-empty">当前时段暂无洗车订单</view>
+
+    <view
+      wx:for="{{item.orders}}"
+      wx:key="id"
+      wx:for-item="order"
+      wx:for-index="orderIndex"
+      class="order-item"
+    >
+      <view class="order-line">{{order.id}} · {{order.customerName || '未填写姓名'}} · {{order.phone || '未填写电话'}}</view>
+      <view class="order-line">门店：{{order.store || '未填写'}} · 工位：{{order.workBay || '未分配'}}</view>
+      <view class="order-line">金额：¥{{order.totalPrice}} · 施工图：{{order.photosCount}}张</view>
+      <view class="status-row">
+        <text>状态：</text>
+        <text class="status-tag {{order.statusClass}}">{{order.boardStatus}}</text>
+      </view>
+
+      <view class="form-item">
+        <text class="label">派工技师</text>
+        <picker
+          mode="selector"
+          range="{{technicianOptions}}"
+          value="{{order.technicianIndex >= 0 ? order.technicianIndex : 0}}"
+          data-row-index="{{rowIndex}}"
+          data-order-index="{{orderIndex}}"
+          bindchange="onTechnicianChange"
+        >
+          <view class="picker">{{order.technicianIndex >= 0 ? technicianOptions[order.technicianIndex] : '请选择技师'}}</view>
+        </picker>
+      </view>
+
+      <view class="button-row">
+        <button class="mini-btn" size="mini" data-row-index="{{rowIndex}}" data-order-index="{{orderIndex}}" bindtap="dispatchOrder">派工/改派</button>
+        <button class="mini-btn" size="mini" data-row-index="{{rowIndex}}" data-order-index="{{orderIndex}}" bindtap="completeOrder">标记完工</button>
+        <button class="mini-btn" size="mini" data-row-index="{{rowIndex}}" data-order-index="{{orderIndex}}" bindtap="uploadPhotos">上传施工图</button>
+        <button class="mini-btn" size="mini" data-id="{{order.id}}" bindtap="viewOrderDetail">订单详情</button>
+      </view>
+    </view>
+  </view>
+
+  <button class="button-secondary" bindtap="goWashOrder">去洗车下单</button>
+  <button class="button-secondary" bindtap="goOrderList">查看全部订单</button>
+</view>

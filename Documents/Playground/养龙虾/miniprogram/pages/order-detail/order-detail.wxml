@@ -1,0 +1,290 @@
+<view class="container" wx:if="{{hasOrder}}">
+  <view class="card top-card">
+    <view class="order-id-row">
+      <text class="small-label">订单号</text>
+      <text class="order-id">{{order.id}}</text>
+    </view>
+    <view class="status-row">
+      <text class="status-badge {{order.status === '未完工' ? 'status-pending' : order.status === '已完工' ? 'status-confirmed' : 'status-cancelled'}}">{{order.status}}</text>
+      <text class="time-text">下单时间 {{order.createdAt}}</text>
+    </view>
+    <view class="hint role-hint">当前账号：{{currentUser.accountName || '管理员'}}（{{currentUser.roleLabel || (isManagerMode ? '最高权限' : '施工账号')}}）</view>
+  </view>
+
+  <view class="card">
+    <view class="section-title">车主信息</view>
+    <view class="line"><text>客户称呼</text><text>{{order.customerName || '未填写'}}</text></view>
+    <view class="line"><text>联系方式</text><text>{{order.phone || '未填写'}}</text></view>
+    <view class="line"><text>车型</text><text>{{order.carModel}}</text></view>
+    <view class="line"><text>车牌号</text><text>{{order.plateNumber || '未填写'}}</text></view>
+    <view class="line"><text>来源渠道</text><text>{{order.sourceChannel || '未填写'}}</text></view>
+    <view class="line"><text>车架号照片</text><text>{{order.vinPhoto ? '已上传' : '未上传'}}</text></view>
+    <view wx:if="{{order.vinPhoto}}" class="photo-grid">
+      <view class="photo-card">
+        <image class="photo-image" src="{{order.vinPhoto}}" mode="aspectFill" bindtap="previewVinPhoto" />
+      </view>
+    </view>
+  </view>
+
+  <!-- 抖音线索专属信息（仅线索订单显示） -->
+  <view class="card" wx:if="{{order.leadSource === 'douyin_ai'}}">
+    <view class="section-title">🔥 抖音线索信息</view>
+    <view class="line"><text>线索等级</text><text class="lead-grade-value">{{order.leadGrade}}级 · {{order.leadGradeScore}}分</text></view>
+    <view class="line"><text>线索状态</text><text>{{order.leadStatus || '待联系'}}</text></view>
+    <view class="line" wx:if="{{order.leadBudgetRange}}"><text>客户预算</text><text>{{order.leadBudgetRange}}</text></view>
+    <view class="line" wx:if="{{order.leadWechat}}"><text>微信号</text><text>{{order.leadWechat}}</text></view>
+    <view class="line"><text>来源平台</text><text>{{order.leadPlatform || '抖音'}} · {{order.leadAccountCode || '-'}}</text></view>
+    <view class="line"><text>跟进优先级</text><text>{{order.leadFollowupPriority === 'urgent' ? '🔴 紧急' : '🟡 正常'}}</text></view>
+
+    <!-- 分级理由 -->
+    <view wx:if="{{order.leadGradeReasons && order.leadGradeReasons.length > 0}}" class="lead-reasons-wrap">
+      <text class="small-label">评级理由</text>
+      <view class="lead-reasons-list">
+        <text wx:for="{{order.leadGradeReasons}}" wx:key="*this" class="lead-reason-tag">{{item}}</text>
+      </view>
+    </view>
+
+    <!-- 回访计划 -->
+    <view wx:if="{{order.followupRecords && order.followupRecords.length > 0}}" class="lead-followup-wrap">
+      <text class="small-label">回访计划</text>
+      <view class="lead-followup-list">
+        <view wx:for="{{order.followupRecords}}" wx:key="type" class="lead-followup-item {{item.done ? 'fu-item-done' : ''}}">
+          <text class="fu-type">{{item.type}}</text>
+          <text class="fu-status">{{item.done ? '✅ 已回访' : '⏳ 待回访'}}</text>
+          <text wx:if="{{item.doneAt}}" class="fu-time">{{item.doneAt}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- AI 对话摘要 -->
+    <view wx:if="{{order.leadConversationSummary}}" class="lead-summary-wrap">
+      <text class="small-label">💬 AI对话摘要</text>
+      <view class="lead-summary-content">{{order.leadConversationSummary}}</view>
+    </view>
+  </view>
+
+  <view class="card">
+    <view class="section-title">服务信息</view>
+    <view class="line"><text>品牌型号</text><text>{{order.packageLabel || '未填写'}}</text></view>
+    <view class="line"><text>施工部位</text><text>{{order.packageDesc || '未填写'}}</text></view>
+    <view class="line"><text>销售负责人</text><text>{{order.salesBrandText || '未填写'}}</text></view>
+    <view class="line"><text>施工门店</text><text>{{order.store}}</text></view>
+    <view class="line"><text>预约时间</text><text>{{order.appointmentDate}} {{order.appointmentTime}}</text></view>
+    <view class="line"><text>备注</text><text>{{order.remark || '无'}}</text></view>
+  </view>
+
+  <view class="card">
+    <view class="section-title">派工信息</view>
+    <view class="hint">每天最多 10 个工位，满额后不可再预约工位。</view>
+    <view class="line"><text>当前工位</text><text>{{order.dispatchInfo.workBay || '未分配'}}</text></view>
+    <view class="line"><text>当前技师</text><text>{{order.dispatchInfo.technicianDisplay || order.dispatchInfo.technicianName || '未分配'}}</text></view>
+    <view class="line"><text>派工更新时间</text><text>{{order.dispatchInfo.updatedAt || '未记录'}}</text></view>
+
+    <view class="form-item">
+      <text class="label">派工日期</text>
+      <picker mode="date" value="{{dispatchForm.date}}" bindchange="onDispatchDateChange" disabled="{{!isManagerMode}}">
+        <view class="picker">{{dispatchForm.date || '请选择日期'}}</view>
+      </picker>
+    </view>
+
+    <view class="form-item">
+      <text class="label">派工时间</text>
+      <picker mode="time" value="{{dispatchForm.time}}" bindchange="onDispatchTimeChange" disabled="{{!isManagerMode}}">
+        <view class="picker">{{dispatchForm.time || '请选择时间'}}</view>
+      </picker>
+    </view>
+
+    <view class="form-item">
+      <text class="label">施工工位</text>
+      <picker mode="selector" range="{{workBayOptions}}" value="{{dispatchBayIndex}}" bindchange="onDispatchBayChange" disabled="{{!isManagerMode}}">
+        <view class="picker">{{dispatchForm.workBay || '请选择工位'}}</view>
+      </picker>
+    </view>
+
+    <view class="form-item">
+      <text class="label">派工技师</text>
+      <checkbox-group bindchange="onDispatchTechniciansChange">
+        <label wx:for="{{dispatchTechnicianOptions}}" wx:key="name" class="multi-check-item">
+          <checkbox value="{{item.name}}" checked="{{item.checked}}" color="#0f172a" disabled="{{!isManagerMode}}" />
+          <text>{{item.name}}</text>
+        </label>
+      </checkbox-group>
+      <view class="hint">可多选，已选 {{dispatchForm.technicianNames.length}} 人</view>
+    </view>
+
+    <view class="form-item">
+      <text class="label">派工备注（选填）</text>
+      <textarea class="textarea" placeholder="如：优先上午施工，避开2号工位占用" maxlength="120" value="{{dispatchForm.remark}}" bindinput="onDispatchRemarkInput" disabled="{{!isManagerMode}}" />
+    </view>
+
+    <view wx:if="{{!isManagerMode}}" class="hint">当前账号无派工编辑权限</view>
+    <button class="button-primary" bindtap="saveDispatch" disabled="{{!isManagerMode}}">保存派工</button>
+    <button class="button-secondary" bindtap="goDispatchBoard">查看派工看板</button>
+  </view>
+
+  <view class="card">
+    <view class="section-title">施工部位提交</view>
+    <view class="hint">施工人员自行分工，提交部位和照片；你确认交车无问题后再生成提成。</view>
+
+    <view class="form-item">
+      <text class="label">提成类型</text>
+      <picker mode="selector" range="{{partTypeOptions}}" range-key="label" value="{{partTypeIndex}}" bindchange="onPartTypeChange" disabled="{{!canSubmitWorkPart}}">
+        <view class="picker">{{partTypeOptions[partTypeIndex].label}}</view>
+      </picker>
+    </view>
+
+    <view class="form-item">
+      <text class="label">施工部位</text>
+      <checkbox-group bindchange="onPartCodesChange">
+        <label wx:for="{{partOptions}}" wx:key="code" class="multi-check-item">
+          <checkbox value="{{item.code}}" checked="{{item.checked}}" color="#0f172a" disabled="{{!canSubmitWorkPart}}" />
+          <text>{{item.label}}（¥{{item.amount}}）</text>
+        </label>
+      </checkbox-group>
+      <view class="hint">可多选，已选 {{partForm.partCodes.length}} 项</view>
+    </view>
+
+    <view class="form-item">
+      <text class="label">施工人员账号</text>
+      <view wx:if="{{isTechnicianMode}}" class="picker picker-readonly">{{partForm.technicianAccountName || currentUser.accountName || '未识别账号'}}</view>
+      <picker wx:else mode="selector" range="{{technicianOptions}}" value="{{partTechnicianIndex >= 0 ? partTechnicianIndex : 0}}" bindchange="onPartTechnicianChange" disabled="{{!canSubmitWorkPart}}">
+        <view class="picker">{{partTechnicianIndex >= 0 ? technicianOptions[partTechnicianIndex] : '请选择施工人员'}}</view>
+      </picker>
+      <view class="hint" wx:if="{{isTechnicianMode}}">施工账号提交时会自动绑定到你的账号。</view>
+      <view class="hint" wx:if="{{!isManagerMode && !isTechnicianMode}}">当前账号仅可查看，不可提交施工记录。</view>
+    </view>
+
+    <view class="photo-section">
+      <view class="photo-header">
+        <text class="label">施工照片</text>
+        <button class="upload-btn" size="mini" bindtap="choosePartPhotos" disabled="{{!canSubmitWorkPart}}">上传照片</button>
+      </view>
+      <view wx:if="{{partForm.photos.length === 0}}" class="photo-empty">暂无照片</view>
+      <view class="photo-grid">
+        <view wx:for="{{partForm.photos}}" wx:key="*this" class="photo-card">
+          <image class="photo-image" src="{{item}}" mode="aspectFill" data-index="{{index}}" bindtap="previewPartPhoto" />
+          <view wx:if="{{canSubmitWorkPart}}" class="photo-remove" data-index="{{index}}" bindtap="removePartPhoto">删除</view>
+        </view>
+      </view>
+    </view>
+
+    <button class="button-primary" bindtap="saveWorkPartRecord" disabled="{{!canSubmitWorkPart}}">保存施工部位记录</button>
+  </view>
+
+  <view class="card">
+    <view class="section-title">已提交施工记录</view>
+    <view wx:if="{{order.workPartRecords.length === 0}}" class="photo-empty">暂无施工部位记录</view>
+    <view wx:for="{{order.workPartRecords}}" wx:key="id" class="part-record">
+      <view class="part-record-head">
+        <text class="part-record-title">{{item.partTypeLabel}} · {{item.partLabel}}</text>
+        <text class="part-record-time">{{item.submittedAt || '未记录时间'}}</text>
+      </view>
+      <view class="part-record-line">施工人员：{{item.technicianName || '未填写'}}</view>
+      <view class="part-record-line">施工账号：{{item.technicianAccountId || '未绑定'}}</view>
+      <view class="part-record-line">固定提成：¥{{item.amount || 0}}</view>
+
+      <view class="photo-grid">
+        <view wx:for="{{item.photos}}" wx:for-item="photo" wx:for-index="photoIndex" wx:key="*this" class="photo-card">
+          <image class="photo-image" src="{{photo}}" mode="aspectFill" data-record-index="{{index}}" data-photo-index="{{photoIndex}}" bindtap="previewWorkPhoto" />
+        </view>
+      </view>
+
+      <button class="record-remove-btn" size="mini" data-id="{{item.id}}" bindtap="removeWorkPartRecord" disabled="{{!isManagerMode && (!isTechnicianMode || (item.technicianAccountId !== currentUser.accountId && item.technicianName !== currentUser.accountName))}}">删除该记录</button>
+    </view>
+  </view>
+
+  <view class="card">
+    <view class="section-title">完工效果图</view>
+    <view class="line"><text>照片数量</text><text>{{order.constructionPhotos.length}} 张</text></view>
+    <view wx:if="{{order.constructionPhotos.length === 0}}" class="photo-empty">暂无完工效果图</view>
+    <view class="photo-grid">
+      <view wx:for="{{order.constructionPhotos}}" wx:key="*this" class="photo-card">
+        <image class="photo-image" src="{{item}}" mode="aspectFill" data-index="{{index}}" bindtap="previewConstructionPhoto" />
+        <view class="photo-remove" data-index="{{index}}" bindtap="removeConstructionPhoto">删除</view>
+      </view>
+    </view>
+    <button class="button-primary" bindtap="chooseConstructionPhotos">上传完工效果图</button>
+  </view>
+
+  <view class="card">
+    <view class="section-title">交车验收与施工提成</view>
+    <view class="line"><text>交车状态</text><text>{{order.deliveryStatus || '待交车验收'}}</text></view>
+    <view class="line"><text>提成状态</text><text>{{order.commissionStatus || '未生成'}}</text></view>
+    <view class="line"><text>交车通过时间</text><text>{{order.deliveryPassedAt || '未确认'}}</text></view>
+    <view class="line"><text>{{isTechnicianMode ? '我的提成总额' : '提成总额'}}</text><text>¥{{displayedCommissionTotal || 0}}</text></view>
+    <view class="line"><text>提成生成时间</text><text>{{order.commissionGeneratedAt || '未生成'}}</text></view>
+    <view class="hint" wx:if="{{isTechnicianMode}}">施工账号仅显示并统计“我的提成记录”。</view>
+
+    <view wx:if="{{displayedCommissionRecords.length > 0}}" class="commission-list">
+      <view class="commission-row" wx:for="{{displayedCommissionRecords}}" wx:key="id">
+        <text>{{item.technicianName}} · {{item.partLabel}}</text>
+        <text>+¥{{item.amount}}</text>
+      </view>
+    </view>
+    <view wx:if="{{displayedCommissionRecords.length === 0}}" class="photo-empty">暂无可见提成记录</view>
+
+    <button class="button-primary" loading="{{generatingCommission}}" catchtap="confirmDeliveryAndGenerate" disabled="{{!isManagerMode}}">{{order.commissionStatus === '已生成' ? '重新生成施工提成' : '交车通过并生成施工提成'}}</button>
+  </view>
+
+  <view class="card">
+    <view class="section-title">支付凭证</view>
+    <view class="line"><text>定金截图</text><text>{{order.depositProofPhotos.length}} 张</text></view>
+    <view wx:if="{{order.depositProofPhotos.length === 0}}" class="photo-empty">暂无定金截图</view>
+    <view class="photo-grid">
+      <view wx:for="{{order.depositProofPhotos}}" wx:key="*this" class="photo-card">
+        <image class="photo-image" src="{{item}}" mode="aspectFill" data-index="{{index}}" bindtap="previewDepositProof" />
+      </view>
+    </view>
+
+    <view class="line"><text>尾款截图</text><text>{{order.finalPaymentPhotos.length}} 张</text></view>
+    <view class="line"><text>尾款上传时间</text><text>{{order.finalPaymentUploadedAt || '未上传'}}</text></view>
+    <view class="hint">交车通过后可上传尾款图片；上传后由最高权限手动点击“确认完工”。</view>
+
+    <view class="photo-grid">
+      <view wx:for="{{order.finalPaymentPhotos}}" wx:key="*this" class="photo-card">
+        <image class="photo-image" src="{{item}}" mode="aspectFill" data-index="{{index}}" bindtap="previewFinalPaymentPhoto" />
+        <view class="photo-remove" data-index="{{index}}" bindtap="removeFinalPaymentPhoto">删除</view>
+      </view>
+    </view>
+
+    <button
+      class="button-primary"
+      bindtap="chooseFinalPaymentPhotos"
+      disabled="{{order.deliveryStatus !== '交车通过'}}"
+    >
+      {{order.deliveryStatus === '交车通过' ? '上传尾款图片' : '交车通过后可上传尾款图片'}}
+    </button>
+  </view>
+
+  <view class="card">
+    <view class="section-title">费用明细</view>
+    <view class="line"><text>套餐价格</text><text>¥{{priceView.packagePrice}}</text></view>
+    <view class="line"><text>增值服务</text><text>¥{{priceView.addOnFee}}</text></view>
+    <view class="line total"><text>总价</text><text>¥{{priceView.totalPrice}}</text></view>
+    <view class="line"><text>定金</text><text>¥{{priceView.deposit}}</text></view>
+    <view class="line"><text>尾款</text><text>¥{{priceView.totalPrice - priceView.deposit}}</text></view>
+  </view>
+
+  <view class="card">
+    <view class="section-title">财务同步</view>
+    <button class="button-primary" bindtap="confirmOrderCompleted" disabled="{{!canCompleteOrder}}">{{order.status === '已完工' ? '订单已完工' : (isManagerMode ? (order.finalPaymentPhotos.length > 0 ? '确认完工' : '请先上传尾款凭证') : '仅最高权限可确认完工')}}</button>
+    <view class="line"><text>同步状态</text><text>{{order.financeSyncStatus || '未同步'}}</text></view>
+    <view class="line"><text>最后同步时间</text><text>{{order.financeSyncAt || '未同步'}}</text></view>
+    <view class="line"><text>同步事件</text><text>{{order.financeLastEvent || '暂无'}}</text></view>
+    <view class="line"><text>财务单号</text><text>{{order.financeExternalId || '未返回'}}</text></view>
+    <view class="line"><text>同步信息</text><text>{{order.financeSyncMessage || '暂无'}}</text></view>
+    <button class="button-primary" loading="{{financeSyncLoading}}" bindtap="syncFinanceNow" disabled="{{!isManagerMode}}">同步到财务系统</button>
+  </view>
+
+  <button class="button-secondary" bindtap="copyOrderId">复制订单号</button>
+  <button class="button-secondary" bindtap="editOrder" disabled="{{!isManagerMode}}">编辑订单</button>
+  <button class="button-secondary" bindtap="callService">联系客服</button>
+  <button class="button-secondary" bindtap="cancelOrder" disabled="{{!isManagerMode}}">取消订单</button>
+</view>
+
+<view class="container" wx:else>
+  <view class="card empty-card">
+    <view class="empty-title">订单不存在或已删除</view>
+    <button class="button-primary" bindtap="createNewOrder">去下单</button>
+  </view>
+</view>

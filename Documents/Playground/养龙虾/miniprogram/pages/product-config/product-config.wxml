@@ -1,0 +1,52 @@
+<view class="container">
+  <view class="card">
+    <view class="section-title">产品与价格管理</view>
+    <view class="hint">内部使用：可直接修改品牌型号、施工部位和价格。</view>
+  </view>
+
+  <view class="card" wx:for="{{products}}" wx:key="value">
+    <view class="line-head">
+      <text class="item-title">产品 {{index + 1}}</text>
+      <button class="delete-btn" size="mini" data-index="{{index}}" bindtap="removeProduct">删除</button>
+    </view>
+
+    <view class="form-item">
+      <text class="label">品牌型号</text>
+      <input class="input" value="{{item.label}}" data-index="{{index}}" data-field="label" bindinput="onItemInput" />
+    </view>
+
+    <view class="form-item">
+      <text class="label">施工部位</text>
+      <input class="input" value="{{item.desc}}" data-index="{{index}}" data-field="desc" bindinput="onItemInput" />
+    </view>
+
+    <view class="form-item">
+      <text class="label">价格（元）</text>
+      <input class="input" type="number" value="{{item.basePrice}}" data-index="{{index}}" data-field="basePrice" bindinput="onItemInput" />
+    </view>
+  </view>
+
+  <view class="card">
+    <view class="section-title">新增产品</view>
+
+    <view class="form-item">
+      <text class="label">品牌型号</text>
+      <input class="input" placeholder="例如：龙膜 AIR80" value="{{newLabel}}" data-field="newLabel" bindinput="onNewInput" />
+    </view>
+
+    <view class="form-item">
+      <text class="label">施工部位</text>
+      <input class="input" placeholder="例如：前挡 / 全车" value="{{newDesc}}" data-field="newDesc" bindinput="onNewInput" />
+    </view>
+
+    <view class="form-item">
+      <text class="label">价格（元）</text>
+      <input class="input" type="number" placeholder="请输入价格" value="{{newPrice}}" data-field="newPrice" bindinput="onNewInput" />
+    </view>
+
+    <button class="button-secondary" bindtap="addProduct">添加产品</button>
+  </view>
+
+  <button class="button-primary" bindtap="saveProducts">保存修改</button>
+  <button class="button-secondary" bindtap="saveAndBack">保存并返回</button>
+</view>

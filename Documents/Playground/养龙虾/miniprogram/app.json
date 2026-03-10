@@ -4,7 +4,21 @@
     "pages/index",
     "pages/leads",
     "pages/lead-detail",
-    "pages/profile"
+    "pages/profile",
+    "pages/login/login",
+    "pages/index/index",
+    "pages/film-order/film-order",
+    "pages/wash-order/wash-order",
+    "pages/wash-order-detail/wash-order-detail",
+    "pages/product-config/product-config",
+    "pages/order-list/order-list",
+    "pages/order-edit/order-edit",
+    "pages/order-detail/order-detail",
+    "pages/dispatch-board/dispatch-board",
+    "pages/wash-dispatch-board/wash-dispatch-board",
+    "pages/sales-performance/sales-performance",
+    "pages/followup-reminder/followup-reminder",
+    "pages/douyin-leads/douyin-leads"
   ],
   "window": {
     "backgroundTextStyle": "light",
