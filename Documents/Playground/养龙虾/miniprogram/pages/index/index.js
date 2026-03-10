@@ -14,6 +14,10 @@ const {
   getMiniRoleLabel,
   logoutMiniProgram
 } = require('../../utils/mini-auth');
+const {
+  hasMiniAuthSession,
+  navigateToStoreLogin
+} = require('../../utils/page-access');
 
 Page({
   data: {
@@ -44,8 +48,7 @@ Page({
   },
 
   _doAuthCheck() {
-    var session = getMiniAuthSession();
-    if (!session.token || !session.user) {
+    if (!hasMiniAuthSession()) {
       this.setData({
         needLogin: true,
         currentAccountLabel: '未登录',
@@ -61,6 +64,8 @@ Page({
       });
       return;
     }
+
+    var session = getMiniAuthSession();
 
     this.setData({ needLogin: false });
     bindUserContextFromSessionUser(session.user);
@@ -99,9 +104,7 @@ Page({
   },
 
   goLogin() {
-    wx.navigateTo({
-      url: '/pages/login?scene=store'
-    });
+    navigateToStoreLogin();
   },
 
   loadAccountContext() {

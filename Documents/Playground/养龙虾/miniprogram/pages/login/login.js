@@ -1,5 +1,6 @@
 const { getFinanceConfig, setFinanceBaseUrl } = require('../../config/finance.config');
-const { getMiniAuthSession, loginMiniProgram } = require('../../utils/mini-auth');
+const { loginMiniProgram } = require('../../utils/mini-auth');
+const { hasMiniAuthSession } = require('../../utils/page-access');
 
 Page({
   data: {
@@ -12,8 +13,7 @@ Page({
   },
 
   onShow() {
-    const session = getMiniAuthSession();
-    if (session.token && session.user) {
+    if (hasMiniAuthSession()) {
       this.finishLoginFlow();
       return;
     }

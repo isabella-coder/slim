@@ -1,6 +1,10 @@
 const { clearMiniAuthSession, getMiniAuthSession } = require('../../utils/mini-auth');
 const { getFinanceConfig } = require('../../config/finance.config');
 const {
+  hasMiniAuthSession,
+  navigateToStoreLogin
+} = require('../../utils/page-access');
+const {
   getCurrentUserContext,
   isManagerContext,
   isSalesContext
@@ -131,8 +135,7 @@ Page({
 
   // ─── 加载线索 ───
   loadLeads() {
-    const session = getMiniAuthSession();
-    if (!session.token) {
+    if (!hasMiniAuthSession()) {
       this.setData({
         needLogin: true,
         loading: false,
@@ -141,6 +144,8 @@ Page({
       });
       return Promise.resolve();
     }
+
+    const session = getMiniAuthSession();
 
     this.setData({ loading: true, needLogin: false });
     const baseUrl = getFinanceConfig().baseUrl.replace(/\/+$/, '');
@@ -256,11 +261,11 @@ Page({
 
   // ─── 回访到期加载 ───
   loadFollowupDue() {
-    const session = getMiniAuthSession();
-    if (!session.token) {
+    if (!hasMiniAuthSession()) {
       this.setData({ needLogin: true });
       return;
     }
+    const session = getMiniAuthSession();
     const baseUrl = getFinanceConfig().baseUrl.replace(/\/+$/, '');
     wx.request({
       url: `${baseUrl}/api/leads/followup-due`,
@@ -284,9 +289,7 @@ Page({
   },
 
   goLogin() {
-    wx.navigateTo({
-      url: '/pages/login?scene=store'
-    });
+    navigateToStoreLogin();
   },
 
   // ─── 显示回访到期详情 ───
