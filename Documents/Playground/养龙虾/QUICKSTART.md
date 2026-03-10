@@ -61,6 +61,11 @@ docker-compose logs postgres
 - User: xls_admin
 - Password: xls_admin_2024
 
+如果你的数据库在腾讯云：
+- 可跳过本地 `docker-compose`，在 `backend/.env` 直接设置 `DATABASE_URL`。
+- 示例：`DATABASE_URL=postgresql://<user>:<password>@<腾讯云DB地址>:5432/<db_name>?sslmode=disable`
+- 若腾讯云实例启用 SSL，请把 `sslmode=disable` 改为 `require`（或实例要求的模式）。
+
 ### 3. 配置环境变量
 
 ```bash
@@ -356,9 +361,9 @@ cd /Users/yushuai/Documents/Playground/养龙虾/backend
 source ../.venv/bin/activate
 uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 
-# 终端 B：8080 经营系统
-cd /Users/yushuai/Documents/Playground/养龙虾/car-film-mini-program/admin-console
-INTERNAL_API_TOKEN='<YOUR_TOKEN>' python3 server.py
+# 可选（仅 legacy 对照，不作为标准发布链路）：若需要 admin-console 对照测试，再单独启动 8080
+# cd /Users/yushuai/Documents/Playground/养龙虾/car-film-mini-program/admin-console
+# INTERNAL_API_TOKEN='<YOUR_TOKEN>' python3 server.py
 ```
 
 ### 2. 小程序统一配置键
@@ -366,7 +371,7 @@ INTERNAL_API_TOKEN='<YOUR_TOKEN>' python3 server.py
 在微信开发者工具 Storage 中只维护这 3 个键：
 
 1. `api_base_url` = `http://127.0.0.1:8000/api/v1`
-2. `store_api_base_url` = `http://127.0.0.1:8080`
+2. `store_api_base_url` = `http://127.0.0.1:8000`
 3. `store_internal_api_token` = `<YOUR_TOKEN>`
 
 ### 3. 登录入口规范
@@ -380,13 +385,13 @@ INTERNAL_API_TOKEN='<YOUR_TOKEN>' python3 server.py
 2. `douyin-leads`、`followup-reminder`、`sales-performance` 可打开且不白屏
 3. token 三态：首次进入、过期后重登、退出后重进
 
-### 5. 8080 冒烟预期
+### 5. 统一接口冒烟预期
 
-1. `/api/v1/internal/orders`、`/api/v1/internal/orders/sync`
+1. `/api/v1/store/internal/orders`、`/api/v1/store/internal/orders/sync`
   - 无 token：401
   - `Authorization: Bearer <store_internal_api_token>`：200
   - `X-Api-Token: <store_internal_api_token>`：200
-2. `/api/leads`
+2. `/api/v1/store/leads`
   - 无 token / 内部 token：401（该接口需要会话 token）
 
 ## 🎯 下一步建议

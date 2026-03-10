@@ -1,4 +1,4 @@
-const { getFinanceConfig, setFinanceBaseUrl } = require('../config/finance.config');
+const { getFinanceConfig, setFinanceApiToken, setFinanceBaseUrl } = require('../config/finance.config');
 const { getAvailableAccounts, getCurrentUserContext, setCurrentUserContextById } = require('./user-context');
 
 const MINI_AUTH_TOKEN_KEY = 'miniAuthSessionToken';
@@ -28,15 +28,20 @@ function loginMiniProgram(options) {
 
   return requestAuthJson({
     baseUrl,
-    path: '/api/login',
+    path: '/api/v1/store/login',
     method: 'POST',
     body: {
       username,
       password
     }
   }).then((payload) => {
-    const token = normalizeText(payload && payload.token);
-    const user = payload && typeof payload.user === 'object' ? payload.user : null;
+    const token = normalizeText(
+      (payload && payload.token)
+      || (payload && payload.data && payload.data.token)
+    );
+    const user = (payload && typeof payload.user === 'object'
+      ? payload.user
+      : (payload && payload.data && typeof payload.data.user === 'object' ? payload.data.user : null));
     if (!token || !user) {
       throw new Error('登录响应缺少会话信息');
     }
@@ -67,12 +72,14 @@ function ensureMiniAuthSession() {
 
   return requestAuthJson({
     baseUrl,
-    path: '/api/me',
+    path: '/api/v1/store/me',
     method: 'GET',
     token: session.token
   })
     .then((payload) => {
-      const user = payload && typeof payload.user === 'object' ? payload.user : session.user;
+      const user = (payload && typeof payload.user === 'object'
+        ? payload.user
+        : (payload && payload.data && typeof payload.data.user === 'object' ? payload.data.user : session.user));
       saveMiniAuthSession(session.token, user);
       bindUserContextFromSessionUser(user);
       return {
@@ -99,7 +106,7 @@ function logoutMiniProgram() {
 
   return requestAuthJson({
     baseUrl,
-    path: '/api/logout',
+    path: '/api/v1/store/logout',
     method: 'POST',
     token: session.token
   })
@@ -132,8 +139,29 @@ function saveMiniAuthSession(token, user) {
   if (!canUseWxStorage()) {
     return;
   }
-  wx.setStorageSync(MINI_AUTH_TOKEN_KEY, normalizeText(token));
-  wx.setStorageSync(MINI_AUTH_USER_KEY, user && typeof user === 'object' ? user : {});
+  const normalizedToken = normalizeText(token);
+  const normalizedUser = user && typeof user === 'object' ? user : {};
+
+  wx.setStorageSync(MINI_AUTH_TOKEN_KEY, normalizedToken);
+  wx.setStorageSync(MINI_AUTH_USER_KEY, normalizedUser);
+
+  const role = normalizeRole(normalizedUser.role || wx.getStorageSync('mini_role') || 'sales');
+  const username = normalizeText(normalizedUser.username || normalizedUser.sales_id || wx.getStorageSync('sales_id'));
+  const name = normalizeText(normalizedUser.name || normalizedUser.sales_name || wx.getStorageSync('sales_name'));
+  const storeCode = normalizeText(normalizedUser.store || normalizedUser.store_code || wx.getStorageSync('store_code'));
+
+  wx.setStorageSync('mini_role', role);
+  if (username) {
+    wx.setStorageSync('sales_id', username);
+  }
+  if (name) {
+    wx.setStorageSync('sales_name', name);
+  }
+  if (storeCode) {
+    wx.setStorageSync('store_code', storeCode);
+  }
+
+  setFinanceApiToken(normalizedToken);
 }
 
 function clearMiniAuthSession() {
@@ -142,6 +170,8 @@ function clearMiniAuthSession() {
   }
   wx.removeStorageSync(MINI_AUTH_TOKEN_KEY);
   wx.removeStorageSync(MINI_AUTH_USER_KEY);
+  wx.removeStorageSync('mini_role');
+  setFinanceApiToken('');
 }
 
 function bindUserContextFromSessionUser(user) {
@@ -178,7 +208,7 @@ function getBridgeSession() {
   }
 
   const financeConfig = getFinanceConfig();
-  const token = normalizeText(financeConfig && financeConfig.apiToken);
+  const token = normalizeText((financeConfig && financeConfig.apiToken) || wx.getStorageSync('token'));
   if (!token) {
     return { token: '', user: null, isBridgeSession: false };
   }
@@ -246,6 +276,28 @@ function requestAuthJson(options) {
           reject(error);
           return;
         }
+
+        if (payload && typeof payload === 'object') {
+          if (payload.ok === false || payload.success === false) {
+            const error = new Error(normalizeText(payload.message) || '请求失败');
+            error.statusCode = statusCode;
+            error.code = normalizeText(payload.code);
+            reject(error);
+            return;
+          }
+
+          if (Object.prototype.hasOwnProperty.call(payload, 'code')) {
+            const codeText = normalizeText(payload.code);
+            if (codeText && !['0', '200', 'OK', 'SUCCESS'].includes(codeText.toUpperCase())) {
+              const error = new Error(normalizeText(payload.message) || '请求失败');
+              error.statusCode = statusCode;
+              error.code = codeText;
+              reject(error);
+              return;
+            }
+          }
+        }
+
         resolve(payload);
       },
       fail: (error) => {
