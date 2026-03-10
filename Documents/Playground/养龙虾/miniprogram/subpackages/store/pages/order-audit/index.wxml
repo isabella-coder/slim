@@ -1,0 +1,148 @@
+<view class="page">
+  <view class="filter-card">
+    <view class="date-preset-row">
+      <text
+        wx:for="{{datePresets}}"
+        wx:key="value"
+        class="preset-chip {{currentDatePreset === item.value ? 'active' : ''}}"
+        data-value="{{item.value}}"
+        bindtap="onDatePresetTap"
+      >{{item.label}}</text>
+    </view>
+
+    <view class="date-range-row">
+      <picker mode="date" value="{{createdFrom}}" bindchange="onCreatedFromChange">
+        <view class="date-box">{{createdFrom || '开始日期'}}</view>
+      </picker>
+      <text class="date-sep">至</text>
+      <picker mode="date" value="{{createdTo}}" bindchange="onCreatedToChange">
+        <view class="date-box">{{createdTo || '结束日期'}}</view>
+      </picker>
+      <button class="date-apply-btn" size="mini" bindtap="onApplyDateTap">应用</button>
+    </view>
+
+    <view class="result-tabs">
+      <view
+        wx:for="{{resultTabs}}"
+        wx:key="value"
+        class="result-tab {{currentResult === item.value ? 'active' : ''}}"
+        data-value="{{item.value}}"
+        bindtap="onResultTabChange"
+      >
+        {{item.label}}
+      </view>
+    </view>
+
+    <view class="action-tabs">
+      <view
+        wx:for="{{actionTabs}}"
+        wx:key="value"
+        class="action-tab {{currentAction === item.value ? 'active' : ''}}"
+        data-value="{{item.value}}"
+        bindtap="onActionTabChange"
+      >
+        {{item.label}}
+      </view>
+    </view>
+
+    <view class="sales-row">
+      <text class="sales-label">执行人</text>
+      <picker mode="selector" range="{{salesOptionLabels}}" value="{{selectedSalesIndex}}" bindchange="onSalesPickerChange">
+        <view class="sales-picker">{{salesOptionLabels[selectedSalesIndex] || '全部执行人'}}</view>
+      </picker>
+    </view>
+
+    <view class="search-row">
+      <input
+        class="search-input"
+        placeholder="输入订单号筛选"
+        value="{{keyword}}"
+        bindinput="onKeywordInput"
+      />
+      <button class="search-btn" size="mini" bindtap="onSearchTap">查询</button>
+      <text wx:if="{{keyword}}" class="clear-link" bindtap="clearKeyword">清空</text>
+    </view>
+
+    <view class="export-row">
+      <button class="reset-btn" size="mini" bindtap="onResetFiltersTap">重置筛选</button>
+      <button class="export-btn" size="mini" loading="{{exportLoading && exportMode === 'all'}}" bindtap="onExportCsvTap">导出 CSV（预览）</button>
+    </view>
+
+    <view class="quick-export-row">
+      <button class="quick-export-btn failed" size="mini" loading="{{exportLoading && exportMode === 'failed'}}" bindtap="onExportFailedTap">仅导出失败</button>
+      <button class="quick-export-btn skipped" size="mini" loading="{{exportLoading && exportMode === 'skipped'}}" bindtap="onExportSkippedTap">仅导出跳过</button>
+    </view>
+  </view>
+
+  <view class="summary-card">
+    <view class="summary-grid">
+      <view class="summary-item">
+        <text class="summary-label">总数</text>
+        <text class="summary-value">{{summary.total || 0}}</text>
+      </view>
+      <view class="summary-item">
+        <text class="summary-label">成功</text>
+        <text class="summary-value success">{{summary.successCount || 0}}</text>
+      </view>
+      <view class="summary-item">
+        <text class="summary-label">失败</text>
+        <text class="summary-value failed">{{summary.failedCount || 0}}</text>
+      </view>
+      <view class="summary-item">
+        <text class="summary-label">跳过</text>
+        <text class="summary-value skipped">{{summary.skippedCount || 0}}</text>
+      </view>
+    </view>
+
+    <view class="summary-reasons" wx:if="{{summary.errorTypeStats.length > 0}}">
+      <view wx:for="{{summary.errorTypeStats}}" wx:key="type" class="reason-chip {{item.className}}">
+        {{item.label}} {{item.count}}
+      </view>
+    </view>
+
+    <view class="summary-actions" wx:if="{{summary.actionStats.length > 0}}">
+      <view wx:for="{{summary.actionStats}}" wx:key="action" class="action-chip {{item.className}}">
+        {{item.label}} {{item.count}}
+      </view>
+    </view>
+    <view class="summary-loading" wx:if="{{summaryLoading}}">汇总更新中...</view>
+  </view>
+
+  <view wx:if="{{loading}}" class="state-box">
+    <text>审计加载中...</text>
+  </view>
+
+  <view wx:elif="{{errorText}}" class="state-box error-box">
+    <text class="error-text">{{errorText}}</text>
+    <button class="retry-btn" size="mini" bindtap="reload">重试</button>
+  </view>
+
+  <view wx:elif="{{items.length === 0}}" class="state-box">
+    <text>暂无审计记录</text>
+  </view>
+
+  <view wx:else class="audit-list">
+    <view class="summary-row">
+      <text>共 {{total}} 条记录</text>
+    </view>
+
+    <view wx:for="{{items}}" wx:key="auditId" class="audit-card">
+      <view class="card-head">
+        <text class="order-id">{{item.targetId}}</text>
+        <text class="result-tag {{item.resultClassName}}">{{item.resultLabel}}</text>
+      </view>
+
+      <view class="line"><text>操作：</text><text>{{item.actionLabel}}</text></view>
+      <view class="line"><text>执行人：</text><text>{{item.actorText}}</text></view>
+      <view class="line"><text>状态：</text><text>{{item.statusText}}</text></view>
+      <view class="line"><text>时间：</text><text>{{item.createdAtText}}</text></view>
+
+      <view class="error-line" wx:if="{{item.hasError}}">
+        <text>{{item.errorText}}</text>
+      </view>
+    </view>
+
+    <view class="footer-tip" wx:if="{{loadingMore}}">加载更多...</view>
+    <view class="footer-tip" wx:elif="{{finished}}">已加载全部</view>
+  </view>
+</view>
