@@ -344,6 +344,51 @@ SELECT * FROM sales_allocations;
 
 ---
 
+## 🔄 2026-03 合并模块优先流程（推荐）
+
+说明：以下流程优先级高于本文历史章节，适用于当前“养龙虾 + 经营工单模块”联调。
+
+### 1. 启动服务
+
+```bash
+# 终端 A：8000 线索后端
+cd /Users/yushuai/Documents/Playground/养龙虾/backend
+source ../.venv/bin/activate
+uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+
+# 终端 B：8080 经营系统
+cd /Users/yushuai/Documents/Playground/养龙虾/car-film-mini-program/admin-console
+INTERNAL_API_TOKEN='<YOUR_TOKEN>' python3 server.py
+```
+
+### 2. 小程序统一配置键
+
+在微信开发者工具 Storage 中只维护这 3 个键：
+
+1. `api_base_url` = `http://127.0.0.1:8000/api/v1`
+2. `store_api_base_url` = `http://127.0.0.1:8080`
+3. `store_internal_api_token` = `<YOUR_TOKEN>`
+
+### 3. 登录入口规范
+
+1. 线索链路：`/pages/login`
+2. 经营链路：`/pages/login?scene=store`
+
+### 4. P0 快速验收（最小集）
+
+1. 首页兼容入口 -> 工单列表 -> 工单详情 -> 编辑/派工 -> 返回
+2. `douyin-leads`、`followup-reminder`、`sales-performance` 可打开且不白屏
+3. token 三态：首次进入、过期后重登、退出后重进
+
+### 5. 8080 冒烟预期
+
+1. `/api/v1/internal/orders`、`/api/v1/internal/orders/sync`
+  - 无 token：401
+  - `Authorization: Bearer <store_internal_api_token>`：200
+  - `X-Api-Token: <store_internal_api_token>`：200
+2. `/api/leads`
+  - 无 token / 内部 token：401（该接口需要会话 token）
+
 ## 🎯 下一步建议
 
 ### Phase 2（可选，后续开发）
