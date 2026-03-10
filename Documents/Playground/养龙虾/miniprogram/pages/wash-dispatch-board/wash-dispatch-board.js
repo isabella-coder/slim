@@ -1,6 +1,6 @@
 const { formatDateTime, getOrders, syncOrdersNow, updateOrder } = require('../../utils/order');
 const { TECHNICIAN_OPTIONS } = require('../../utils/staff-options');
-const { getMiniAuthSession } = require('../../utils/mini-auth');
+const { hasMiniAuthSession, navigateToStoreLogin } = require('../../utils/page-access');
 const { canDispatchOrderContext, getCurrentUserContext } = require('../../utils/user-context');
 
 const SLOT_OPTIONS = buildTimeSlots(9, 19);
@@ -56,8 +56,7 @@ Page({
   },
 
   ensurePageAccess() {
-    const session = getMiniAuthSession();
-    if (!session.token || !session.user) {
+    if (!hasMiniAuthSession()) {
       this.setData({
         needLogin: true,
         noPermission: false,
@@ -98,9 +97,7 @@ Page({
   },
 
   goLogin() {
-    wx.navigateTo({
-      url: '/pages/login?scene=store'
-    });
+    navigateToStoreLogin();
   },
 
   reloadBoardWithSync() {

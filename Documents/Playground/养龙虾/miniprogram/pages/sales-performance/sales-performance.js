@@ -1,5 +1,5 @@
 const { getOrders, syncOrdersNow } = require('../../utils/order');
-const { getMiniAuthSession } = require('../../utils/mini-auth');
+const { hasMiniAuthSession, navigateToStoreLogin } = require('../../utils/page-access');
 const { canViewSalesBoardContext, getCurrentUserContext } = require('../../utils/user-context');
 
 const DIMENSION_TABS = [
@@ -114,8 +114,7 @@ Page({
   },
 
   ensurePageAccess() {
-    const session = getMiniAuthSession();
-    if (!session.token || !session.user) {
+    if (!hasMiniAuthSession()) {
       this.setData({
         needLogin: true,
         noPermission: false,
@@ -158,9 +157,7 @@ Page({
   },
 
   goLogin() {
-    wx.navigateTo({
-      url: '/pages/login?scene=store'
-    });
+    navigateToStoreLogin();
   },
 
   reloadBoardWithSync() {

@@ -1,7 +1,7 @@
 const { calculatePrice, getOrderById, getOrders, updateOrder } = require('../../utils/order');
 const { getProductCatalog } = require('../../utils/product-catalog');
 const { syncOrderToFinance } = require('../../utils/finance-sync');
-const { getMiniAuthSession } = require('../../utils/mini-auth');
+const { ensureMiniSessionOrNavigate } = require('../../utils/page-access');
 const { canEditOrderContext, getCurrentUserContext } = require('../../utils/user-context');
 const {
   DAILY_WORK_BAY_LIMIT,
@@ -72,14 +72,7 @@ Page({
   },
 
   ensureLoggedInSession() {
-    const session = getMiniAuthSession();
-    if (session.token && session.user) {
-      return true;
-    }
-    wx.navigateTo({
-      url: '/pages/login?scene=store'
-    });
-    return false;
+    return ensureMiniSessionOrNavigate();
   },
 
   ensureEditAccess(order) {

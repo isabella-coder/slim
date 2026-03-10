@@ -11,7 +11,7 @@ const {
   findTechnicianAccountById,
   findTechnicianAccountByName
 } = require('../../utils/staff-options');
-const { getMiniAuthSession } = require('../../utils/mini-auth');
+const { ensureMiniSessionOrNavigate } = require('../../utils/page-access');
 const {
   getCurrentUserContext,
   isManagerContext,
@@ -147,14 +147,7 @@ Page({
   },
 
   ensureLoggedInSession() {
-    const session = getMiniAuthSession();
-    if (session.token && session.user) {
-      return true;
-    }
-    wx.navigateTo({
-      url: '/pages/login?scene=store'
-    });
-    return false;
+    return ensureMiniSessionOrNavigate();
   },
 
   loadOrder(orderId) {

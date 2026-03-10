@@ -1,6 +1,6 @@
 const { getOrderById, syncOrdersNow, updateOrder, updateOrderStatus } = require('../../utils/order');
 const { syncOrderToFinance } = require('../../utils/finance-sync');
-const { getMiniAuthSession } = require('../../utils/mini-auth');
+const { ensureMiniSessionOrNavigate } = require('../../utils/page-access');
 
 Page({
   data: {
@@ -59,14 +59,7 @@ Page({
   },
 
   ensureLoggedInSession() {
-    const session = getMiniAuthSession();
-    if (session.token && session.user) {
-      return true;
-    }
-    wx.navigateTo({
-      url: '/pages/login?scene=store'
-    });
-    return false;
+    return ensureMiniSessionOrNavigate();
   },
 
   previewConstructionPhoto(event) {

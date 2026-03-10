@@ -1,5 +1,5 @@
 const { getProductCatalog, saveProductCatalog } = require('../../utils/product-catalog');
-const { getMiniAuthSession } = require('../../utils/mini-auth');
+const { hasMiniAuthSession, navigateToStoreLogin } = require('../../utils/page-access');
 const { getCurrentUserContext, isManagerContext } = require('../../utils/user-context');
 
 Page({
@@ -25,8 +25,7 @@ Page({
   },
 
   ensurePageAccess() {
-    const session = getMiniAuthSession();
-    if (!session.token || !session.user) {
+    if (!hasMiniAuthSession()) {
       this.setData({
         needLogin: true,
         noPermission: false,
@@ -55,9 +54,7 @@ Page({
   },
 
   goLogin() {
-    wx.navigateTo({
-      url: '/pages/login?scene=store'
-    });
+    navigateToStoreLogin();
   },
 
   loadProducts() {

@@ -1,7 +1,7 @@
 const { getOrderById, getOrders, syncOrdersNow, updateOrder } = require('../../utils/order');
 const { syncOrderToFinance } = require('../../utils/finance-sync');
 const { buildFollowupItems, markFollowupDone, summarizeFollowupOrders } = require('../../utils/followup');
-const { getMiniAuthSession } = require('../../utils/mini-auth');
+const { hasMiniAuthSession, navigateToStoreLogin } = require('../../utils/page-access');
 const { canCreateOrderContext, getCurrentUserContext } = require('../../utils/user-context');
 
 Page({
@@ -61,8 +61,7 @@ Page({
   },
 
   ensurePageAccess() {
-    const session = getMiniAuthSession();
-    if (!session.token || !session.user) {
+    if (!hasMiniAuthSession()) {
       this.setData({
         needLogin: true,
         noPermission: false,
@@ -108,9 +107,7 @@ Page({
   },
 
   goLogin() {
-    wx.navigateTo({
-      url: '/pages/login?scene=store'
-    });
+    navigateToStoreLogin();
   },
 
   loadReminders() {
