@@ -149,7 +149,7 @@ Page({
     this.setData({ loading: true, needLogin: false });
     const baseUrl = getFinanceConfig().baseUrl.replace(/\/+$/, '');
     const grade = this.data.gradeFilter;
-    const url = `${baseUrl}/api/leads?grade=${grade}`;
+    const url = `${baseUrl}/api/v1/store/leads?grade=${grade}`;
 
     return new Promise((resolve) => {
       wx.request({
@@ -161,7 +161,7 @@ Page({
         },
         timeout: 10000,
         success: (res) => {
-          if (res.statusCode === 200 && res.data && res.data.ok) {
+          if (res.statusCode === 200 && res.data && (res.data.ok || res.data.success || res.data.code === 0)) {
             const items = Array.isArray(res.data.items) ? res.data.items : [];
             addStatusClass(items);
             const stats = res.data.stats || {};
@@ -229,7 +229,7 @@ Page({
     wx.showLoading({ title: '更新中...' });
 
     wx.request({
-      url: `${baseUrl}/api/leads/update-status`,
+      url: `${baseUrl}/api/v1/store/leads/update-status`,
       method: 'POST',
       header: {
         'content-type': 'application/json',
@@ -238,7 +238,7 @@ Page({
       data: { id: leadId, leadStatus: newStatus },
       success: (res) => {
         wx.hideLoading();
-        if (res.statusCode === 200 && res.data && res.data.ok) {
+        if (res.statusCode === 200 && res.data && (res.data.ok || res.data.success || res.data.code === 0)) {
           wx.showToast({ title: `已更新为${newStatus}` });
           // 同步本地数据
           const leads = this.data.leads;
@@ -270,11 +270,11 @@ Page({
     }
     const baseUrl = getFinanceConfig().baseUrl.replace(/\/+$/, '');
     wx.request({
-      url: `${baseUrl}/api/leads/followup-due`,
+      url: `${baseUrl}/api/v1/store/leads/followup-due`,
       method: 'GET',
       header: { 'Authorization': `Bearer ${session.token}` },
       success: (res) => {
-        if (res.statusCode === 200 && res.data && res.data.ok) {
+        if (res.statusCode === 200 && res.data && (res.data.ok || res.data.success || res.data.code === 0)) {
           this.setData({
             needLogin: false,
             followupDueCount: res.data.total || 0,

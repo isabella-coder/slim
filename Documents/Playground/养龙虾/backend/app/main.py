@@ -71,13 +71,14 @@ async def health_check():
 
 # ============ 路由注册 ============
 
-from app.api import leads, stats, chat, auth, audit
+from app.api import leads, stats, chat, auth, audit, store
 
 app.include_router(leads.router, prefix="/api/v1")
 app.include_router(stats.router, prefix="/api/v1")
 app.include_router(chat.router, prefix="/api/v1")
 app.include_router(auth.router, prefix="/api/v1")
 app.include_router(audit.router, prefix="/api/v1")
+app.include_router(store.router, prefix="/api/v1")
 
 
 # ============ 根路由 ============

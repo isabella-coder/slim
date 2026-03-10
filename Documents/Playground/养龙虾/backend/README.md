@@ -35,6 +35,15 @@ docker-compose up -d
 createdb lx_center
 ```
 
+方式 C：腾讯云 PostgreSQL（远程数据库）
+
+```bash
+# 推荐：直接配置完整连接串（优先级高于 DB_HOST/DB_PORT/DB_USER/DB_PASSWORD/DB_NAME）
+DATABASE_URL=postgresql://<user>:<password>@<腾讯云DB地址>:5432/<db_name>?sslmode=disable
+
+# 如实例要求 SSL，把 sslmode=disable 改为 require 或云实例要求的模式
+```
+
 ### 3. 配置环境变量
 
 ```bash
@@ -219,6 +228,10 @@ pytest --cov=app tests/
 
 **Q: 数据库连接错误？**
 A: 检查 PostgreSQL 服务是否运行，.env 中的数据库配置是否正确。
+   若使用腾讯云数据库，还需检查：
+   1. 安全组/白名单是否放通后端机器 IP；
+   2. `DATABASE_URL` 中主机、端口、账号密码是否正确；
+   3. `sslmode` 是否与腾讯云实例要求一致。
 
 **Q: 出现 "ModuleNotFoundError"？**
 A: 确保虚拟环境已激活，依赖已安装：`pip install -r requirements.txt`

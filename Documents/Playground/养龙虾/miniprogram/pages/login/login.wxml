@@ -9,7 +9,7 @@
 
     <view class="label">后端地址（Base URL）</view>
     <input class="input" placeholder="https://api.example.com" value="{{baseUrlInput}}" bindinput="onBaseUrlInput" />
-    <view class="hint">开发环境可用 http://127.0.0.1:8080，线上必须使用 HTTPS 域名。</view>
+    <view class="hint">开发环境可用 http://127.0.0.1:8000，线上必须使用 HTTPS 域名。</view>
 
     <view class="label">账号</view>
     <input class="input" placeholder="请输入账号" value="{{usernameInput}}" bindinput="onUsernameInput" />

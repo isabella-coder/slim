@@ -1,24 +1,25 @@
 const { isVersionConflictError, getCurrentVersion } = require('./store-error')
+const { getFinanceConfig } = require('../../config/finance.config')
+const { getMiniAuthSession } = require('../mini-auth')
 
 function getStoreApiBaseUrl() {
   const customBaseUrl = wx.getStorageSync('store_api_base_url')
-  return String(customBaseUrl || 'http://127.0.0.1:8080').replace(/\/+$/, '')
-}
-
-function getStoreInternalToken() {
-  return String(wx.getStorageSync('store_internal_api_token') || '').trim()
+  const fallbackBaseUrl = getFinanceConfig().baseUrl
+  return String(customBaseUrl || fallbackBaseUrl || 'http://127.0.0.1:8000').replace(/\/+$/, '')
 }
 
 function requestStore(path, options = {}) {
   return new Promise((resolve, reject) => {
-    const token = getStoreInternalToken()
+    const session = getMiniAuthSession()
+    const token = String((session && session.token) || '').trim()
     if (!token) {
-      reject(new Error('未配置经营系统令牌，请先设置 store_internal_api_token'))
+      reject(new Error('请先登录经营系统账号'))
       return
     }
 
     const headers = {
       'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
       'X-Api-Token': token,
     }
 
@@ -144,9 +145,11 @@ const storeApi = {
     const view = String(params.view || 'ALL').toUpperCase()
     const status = String(params.status || 'ALL')
     const keyword = String(params.keyword || '')
-    const salesName = String(params.salesName || wx.getStorageSync('sales_name') || '')
+    const session = getMiniAuthSession()
+    const sessionName = String((session && session.user && session.user.name) || '')
+    const salesName = String(params.salesName || sessionName || wx.getStorageSync('sales_name') || '')
 
-    const data = await requestStore('/api/v1/orders', { method: 'GET' })
+    const data = await requestStore('/api/v1/store/orders', { method: 'GET' })
     const source = Array.isArray(data.items) ? data.items : []
     const normalized = source.map(normalizeOrderItem).filter((item) => item.id)
 
@@ -217,7 +220,7 @@ const storeApi = {
 
     let data
     try {
-      data = await requestStore(`/api/v1/orders/${encodeURIComponent(targetId)}`, {
+      data = await requestStore(`/api/v1/store/orders/${encodeURIComponent(targetId)}`, {
         method: 'PATCH',
         data: patch,
       })

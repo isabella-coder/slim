@@ -262,3 +262,71 @@ class DailyStats(Base):
     
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+
+class StoreUser(Base):
+    """经营系统账号表（原 admin-console users.json）"""
+    __tablename__ = "store_user"
+    __table_args__ = (
+        Index("idx_store_user_role_active", "role", "is_active"),
+        Index("idx_store_user_store_code", "store_code"),
+    )
+
+    username = Column(String(60), primary_key=True, index=True)
+    name = Column(String(60), nullable=False)
+    role = Column(String(20), nullable=False, default="sales")
+    store_code = Column(String(20), nullable=True)
+    password_hash = Column(String(255), nullable=False)
+    is_active = Column(Boolean, nullable=False, default=True)
+    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
+
+
+class StoreAuthSession(Base):
+    """经营系统登录会话表（替代 8080 会话缓存）"""
+    __tablename__ = "store_auth_session"
+    __table_args__ = (
+        Index("idx_store_auth_session_username", "username"),
+        Index("idx_store_auth_session_expires_at", "expires_at"),
+    )
+
+    session_token = Column(String(80), primary_key=True, index=True)
+    username = Column(String(60), ForeignKey("store_user.username"), nullable=False)
+    user_payload = Column(JSON, nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
+    expires_at = Column(DateTime, nullable=False)
+
+    user = relationship("StoreUser")
+
+
+class StoreOrder(Base):
+    """经营系统订单表（原 admin-console orders.json）"""
+    __tablename__ = "store_order"
+    __table_args__ = (
+        Index("idx_store_order_updated_at", "updated_at_dt"),
+        Index("idx_store_order_store_status", "store_name", "status"),
+        Index("idx_store_order_lead_source_grade", "lead_source", "lead_grade"),
+        Index("idx_store_order_sales", "sales_brand_text"),
+    )
+
+    order_id = Column(String(80), primary_key=True, index=True)
+    status = Column(String(30), nullable=False, default="未完工")
+    version = Column(Integer, nullable=False, default=0)
+
+    store_name = Column(String(120), nullable=True)
+    sales_brand_text = Column(String(80), nullable=True)
+    customer_name = Column(String(120), nullable=True)
+    phone = Column(String(30), nullable=True)
+    car_model = Column(String(120), nullable=True)
+
+    lead_source = Column(String(40), nullable=True)
+    lead_grade = Column(String(10), nullable=True)
+    lead_status = Column(String(30), nullable=True)
+
+    created_at_text = Column(String(20), nullable=True)
+    updated_at_text = Column(String(20), nullable=True)
+    created_at_dt = Column(DateTime, nullable=False, default=datetime.utcnow)
+    updated_at_dt = Column(DateTime, nullable=False, default=datetime.utcnow, index=True)
+
+    payload = Column(JSON, nullable=False)

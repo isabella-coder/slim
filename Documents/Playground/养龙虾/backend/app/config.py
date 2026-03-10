@@ -39,14 +39,32 @@ class Settings(BaseSettings):
     DB_USER: str = os.getenv("DB_USER", "postgres")
     DB_PASSWORD: str = os.getenv("DB_PASSWORD", "password")
     DB_NAME: str = os.getenv("DB_NAME", "lx_center")
+    DATABASE_URL_DIRECT: str = os.getenv("DATABASE_URL", "").strip()
+    DB_SSL_MODE: str = os.getenv("DB_SSL_MODE", "").strip()
+    DB_CONNECT_TIMEOUT: int = int(os.getenv("DB_CONNECT_TIMEOUT", "10"))
 
     @property
     def DATABASE_URL(self) -> str:
         """构建数据库连接字符串"""
+        if self.DATABASE_URL_DIRECT:
+            return self.DATABASE_URL_DIRECT
+
         return (
             f"postgresql://{self.DB_USER}:{self.DB_PASSWORD}@"
             f"{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
+            + self._database_url_query
         )
+
+    @property
+    def _database_url_query(self) -> str:
+        query_parts = []
+        if self.DB_SSL_MODE:
+            query_parts.append(f"sslmode={self.DB_SSL_MODE}")
+        if self.DB_CONNECT_TIMEOUT > 0:
+            query_parts.append(f"connect_timeout={self.DB_CONNECT_TIMEOUT}")
+        if not query_parts:
+            return ""
+        return "?" + "&".join(query_parts)
 
     # 企业微信配置
     WECOM_CORP_ID: str = os.getenv("WECOM_CORP_ID", "")

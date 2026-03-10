@@ -56,6 +56,9 @@ def init_db():
         SalesAllocation,
         OrderOperationAudit,
         DailyStats,
+        StoreUser,
+        StoreAuthSession,
+        StoreOrder,
     )
 
     # 创建所有表

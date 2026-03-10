@@ -17,7 +17,7 @@
 ## 3. 测试前置条件
 
 1. 后端服务启动并可访问 `http://localhost:8000`。
-2. 经营系统服务启动并可访问 `http://localhost:8080`（已配置 `INTERNAL_API_TOKEN`）。
+2. 统一后端服务启动并可访问 `http://localhost:8000`（经营接口已桥接，已配置 `INTERNAL_API_TOKEN`）。
 3. 小程序 `api_base_url` 指向 `http://localhost:8000/api/v1` 或当前可用公网地址。
 4. 小程序已配置 `store_api_base_url` 与 `store_internal_api_token`。
 5. 默认销售密码：`sale123`。
@@ -135,21 +135,21 @@ curl -s "$BASE/stats/daily-by-sales?stat_date=2026-03-10&store_code=$FIRST_STORE
   -H "Authorization: Bearer $TOKEN"
 ```
 
-## 10. 经营模块 8080 冒烟结果（2026-03-10）
+## 10. 经营模块 8000 冒烟结果（2026-03-10）
 
-目标接口：`car-film-mini-program/admin-console`（`http://localhost:8080`）
+目标接口：统一桥接后端（`养龙虾/backend`, `http://localhost:8000`）
 
-1. `GET /api/v1/internal/orders`
-2. `POST /api/v1/internal/orders/sync`
+1. `GET /api/v1/store/internal/orders`
+2. `POST /api/v1/store/internal/orders/sync`
 3. `GET /api/leads`
 
 结果：
 
-1. `GET /api/v1/internal/orders`
+1. `GET /api/v1/store/internal/orders`
   - 无 token: `401`（预期）
   - `Authorization: Bearer <store_internal_api_token>`: `200`（PASS）
   - `X-Api-Token: <store_internal_api_token>`: `200`（PASS）
-2. `POST /api/v1/internal/orders/sync`（`{"orders":[]}`）
+2. `POST /api/v1/store/internal/orders/sync`（`{"orders":[]}`）
   - 无 token: `401`（预期）
   - `Authorization: Bearer <store_internal_api_token>`: `200`（PASS）
   - `X-Api-Token: <store_internal_api_token>`: `200`（PASS）
@@ -204,9 +204,9 @@ curl -s "$BASE/stats/daily-by-sales?stat_date=2026-03-10&store_code=$FIRST_STORE
 4. 登录入口收敛校验：
   - 业务页引用已统一为 `/pages/login?scene=store`：PASS
   - 旧直接引用 `/pages/login/login`（业务页）：未发现
-5. 8080 冒烟复测（状态码）：
-  - `GET /api/v1/internal/orders`：`401 -> 200(Authorization) / 200(X-Api-Token)`
-  - `POST /api/v1/internal/orders/sync`：`401 -> 200(Authorization) / 200(X-Api-Token)`
+5. 8000 冒烟复测（状态码）：
+  - `GET /api/v1/store/internal/orders`：`401 -> 200(Authorization) / 200(X-Api-Token)`
+  - `POST /api/v1/store/internal/orders/sync`：`401 -> 200(Authorization) / 200(X-Api-Token)`
   - `GET /api/leads`：`401(无token) / 401(内部token，符合会话鉴权预期)`
 
 真机执行状态更新：
