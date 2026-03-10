@@ -1,7 +1,11 @@
 const { getOrders, syncOrdersNow } = require('../../utils/order');
+const { getMiniAuthSession } = require('../../utils/mini-auth');
+const { canDispatchOrderContext, getCurrentUserContext } = require('../../utils/user-context');
 
 Page({
   data: {
+    needLogin: false,
+    noPermission: false,
     selectedDate: '',
     entries: [],
     bayGroups: [],
@@ -23,10 +27,17 @@ Page({
   },
 
   onShow() {
+    if (!this.ensurePageAccess()) {
+      return;
+    }
     this.reloadBoardWithSync();
   },
 
   onPullDownRefresh() {
+    if (!this.ensurePageAccess()) {
+      wx.stopPullDownRefresh();
+      return;
+    }
     syncOrdersNow()
       .catch(() => {})
       .finally(() => {
@@ -36,10 +47,65 @@ Page({
   },
 
   onDateChange(event) {
+    if (!this.ensurePageAccess()) {
+      return;
+    }
     this.setData({
       selectedDate: event.detail.value
     });
     this.reloadBoardWithSync();
+  },
+
+  ensurePageAccess() {
+    const session = getMiniAuthSession();
+    if (!session.token || !session.user) {
+      this.setData({
+        needLogin: true,
+        noPermission: false,
+        entries: [],
+        bayGroups: [],
+        technicianGroups: [],
+        conflictEntries: [],
+        stats: {
+          total: 0,
+          assigned: 0,
+          unassigned: 0,
+          conflict: 0
+        }
+      });
+      return false;
+    }
+
+    const user = getCurrentUserContext();
+    if (!canDispatchOrderContext(user)) {
+      this.setData({
+        needLogin: false,
+        noPermission: true,
+        entries: [],
+        bayGroups: [],
+        technicianGroups: [],
+        conflictEntries: [],
+        stats: {
+          total: 0,
+          assigned: 0,
+          unassigned: 0,
+          conflict: 0
+        }
+      });
+      return false;
+    }
+
+    this.setData({
+      needLogin: false,
+      noPermission: false
+    });
+    return true;
+  },
+
+  goLogin() {
+    wx.navigateTo({
+      url: '/pages/login?scene=store'
+    });
   },
 
   reloadBoardWithSync() {

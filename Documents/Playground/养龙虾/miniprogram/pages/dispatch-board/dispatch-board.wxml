@@ -1,4 +1,16 @@
 <view class="container">
+  <view wx:if="{{needLogin}}" class="card empty-card">
+    <view class="empty-title">当前未登录</view>
+    <view class="empty-subtitle">请先登录后查看派工看板。</view>
+    <button class="button-secondary" bindtap="goLogin">去登录</button>
+  </view>
+
+  <view wx:elif="{{noPermission}}" class="card empty-card">
+    <view class="empty-title">暂无查看权限</view>
+    <view class="empty-subtitle">当前账号不具备派工看板权限。</view>
+  </view>
+
+  <block wx:else>
   <view class="card top-card">
     <view class="section-title">贴膜派工看板</view>
     <view class="hint">仅展示贴膜订单，按日期查看工位/技师排班，冲突会自动高亮。</view>
@@ -74,4 +86,5 @@
       </view>
     </view>
   </view>
+  </block>
 </view>

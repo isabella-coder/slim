@@ -1,4 +1,16 @@
 <view class="container">
+  <view wx:if="{{needLogin}}" class="card empty-card">
+    <view class="empty-title">当前未登录</view>
+    <view class="empty-subtitle">请先登录后查看洗车派工看板。</view>
+    <button class="button-secondary" bindtap="goLogin">去登录</button>
+  </view>
+
+  <view wx:elif="{{noPermission}}" class="card empty-card">
+    <view class="empty-title">暂无查看权限</view>
+    <view class="empty-subtitle">当前账号不具备洗车派工权限。</view>
+  </view>
+
+  <block wx:else>
   <view class="card top-card">
     <view class="section-title">洗车派工看板</view>
     <view class="hint">按日期/时段/技师/状态管理，支持一键派工、改派、完工和上传施工图。</view>
@@ -81,4 +93,5 @@
 
   <button class="button-secondary" bindtap="goWashOrder">去洗车下单</button>
   <button class="button-secondary" bindtap="goOrderList">查看全部订单</button>
+  </block>
 </view>

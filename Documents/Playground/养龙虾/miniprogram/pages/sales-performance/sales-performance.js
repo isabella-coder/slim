@@ -1,4 +1,6 @@
 const { getOrders, syncOrdersNow } = require('../../utils/order');
+const { getMiniAuthSession } = require('../../utils/mini-auth');
+const { canViewSalesBoardContext, getCurrentUserContext } = require('../../utils/user-context');
 
 const DIMENSION_TABS = [
   { label: '按天', value: 'DAY' },
@@ -8,6 +10,8 @@ const DIMENSION_TABS = [
 
 Page({
   data: {
+    needLogin: false,
+    noPermission: false,
     dimensionTabs: DIMENSION_TABS,
     currentDimension: 'DAY',
     anchorDate: '',
@@ -29,10 +33,17 @@ Page({
   },
 
   onShow() {
+    if (!this.ensurePageAccess()) {
+      return;
+    }
     this.reloadBoardWithSync();
   },
 
   onPullDownRefresh() {
+    if (!this.ensurePageAccess()) {
+      wx.stopPullDownRefresh();
+      return;
+    }
     syncOrdersNow()
       .catch(() => {})
       .finally(() => {
@@ -42,6 +53,9 @@ Page({
   },
 
   onDimensionChange(event) {
+    if (!this.ensurePageAccess()) {
+      return;
+    }
     const value = event.currentTarget.dataset.value;
     if (!value || value === this.data.currentDimension) {
       return;
@@ -55,6 +69,9 @@ Page({
   },
 
   onAnchorDateChange(event) {
+    if (!this.ensurePageAccess()) {
+      return;
+    }
     const nextDate = normalizeText(event.detail.value);
     if (!/^\d{4}-\d{2}-\d{2}$/.test(nextDate)) {
       return;
@@ -68,6 +85,9 @@ Page({
   },
 
   onPeriodChange(event) {
+    if (!this.ensurePageAccess()) {
+      return;
+    }
     const key = event.currentTarget.dataset.key;
     if (!key || key === this.data.selectedPeriodKey) {
       return;
@@ -90,6 +110,56 @@ Page({
         avgTicket: period.avgTicket
       },
       salesRecords
+    });
+  },
+
+  ensurePageAccess() {
+    const session = getMiniAuthSession();
+    if (!session.token || !session.user) {
+      this.setData({
+        needLogin: true,
+        noPermission: false,
+        periodRecords: [],
+        salesRecords: [],
+        selectedPeriodKey: '',
+        selectedPeriodLabel: '',
+        summary: {
+          orderCount: 0,
+          totalAmount: 0,
+          avgTicket: 0
+        }
+      });
+      return false;
+    }
+
+    const user = getCurrentUserContext();
+    if (!canViewSalesBoardContext(user)) {
+      this.setData({
+        needLogin: false,
+        noPermission: true,
+        periodRecords: [],
+        salesRecords: [],
+        selectedPeriodKey: '',
+        selectedPeriodLabel: '',
+        summary: {
+          orderCount: 0,
+          totalAmount: 0,
+          avgTicket: 0
+        }
+      });
+      return false;
+    }
+
+    this.setData({
+      needLogin: false,
+      noPermission: false
+    });
+    return true;
+  },
+
+  goLogin() {
+    wx.navigateTo({
+      url: '/pages/login?scene=store'
     });
   },
 

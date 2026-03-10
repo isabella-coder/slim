@@ -1,10 +1,14 @@
 const { formatDateTime, getOrders, syncOrdersNow, updateOrder } = require('../../utils/order');
 const { TECHNICIAN_OPTIONS } = require('../../utils/staff-options');
+const { getMiniAuthSession } = require('../../utils/mini-auth');
+const { canDispatchOrderContext, getCurrentUserContext } = require('../../utils/user-context');
 
 const SLOT_OPTIONS = buildTimeSlots(9, 19);
 
 Page({
   data: {
+    needLogin: false,
+    noPermission: false,
     selectedDate: '',
     slotOptions: SLOT_OPTIONS,
     technicianOptions: TECHNICIAN_OPTIONS,
@@ -24,10 +28,17 @@ Page({
   },
 
   onShow() {
+    if (!this.ensurePageAccess()) {
+      return;
+    }
     this.reloadBoardWithSync();
   },
 
   onPullDownRefresh() {
+    if (!this.ensurePageAccess()) {
+      wx.stopPullDownRefresh();
+      return;
+    }
     syncOrdersNow()
       .catch(() => {})
       .finally(() => {
@@ -37,8 +48,59 @@ Page({
   },
 
   onDateChange(event) {
+    if (!this.ensurePageAccess()) {
+      return;
+    }
     this.setData({ selectedDate: event.detail.value });
     this.reloadBoardWithSync();
+  },
+
+  ensurePageAccess() {
+    const session = getMiniAuthSession();
+    if (!session.token || !session.user) {
+      this.setData({
+        needLogin: true,
+        noPermission: false,
+        slotRows: [],
+        stats: {
+          total: 0,
+          unassigned: 0,
+          assigned: 0,
+          completed: 0,
+          conflict: 0
+        }
+      });
+      return false;
+    }
+
+    const user = getCurrentUserContext();
+    if (!canDispatchOrderContext(user)) {
+      this.setData({
+        needLogin: false,
+        noPermission: true,
+        slotRows: [],
+        stats: {
+          total: 0,
+          unassigned: 0,
+          assigned: 0,
+          completed: 0,
+          conflict: 0
+        }
+      });
+      return false;
+    }
+
+    this.setData({
+      needLogin: false,
+      noPermission: false
+    });
+    return true;
+  },
+
+  goLogin() {
+    wx.navigateTo({
+      url: '/pages/login?scene=store'
+    });
   },
 
   reloadBoardWithSync() {
