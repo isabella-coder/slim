@@ -1,0 +1,241 @@
+.profile-page {
+  padding: 20rpx;
+  padding-bottom: 120rpx;
+}
+
+/* 个人卡片 */
+.profile-card {
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+  background: linear-gradient(135deg, #409eff, #66b1ff);
+  padding: 40rpx 30rpx;
+  border-radius: 16rpx;
+  margin-bottom: 24rpx;
+}
+
+.avatar-box {
+  width: 100rpx;
+  height: 100rpx;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar-text {
+  font-size: 42rpx;
+  color: #fff;
+  font-weight: bold;
+}
+
+.profile-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.profile-name {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #fff;
+}
+
+.profile-store {
+  font-size: 24rpx;
+  color: rgba(255,255,255,0.8);
+  margin-top: 4rpx;
+}
+
+/* 区块 */
+.section {
+  background: #fff;
+  border-radius: 12rpx;
+  padding: 24rpx;
+  margin-bottom: 20rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.06);
+}
+
+.section-title {
+  display: block;
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 20rpx;
+}
+
+/* 我的统计 */
+.my-stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16rpx;
+}
+
+.my-stat {
+  text-align: center;
+  padding: 20rpx;
+  background: #f8f9fa;
+  border-radius: 10rpx;
+}
+
+.my-stat-value {
+  display: block;
+  font-size: 40rpx;
+  font-weight: bold;
+  color: #409eff;
+}
+
+.my-stat-label {
+  display: block;
+  font-size: 22rpx;
+  color: #999;
+  margin-top: 6rpx;
+}
+
+/* 门店统计 */
+.store-stats {
+  display: flex;
+  flex-direction: column;
+}
+
+.store-stat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16rpx 0;
+  border-bottom: 1rpx solid #f5f5f5;
+}
+
+.store-stat-row:last-child {
+  border-bottom: none;
+}
+
+.store-stat-label {
+  font-size: 26rpx;
+  color: #666;
+}
+
+.store-stat-value {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #333;
+}
+
+/* 门店日报 */
+.report-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16rpx;
+}
+
+.report-date {
+  font-size: 24rpx;
+  color: #409eff;
+  background: #f0f7ff;
+  padding: 8rpx 14rpx;
+  border-radius: 8rpx;
+}
+
+.report-summary {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 16rpx;
+  font-size: 24rpx;
+  color: #666;
+}
+
+.report-empty {
+  text-align: center;
+  color: #999;
+  font-size: 24rpx;
+  padding: 20rpx 0;
+}
+
+.report-error-box {
+  background: #fff6f6;
+  border: 1rpx solid #ffd9d9;
+  border-radius: 10rpx;
+  padding: 18rpx;
+  margin-bottom: 16rpx;
+}
+
+.report-error-text {
+  display: block;
+  color: #d85b5b;
+  font-size: 23rpx;
+}
+
+.report-retry-btn {
+  margin-top: 12rpx;
+  display: inline-block;
+  padding: 8rpx 16rpx;
+  border-radius: 8rpx;
+  background: #409eff;
+  color: #fff;
+  font-size: 22rpx;
+}
+
+.report-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+
+.report-row {
+  padding: 14rpx;
+  background: #fafafa;
+  border-radius: 8rpx;
+}
+
+.report-name {
+  font-size: 26rpx;
+  color: #333;
+  font-weight: 600;
+  margin-bottom: 8rpx;
+}
+
+.report-metrics {
+  display: flex;
+  justify-content: space-between;
+  font-size: 22rpx;
+  color: #666;
+}
+
+/* SLA 规则 */
+.sla-rules {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.sla-rule {
+  display: flex;
+  gap: 16rpx;
+  align-items: flex-start;
+  padding: 16rpx;
+  background: #fafafa;
+  border-radius: 8rpx;
+}
+
+.sla-time {
+  font-size: 24rpx;
+  font-weight: 600;
+  color: #333;
+  white-space: nowrap;
+}
+
+.sla-desc {
+  font-size: 24rpx;
+  color: #666;
+  line-height: 1.5;
+}
+
+/* 退出按钮 */
+.logout-btn {
+  text-align: center;
+  padding: 24rpx;
+  color: #f56c6c;
+  font-size: 28rpx;
+  margin-top: 20rpx;
+}

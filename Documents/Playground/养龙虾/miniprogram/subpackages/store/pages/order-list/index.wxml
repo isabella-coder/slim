@@ -1,0 +1,156 @@
+<view class="page">
+  <view class="summary-card">
+    <view class="summary-item">
+      <text class="summary-label">总订单</text>
+      <text class="summary-value">{{stats.total || 0}}</text>
+    </view>
+    <view class="summary-item">
+      <text class="summary-label">未完工</text>
+      <text class="summary-value warning">{{stats.pending || 0}}</text>
+    </view>
+    <view class="summary-item">
+      <text class="summary-label">已完工</text>
+      <text class="summary-value success">{{stats.confirmed || 0}}</text>
+    </view>
+  </view>
+
+  <view class="view-tabs" wx:if="{{viewTabs.length > 1}}">
+    <view
+      wx:for="{{viewTabs}}"
+      wx:key="value"
+      class="view-tab {{currentView === item.value ? 'active' : ''}}"
+      data-view="{{item.value}}"
+      bindtap="onViewTabChange"
+    >
+      {{item.label}}
+    </view>
+  </view>
+
+  <view class="search-box">
+    <input
+      class="search-input"
+      placeholder="搜索称呼/车型/车牌/手机号"
+      value="{{keyword}}"
+      bindinput="onSearchInput"
+    />
+    <text wx:if="{{keyword}}" class="search-clear" bindtap="clearKeyword">清空</text>
+  </view>
+
+  <view class="status-tabs">
+    <view
+      wx:for="{{statusTabs}}"
+      wx:key="value"
+      class="status-tab {{currentStatus === item.value ? 'active' : ''}}"
+      data-status="{{item.value}}"
+      bindtap="onStatusTabChange"
+    >
+      {{item.label}}
+    </view>
+  </view>
+
+  <view class="batch-bar" wx:if="{{canBatchEditRole}}">
+    <button class="batch-toggle-btn" size="mini" bindtap="toggleBatchMode">{{batchMode ? '退出批量' : '批量改状态'}}</button>
+
+    <view class="batch-actions" wx:if="{{batchMode}}">
+      <text class="batch-count">已选 {{selectedIds.length}} 项</text>
+      <text class="batch-link" bindtap="selectAllEditable">全选可编辑</text>
+      <text class="batch-link" bindtap="clearSelection">清空</text>
+      <button class="batch-submit-btn" size="mini" loading="{{batchUpdating}}" bindtap="onBatchStatusTap">批量改状态</button>
+    </view>
+  </view>
+
+  <view class="batch-result" wx:if="{{batchResultVisible}}">
+    <view class="batch-result-head">
+      <text class="batch-result-title">{{batchResultTitle}}</text>
+      <text class="batch-result-summary">{{batchResultSummary}}</text>
+    </view>
+
+    <view class="batch-result-filters" wx:if="{{batchResultIssueCount > 0}}">
+      <text
+        class="batch-filter-chip {{batchResultFilter === 'ALL' ? 'active' : ''}}"
+        data-filter="ALL"
+        bindtap="onBatchResultFilterChange"
+      >全部问题（{{batchResultIssueCount}}）</text>
+      <text
+        class="batch-filter-chip {{batchResultFilter === 'FAIL' ? 'active' : ''}}"
+        data-filter="FAIL"
+        bindtap="onBatchResultFilterChange"
+      >仅失败项（{{batchResultFailCount}}）</text>
+    </view>
+
+    <view class="batch-reason-row" wx:if="{{batchResultReasonStats.length > 0}}">
+      <view wx:for="{{batchResultReasonStats}}" wx:key="key" class="batch-reason-tag">
+        {{item.label}} {{item.count}}
+      </view>
+    </view>
+
+    <view class="batch-result-list" wx:if="{{batchResultDisplayItems.length}}">
+      <view
+        wx:for="{{batchResultDisplayItems}}"
+        wx:key="index"
+        class="batch-result-item {{item.level === 'fail' ? 'is-fail' : 'is-skip'}}"
+      >
+        <text class="batch-result-id">{{item.id}}</text>
+        <text class="batch-result-msg">{{item.message}}</text>
+      </view>
+    </view>
+
+    <view class="batch-result-empty" wx:elif="{{batchResultFilter === 'FAIL'}}">
+      当前没有失败项
+    </view>
+
+    <view class="batch-result-actions">
+      <button class="batch-result-refresh" size="mini" bindtap="refreshFromBatchResult">刷新列表</button>
+      <button class="batch-result-retry" wx:if="{{batchResultFailCount > 0}}" size="mini" loading="{{batchUpdating}}" bindtap="retryFailedBatch">重试失败项</button>
+      <button class="batch-result-close" size="mini" bindtap="closeBatchResult">知道了</button>
+    </view>
+  </view>
+
+  <view wx:if="{{loading}}" class="state-box">
+    <text>订单加载中...</text>
+  </view>
+
+  <view wx:elif="{{errorText}}" class="state-box error-box">
+    <text class="error-text">{{errorText}}</text>
+    <button class="retry-btn" size="mini" bindtap="loadOrders">重试</button>
+  </view>
+
+  <view wx:elif="{{orders.length === 0}}" class="state-box">
+    <text>暂无匹配订单</text>
+  </view>
+
+  <view wx:else class="order-list">
+    <view
+      wx:for="{{orders}}"
+      wx:key="id"
+      class="order-card {{item.selected ? 'order-card-selected' : ''}}"
+      data-id="{{item.id}}"
+      bindtap="goDetail"
+    >
+      <view class="order-head">
+        <view class="order-id-row">
+          <view wx:if="{{batchMode && item.canQuickEdit}}" class="select-dot {{item.selected ? 'selected' : ''}}" data-id="{{item.id}}" catchtap="onToggleSelect"></view>
+          <text class="order-id">{{item.id}}</text>
+        </view>
+        <text class="status-badge status-{{item.status === '未完工' ? 'pending' : item.status === '已完工' ? 'done' : 'cancel'}}">{{item.status}}</text>
+      </view>
+      <view class="line">{{item.customerName || '未填写称呼'}} · {{item.phone || '未填写手机号'}}</view>
+      <view class="line">{{item.carModel || '-'}} · {{item.plateNumber || '-'}}</view>
+      <view class="line">负责人：{{item.salesBrandText || '未填写'}}</view>
+      <view class="line">{{item.appointmentDate || '-'}} {{item.appointmentTime || ''}}</view>
+      <view class="order-actions" wx:if="{{item.canQuickEdit}}">
+        <button
+          class="quick-btn"
+          size="mini"
+          data-id="{{item.id}}"
+          loading="{{statusUpdatingId === item.id}}"
+          catchtap="onQuickStatusTap"
+        >快捷改状态</button>
+      </view>
+      <view class="order-foot">
+        <text class="service-tag">{{item.serviceType === 'WASH' ? '洗车' : '贴膜'}}</text>
+        <text class="price">¥{{item.priceSummary.totalPrice || 0}}</text>
+      </view>
+    </view>
+  </view>
+</view>

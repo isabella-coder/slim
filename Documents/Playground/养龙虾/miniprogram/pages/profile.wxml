@@ -1,0 +1,124 @@
+<view class="profile-page">
+  <!-- 个人信息卡 -->
+  <view class="profile-card">
+    <view class="avatar-box">
+      <text class="avatar-text">{{salesName[0] || '销'}}</text>
+    </view>
+    <view class="profile-info">
+      <text class="profile-name">{{salesName}}</text>
+      <text class="profile-store">{{storeCode === 'BOP' ? 'BOP店' : '龙膜店'}}</text>
+    </view>
+  </view>
+
+  <!-- 我的数据 -->
+  <view class="section">
+    <text class="section-title">📊 我的业绩</text>
+    <view class="my-stats-grid">
+      <view class="my-stat">
+        <text class="my-stat-value">{{totalAssigned}}</text>
+        <text class="my-stat-label">总分配</text>
+      </view>
+      <view class="my-stat">
+        <text class="my-stat-value">{{totalSuccess}}</text>
+        <text class="my-stat-label">加微成功</text>
+      </view>
+      <view class="my-stat">
+        <text class="my-stat-value">{{successRate}}%</text>
+        <text class="my-stat-label">成功率</text>
+      </view>
+      <view class="my-stat">
+        <text class="my-stat-value">{{sla1mRate}}%</text>
+        <text class="my-stat-label">首响达标</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 今日门店统计 -->
+  <view class="section">
+    <text class="section-title">🏪 今日门店数据</text>
+    <view class="store-stats">
+      <view class="store-stat-row">
+        <text class="store-stat-label">门店线索总数</text>
+        <text class="store-stat-value">{{todayStats.lead_count || 0}}</text>
+      </view>
+      <view class="store-stat-row">
+        <text class="store-stat-label">门店首响率</text>
+        <text class="store-stat-value">{{todayStats.first_reply_rate || 0}}%</text>
+      </view>
+      <view class="store-stat-row">
+        <text class="store-stat-label">门店微信成功率</text>
+        <text class="store-stat-value">{{todayStats.wechat_success_rate || 0}}%</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 门店日报（按销售） -->
+  <view class="section">
+    <view class="report-header">
+      <text class="section-title">📒 门店日报（按销售）</text>
+      <picker mode="date" value="{{reportDate}}" end="{{today}}" bindchange="onReportDateChange">
+        <view class="report-date">{{reportDate}}</view>
+      </picker>
+    </view>
+
+    <view wx:if="{{dailyReportLoading}}" class="report-empty">
+      <text>日报加载中...</text>
+    </view>
+
+    <view wx:elif="{{dailyReportError}}" class="report-error-box">
+      <text class="report-error-text">日报加载失败：{{dailyReportError}}</text>
+      <view class="report-retry-btn" bindtap="retryDailyReport">
+        <text>重试</text>
+      </view>
+    </view>
+
+    <block wx:else>
+    <view class="report-summary">
+      <text>分配 {{dailySummary.assigned_count || 0}}</text>
+      <text>首响 {{dailySummary.first_reply_count || 0}}</text>
+      <text>成功 {{dailySummary.wechat_success_count || 0}}</text>
+    </view>
+
+    <view wx:if="{{dailySalesStats.length === 0}}" class="report-empty">
+      <text>该日暂无销售数据</text>
+    </view>
+
+    <view wx:else class="report-list">
+      <view class="report-row" wx:for="{{dailySalesStats}}" wx:key="sales_id">
+        <view class="report-name">
+          <text>{{item.sales_name}}</text>
+        </view>
+        <view class="report-metrics">
+          <text>分配 {{item.assigned_count}}</text>
+          <text>首响率 {{item.first_reply_rate_text}}</text>
+          <text>成功率 {{item.wechat_success_rate_text}}</text>
+        </view>
+      </view>
+    </view>
+    </block>
+  </view>
+
+  <!-- SLA 说明 -->
+  <view class="section">
+    <text class="section-title">📋 SLA 时效规则</text>
+    <view class="sla-rules">
+      <view class="sla-rule">
+        <text class="sla-time">⚡ 1 分钟</text>
+        <text class="sla-desc">收到线索后需在 1 分钟内首次回应</text>
+      </view>
+      <view class="sla-rule">
+        <text class="sla-time">💬 3 分钟</text>
+        <text class="sla-desc">首响后需在 3 分钟内发起加微信</text>
+      </view>
+      <view class="sla-rule">
+        <text class="sla-time">✅ 10 分钟</text>
+        <text class="sla-desc">加微信后需在 10 分钟内确认结果</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 退出 -->
+  <view class="logout-btn" bindtap="handleLogout">
+    <text>退出登录</text>
+  </view>
+</view>

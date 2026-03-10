@@ -1,0 +1,64 @@
+<view class="page">
+  <view wx:if="{{loading}}" class="state-box">
+    <text>详情加载中...</text>
+  </view>
+
+  <view wx:elif="{{errorText}}" class="state-box error-box">
+    <text class="error-text">{{errorText}}</text>
+    <button class="retry-btn" size="mini" bindtap="loadDetail">重试</button>
+  </view>
+
+  <view wx:elif="{{order}}" class="content">
+    <view class="header-card">
+      <text class="order-id">{{order.id}}</text>
+      <text class="status-badge status-{{order.status === '未完工' ? 'pending' : order.status === '已完工' ? 'done' : 'cancel'}}">{{order.status}}</text>
+    </view>
+
+    <view class="card">
+      <text class="card-title">客户信息</text>
+      <view class="line"><text>称呼</text><text>{{order.customerName || '未填写'}}</text></view>
+      <view class="line"><text>手机号</text><text>{{order.phone || '未填写'}}</text></view>
+      <view class="line"><text>车型</text><text>{{order.carModel || '未填写'}}</text></view>
+      <view class="line"><text>车牌</text><text>{{order.plateNumber || '未填写'}}</text></view>
+    </view>
+
+    <view class="card">
+      <text class="card-title">服务信息</text>
+      <view class="line"><text>业务类型</text><text>{{order.serviceType === 'WASH' ? '洗车' : '贴膜'}}</text></view>
+      <view class="line"><text>套餐</text><text>{{order.packageLabel || '未填写'}}</text></view>
+      <view class="line"><text>说明</text><text>{{order.packageDesc || '未填写'}}</text></view>
+      <view class="line"><text>门店</text><text>{{order.store || '未填写'}}</text></view>
+      <view class="line"><text>负责人</text><text>{{order.salesBrandText || '未填写'}}</text></view>
+      <view class="line"><text>预约时间</text><text>{{order.appointmentDate || '-'}} {{order.appointmentTime || ''}}</text></view>
+      <view class="line"><text>总价</text><text>¥{{order.priceSummary.totalPrice || 0}}</text></view>
+    </view>
+
+    <view class="card">
+      <text class="card-title">订单编辑</text>
+      <view wx:if="{{canEdit}}">
+        <view class="form-item">
+          <text class="form-label">订单状态</text>
+          <picker mode="selector" range="{{editStatusOptions}}" value="{{editStatusIndex}}" bindchange="onEditStatusChange">
+            <view class="picker-box">{{editStatusOptions[editStatusIndex]}}</view>
+          </picker>
+        </view>
+
+        <view class="form-item">
+          <text class="form-label">备注</text>
+          <textarea class="remark-input" maxlength="160" placeholder="填写订单备注（可选）" value="{{editRemark}}" bindinput="onEditRemarkInput" />
+        </view>
+
+        <button class="save-btn" loading="{{saving}}" bindtap="saveOrderUpdate">保存修改</button>
+      </view>
+      <view wx:else class="readonly-tip">当前角色仅可查看订单，不可编辑</view>
+    </view>
+
+    <view class="card">
+      <text class="card-title">时间信息</text>
+      <view class="line"><text>创建时间</text><text>{{order.createdAt || '-'}}</text></view>
+      <view class="line"><text>更新时间</text><text>{{order.updatedAt || '-'}}</text></view>
+    </view>
+
+    <button class="copy-btn" bindtap="copyOrderId">复制订单号</button>
+  </view>
+</view>

@@ -1,0 +1,22 @@
+<view class="ops-page">
+  <view class="hero">
+    <text class="hero-title">经营中心</text>
+    <text class="hero-subtitle">该区域用于承载订单、调度、绩效等门店经营能力。</text>
+    <text class="hero-role">当前角色：{{roleLabel}}</text>
+  </view>
+
+  <view class="module-list">
+    <view class="module-card" wx:for="{{modules}}" wx:key="key" bindtap="onOpenModule" data-route="{{item.route}}">
+      <view class="module-head">
+        <text class="module-name">{{item.name}}</text>
+        <text class="module-tag">{{item.route ? '已接通' : '提示'}}</text>
+      </view>
+      <text class="module-desc">{{item.desc}}</text>
+    </view>
+  </view>
+
+  <view class="hint-box">
+    <text class="hint-title">当前阶段</text>
+    <text class="hint-text">已完成首批迁移：订单列表、订单详情、操作审计。</text>
+  </view>
+</view>

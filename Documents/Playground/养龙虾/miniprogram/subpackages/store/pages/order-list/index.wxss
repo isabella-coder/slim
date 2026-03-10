@@ -1,0 +1,402 @@
+.page {
+  min-height: 100vh;
+  padding: 20rpx;
+  background: #f3f6fb;
+  box-sizing: border-box;
+}
+
+.summary-card {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 12rpx;
+  background: #fff;
+  border-radius: 12rpx;
+  padding: 16rpx;
+  margin-bottom: 16rpx;
+}
+
+.summary-item {
+  text-align: center;
+}
+
+.summary-label {
+  font-size: 22rpx;
+  color: #7a869c;
+  display: block;
+}
+
+.summary-value {
+  display: block;
+  margin-top: 8rpx;
+  font-size: 34rpx;
+  font-weight: 700;
+  color: #24324a;
+}
+
+.summary-value.warning {
+  color: #b7791f;
+}
+
+.summary-value.success {
+  color: #2f855a;
+}
+
+.view-tabs,
+.status-tabs {
+  display: flex;
+  gap: 10rpx;
+  margin-bottom: 14rpx;
+}
+
+.view-tab,
+.status-tab {
+  flex: 1;
+  text-align: center;
+  font-size: 24rpx;
+  color: #546179;
+  background: #e8edf7;
+  border-radius: 10rpx;
+  padding: 10rpx 0;
+}
+
+.view-tab.active,
+.status-tab.active {
+  background: #1f2a44;
+  color: #fff;
+}
+
+.search-box {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+  background: #fff;
+  border-radius: 12rpx;
+  padding: 12rpx;
+  margin-bottom: 14rpx;
+}
+
+.search-input {
+  flex: 1;
+  min-height: 64rpx;
+  border: 1rpx solid #d7dfed;
+  border-radius: 10rpx;
+  padding: 0 16rpx;
+}
+
+.search-clear {
+  color: #1f2a44;
+  font-size: 24rpx;
+}
+
+.batch-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 10rpx;
+  margin-bottom: 14rpx;
+}
+
+.batch-toggle-btn {
+  margin: 0;
+  align-self: flex-start;
+  border: none;
+  border-radius: 999rpx;
+  background: #1f2a44;
+  color: #fff;
+  line-height: 1.8;
+  padding: 0 24rpx;
+}
+
+.batch-actions {
+  background: #fff;
+  border-radius: 12rpx;
+  padding: 10rpx 12rpx;
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  flex-wrap: wrap;
+}
+
+.batch-count {
+  font-size: 24rpx;
+  color: #334155;
+}
+
+.batch-link {
+  font-size: 24rpx;
+  color: #2f4f80;
+}
+
+.batch-submit-btn {
+  margin: 0 0 0 auto;
+  border: none;
+  border-radius: 999rpx;
+  background: #0f766e;
+  color: #fff;
+  line-height: 1.8;
+  padding: 0 20rpx;
+}
+
+.batch-result {
+  background: #fff;
+  border-radius: 12rpx;
+  padding: 12rpx;
+  margin-bottom: 14rpx;
+}
+
+.batch-result-head {
+  display: flex;
+  flex-direction: column;
+  gap: 6rpx;
+}
+
+.batch-result-title {
+  font-size: 26rpx;
+  font-weight: 700;
+  color: #1f2a44;
+}
+
+.batch-result-summary {
+  font-size: 22rpx;
+  color: #475569;
+}
+
+.batch-result-filters {
+  margin-top: 10rpx;
+  display: flex;
+  gap: 10rpx;
+  flex-wrap: wrap;
+}
+
+.batch-filter-chip {
+  font-size: 22rpx;
+  color: #334155;
+  background: #e2e8f0;
+  border-radius: 999rpx;
+  padding: 4rpx 14rpx;
+}
+
+.batch-filter-chip.active {
+  background: #1f2a44;
+  color: #fff;
+}
+
+.batch-reason-row {
+  margin-top: 10rpx;
+  display: flex;
+  gap: 8rpx;
+  flex-wrap: wrap;
+}
+
+.batch-reason-tag {
+  font-size: 20rpx;
+  color: #475569;
+  background: #f1f5f9;
+  border-radius: 999rpx;
+  padding: 4rpx 12rpx;
+}
+
+.batch-result-list {
+  margin-top: 10rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+
+.batch-result-item {
+  border-radius: 10rpx;
+  padding: 10rpx 12rpx;
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+}
+
+.batch-result-item.is-fail {
+  background: #fee2e2;
+}
+
+.batch-result-item.is-skip {
+  background: #f1f5f9;
+}
+
+.batch-result-id {
+  font-size: 20rpx;
+  color: #1e293b;
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 999rpx;
+  padding: 2rpx 10rpx;
+}
+
+.batch-result-msg {
+  flex: 1;
+  font-size: 22rpx;
+  color: #334155;
+}
+
+.batch-result-empty {
+  margin-top: 10rpx;
+  font-size: 22rpx;
+  color: #64748b;
+}
+
+.batch-result-actions {
+  margin-top: 10rpx;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10rpx;
+}
+
+.batch-result-refresh {
+  margin: 0;
+  border-radius: 999rpx;
+  background: #e2e8f0;
+  color: #1e293b;
+  line-height: 1.8;
+  padding: 0 20rpx;
+}
+
+.batch-result-retry {
+  margin: 0;
+  border: none;
+  border-radius: 999rpx;
+  background: #0f766e;
+  color: #fff;
+  line-height: 1.8;
+  padding: 0 20rpx;
+}
+
+.batch-result-close {
+  margin: 0;
+  border: none;
+  border-radius: 999rpx;
+  background: #1f2a44;
+  color: #fff;
+  line-height: 1.8;
+  padding: 0 20rpx;
+}
+
+.state-box {
+  background: #fff;
+  border-radius: 12rpx;
+  padding: 40rpx 20rpx;
+  text-align: center;
+  color: #7a869c;
+}
+
+.error-box {
+  color: #c53030;
+}
+
+.retry-btn {
+  margin-top: 12rpx;
+}
+
+.order-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+
+.order-card {
+  background: #fff;
+  border-radius: 12rpx;
+  padding: 18rpx;
+}
+
+.order-card-selected {
+  box-shadow: 0 0 0 2rpx #1f2a44 inset;
+}
+
+.order-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.order-id-row {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+}
+
+.select-dot {
+  width: 26rpx;
+  height: 26rpx;
+  border-radius: 50%;
+  border: 2rpx solid #94a3b8;
+  background: #fff;
+}
+
+.select-dot.selected {
+  border-color: #1f2a44;
+  background: #1f2a44;
+}
+
+.order-id {
+  font-size: 24rpx;
+  color: #5c677d;
+}
+
+.status-badge {
+  font-size: 20rpx;
+  padding: 4rpx 12rpx;
+  border-radius: 999rpx;
+}
+
+.status-pending {
+  background: #fef3c7;
+  color: #9c6b10;
+}
+
+.status-done {
+  background: #d9f2e3;
+  color: #1f7a46;
+}
+
+.status-cancel {
+  background: #fee2e2;
+  color: #b83232;
+}
+
+.line {
+  margin-top: 8rpx;
+  font-size: 24rpx;
+  color: #334155;
+}
+
+.order-actions {
+  margin-top: 10rpx;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.quick-btn {
+  margin: 0;
+  border: none;
+  border-radius: 999rpx;
+  background: #1f2a44;
+  color: #fff;
+  line-height: 1.8;
+  padding: 0 20rpx;
+  font-size: 20rpx;
+}
+
+.order-foot {
+  margin-top: 10rpx;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.service-tag {
+  font-size: 20rpx;
+  color: #2f4f80;
+  background: #ecf2ff;
+  border-radius: 999rpx;
+  padding: 4rpx 12rpx;
+}
+
+.price {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: #24324a;
+}

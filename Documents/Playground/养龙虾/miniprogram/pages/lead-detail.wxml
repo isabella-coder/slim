@@ -1,0 +1,167 @@
+<view class="detail-page" wx:if="{{!loading && lead}}">
+  <!-- 客户信息卡片 -->
+  <view class="card">
+    <view class="card-top">
+      <view class="customer-header">
+        <text class="customer-name">{{lead.customer_nickname || '未知客户'}}</text>
+        <text class="platform-tag {{lead.platform === 'douyin' ? 'tag-dy' : 'tag-xhs'}}">
+          {{lead.platformLabel}}
+        </text>
+      </view>
+      <text class="status-badge status-{{lead.status}}">{{lead.statusLabel}}</text>
+    </view>
+
+    <view class="info-grid">
+      <view class="info-cell">
+        <text class="info-label">车型</text>
+        <text class="info-value">{{lead.car_model || '-'}}</text>
+      </view>
+      <view class="info-cell">
+        <text class="info-label">服务</text>
+        <text class="info-value">{{lead.service_type || '-'}}</text>
+      </view>
+      <view class="info-cell">
+        <text class="info-label">预算</text>
+        <text class="info-value">{{lead.budget_range || '-'}}</text>
+      </view>
+      <view class="info-cell">
+        <text class="info-label">来源账号</text>
+        <text class="info-value">{{lead.account_code}}</text>
+      </view>
+    </view>
+
+    <!-- 联系方式 -->
+    <view class="contact-bar" wx:if="{{lead.customer_phone || lead.customer_wechat}}">
+      <view class="contact-btn" bindtap="callCustomer" wx:if="{{lead.customer_phone}}">
+        <text>📞 {{lead.customer_phone}}</text>
+      </view>
+      <view class="contact-btn" bindtap="copyWechat" wx:if="{{lead.customer_wechat}}">
+        <text>💬 复制微信号</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- AI 对话摘要 -->
+  <view class="card" wx:if="{{lead.conversation_summary}}">
+    <text class="card-title">🤖 AI 对话摘要</text>
+    <text class="summary-text">{{lead.conversation_summary}}</text>
+  </view>
+
+  <!-- 时间线 -->
+  <view class="card">
+    <text class="card-title">⏱ 处理时间线</text>
+    <view class="timeline">
+      <view class="tl-item tl-done">
+        <view class="tl-dot"></view>
+        <view class="tl-content">
+          <text class="tl-label">线索创建</text>
+          <text class="tl-time">{{lead.timeDisplay}}</text>
+        </view>
+      </view>
+
+      <view class="tl-item tl-done" wx:if="{{lead.assigned_at}}">
+        <view class="tl-dot"></view>
+        <view class="tl-content">
+          <text class="tl-label">分配给你</text>
+          <text class="tl-time">{{lead.assignedTimeDisplay}}</text>
+        </view>
+      </view>
+
+      <view class="tl-item {{lead.first_reply_at ? 'tl-done' : 'tl-pending'}}">
+        <view class="tl-dot"></view>
+        <view class="tl-content">
+          <text class="tl-label">首次回应</text>
+          <text class="tl-time" wx:if="{{lead.first_reply_at}}">{{lead.firstReplyTimeDisplay}}</text>
+          <text class="tl-sla" wx:if="{{lead.sla1mDisplay}}">SLA 1分钟: {{lead.sla1mDisplay}}</text>
+          <text class="tl-waiting" wx:if="{{!lead.first_reply_at && lead.status === 'assigned'}}">⏳ 等待你的首响...</text>
+        </view>
+      </view>
+
+      <view class="tl-item {{lead.wechat_invited_at ? 'tl-done' : 'tl-pending'}}">
+        <view class="tl-dot"></view>
+        <view class="tl-content">
+          <text class="tl-label">发起加微信</text>
+          <text class="tl-time" wx:if="{{lead.wechat_invited_at}}">{{lead.wechatInviteTimeDisplay}}</text>
+          <text class="tl-sla" wx:if="{{lead.sla3mDisplay}}">SLA 3分钟: {{lead.sla3mDisplay}}</text>
+          <text class="tl-waiting" wx:if="{{!lead.wechat_invited_at && lead.status === 'first_reply'}}">⏳ 等待发起加微信...</text>
+        </view>
+      </view>
+
+      <view class="tl-item {{lead.wechat_result_at ? 'tl-done' : 'tl-pending'}}">
+        <view class="tl-dot"></view>
+        <view class="tl-content">
+          <text class="tl-label">微信结果</text>
+          <text class="tl-time" wx:if="{{lead.wechat_result_at}}">{{lead.wechatResultTimeDisplay}}</text>
+          <text class="tl-status-text">{{lead.wechatStatusLabel}}</text>
+          <text class="tl-sla" wx:if="{{lead.sla10mDisplay}}">SLA 10分钟: {{lead.sla10mDisplay}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 操作按钮区 -->
+  <view class="action-area">
+    <!-- 待首响：显示首响按钮 -->
+    <view class="action-btn-big btn-primary" wx:if="{{lead.status === 'assigned'}}"
+      bindtap="handleFirstReply">
+      <text class="btn-icon">⚡</text>
+      <text class="btn-text">立即首响</text>
+      <text class="btn-hint">点击后将开始计时</text>
+    </view>
+
+    <!-- 已首响：显示加微信按钮 -->
+    <view class="action-btn-big btn-success" wx:if="{{lead.status === 'first_reply'}}"
+      bindtap="showWechatOptions">
+      <text class="btn-icon">💬</text>
+      <text class="btn-text">发起加微信</text>
+      <text class="btn-hint">选择加微信方式</text>
+    </view>
+
+    <!-- 加微信中：显示确认结果按钮 -->
+    <view class="action-btn-big btn-warning" wx:if="{{lead.status === 'wechat_invited'}}"
+      bindtap="showWechatResultOptions">
+      <text class="btn-icon">✏️</text>
+      <text class="btn-text">确认微信结果</text>
+      <text class="btn-hint">选择最终状态</text>
+    </view>
+
+    <!-- 已完成 -->
+    <view class="completed-box" wx:if="{{lead.status === 'completed'}}">
+      <text class="completed-icon">{{lead.wechat_status === 'success' ? '🎉' : '📋'}}</text>
+      <text class="completed-text">
+        {{lead.wechat_status === 'success' ? '已成功加上微信！' : '线索已处理完成'}}
+      </text>
+    </view>
+  </view>
+
+  <!-- 加微信方式选择弹窗 -->
+  <view class="mask" wx:if="{{showWechatMethodPicker}}" bindtap="hideWechatMethodPicker"></view>
+  <view class="bottom-sheet" wx:if="{{showWechatMethodPicker}}">
+    <text class="sheet-title">选择加微信方式</text>
+    <view class="sheet-option" wx:for="{{wechatMethods}}" wx:key="key"
+      bindtap="selectWechatMethod" data-method="{{item.key}}">
+      <text>{{item.label}}</text>
+    </view>
+    <view class="sheet-cancel" bindtap="hideWechatMethodPicker">
+      <text>取消</text>
+    </view>
+  </view>
+
+  <!-- 微信结果选择弹窗 -->
+  <view class="mask" wx:if="{{showWechatResultPicker}}" bindtap="hideWechatResultPicker"></view>
+  <view class="bottom-sheet" wx:if="{{showWechatResultPicker}}">
+    <text class="sheet-title">确认微信结果</text>
+    <view class="sheet-option" wx:for="{{wechatResults}}" wx:key="key"
+      bindtap="selectWechatResult" data-status="{{item.key}}">
+      <text>{{item.icon}} {{item.label}}</text>
+    </view>
+    <view class="sheet-cancel" bindtap="hideWechatResultPicker">
+      <text>取消</text>
+    </view>
+  </view>
+</view>
+
+<!-- 加载态 -->
+<view wx:if="{{loading}}" class="loading-page">
+  <text>加载中...</text>
+</view>

@@ -1,0 +1,89 @@
+<view class="leads-page">
+  <!-- Tab 筛选 -->
+  <scroll-view scroll-x class="tab-bar">
+    <view class="tab-item {{currentTab === item.key ? 'tab-active' : ''}}"
+      wx:for="{{tabs}}" wx:key="key"
+      bindtap="switchTab" data-tab="{{item.key}}">
+      <text>{{item.label}}</text>
+    </view>
+  </scroll-view>
+
+  <!-- 时间筛选 -->
+  <view class="date-filter-bar">
+    <picker mode="date" value="{{startDate}}" end="{{today}}" bindchange="onStartDateChange">
+      <view class="date-picker">{{startDate || '开始日期'}}</view>
+    </picker>
+    <text class="date-sep">至</text>
+    <picker mode="date" value="{{endDate}}" end="{{today}}" bindchange="onEndDateChange">
+      <view class="date-picker">{{endDate || '结束日期'}}</view>
+    </picker>
+    <view class="filter-btn btn-apply" bindtap="applyDateFilter">
+      <text>筛选</text>
+    </view>
+    <view class="filter-btn btn-reset" bindtap="clearDateFilter">
+      <text>重置</text>
+    </view>
+  </view>
+
+  <!-- 线索列表 -->
+  <view class="lead-list">
+    <view wx:if="{{loading && leads.length === 0}}" class="loading-box">
+      <text>加载中...</text>
+    </view>
+
+    <view wx:elif="{{leads.length === 0}}" class="empty-box">
+      <text class="empty-icon">📭</text>
+      <text class="empty-text">暂无线索</text>
+    </view>
+
+    <view wx:else>
+      <view class="lead-card" wx:for="{{leads}}" wx:key="lead_id"
+        bindtap="goToDetail" data-id="{{item.lead_id}}">
+        
+        <!-- 卡片头部 -->
+        <view class="card-header">
+          <view class="card-left">
+            <text class="customer-name">{{item.customer_nickname || '未知客户'}}</text>
+            <text class="platform-tag {{item.platform === 'douyin' ? 'tag-dy' : 'tag-xhs'}}">
+              {{item.platformLabel}}
+            </text>
+          </view>
+          <text class="status-tag status-{{item.status}}">{{item.statusLabel}}</text>
+        </view>
+
+        <!-- 卡片信息 -->
+        <view class="card-body">
+          <view class="info-row">
+            <text class="info-item">🚗 {{item.car_model || '-'}}</text>
+            <text class="info-item">🔧 {{item.service_type || '-'}}</text>
+          </view>
+          <view class="info-row" wx:if="{{item.budget_range}}">
+            <text class="info-item">💰 {{item.budget_range}}</text>
+          </view>
+        </view>
+
+        <!-- 卡片底部 -->
+        <view class="card-footer">
+          <text class="time-text">{{item.timeDisplay}}</text>
+          
+          <!-- 快捷操作按钮 -->
+          <view class="quick-actions" catchtap="">
+            <view class="action-btn action-reply"
+              wx:if="{{item.status === 'assigned'}}"
+              catchtap="quickFirstReply" data-id="{{item.lead_id}}">
+              <text>首响</text>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 加载更多 -->
+      <view wx:if="{{loading}}" class="loading-more">
+        <text>加载更多...</text>
+      </view>
+      <view wx:elif="{{!hasMore}}" class="no-more">
+        <text>— 没有更多了 —</text>
+      </view>
+    </view>
+  </view>
+</view>

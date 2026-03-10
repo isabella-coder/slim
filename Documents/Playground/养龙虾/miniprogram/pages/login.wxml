@@ -1,0 +1,41 @@
+<view class="login-page">
+  <view class="login-card">
+    <view class="title-wrap">
+      <text class="title">销售登录</text>
+      <text class="subtitle">两店客资中台</text>
+    </view>
+
+    <view class="form-item">
+      <text class="label">账号</text>
+      <picker mode="selector" range="{{salesOptions}}" range-key="sales_name" value="{{selectedIndex}}" bindchange="onSalesChange">
+        <view class="picker-box">
+          <text class="{{selectedSalesId ? '' : 'placeholder'}}">{{selectedLabel || '请选择账号'}}</text>
+        </view>
+      </picker>
+    </view>
+
+    <view class="form-item">
+      <text class="label">密码</text>
+      <input
+        class="input"
+        type="password"
+        placeholder="请输入登录密码"
+        value="{{password}}"
+        bindinput="onPasswordInput"
+      />
+    </view>
+
+    <view class="remember-row">
+      <checkbox-group bindchange="onRememberChange">
+        <label class="remember-label">
+          <checkbox value="remember" checked="{{rememberAccount}}" />
+          <text>记住账号</text>
+        </label>
+      </checkbox-group>
+    </view>
+
+    <button class="login-btn" bindtap="handleLogin" loading="{{loading}}" disabled="{{loading}}">
+      登录
+    </button>
+  </view>
+</view>

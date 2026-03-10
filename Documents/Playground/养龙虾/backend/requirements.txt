@@ -1,0 +1,56 @@
+"""
+上海两店多渠道客资中台系统 - FastAPI 后端
+"""
+
+# FastAPI 核心
+fastapi==0.109.0
+uvicorn[standard]==0.27.0
+pydantic==2.6.0
+pydantic-settings==2.1.0
+
+# 数据库
+sqlalchemy==2.0.24
+alembic==1.13.1
+psycopg2-binary==2.9.9  # PostgreSQL 驱动
+
+# 认证&安全
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+python-multipart==0.0.6
+
+# 企业微信集成（使用官方 SDK）
+requests==2.31.0
+# 企业微信官方 SDK：pip install work-wecard (如有)
+
+# 任务调度
+apscheduler==3.10.4
+
+# 工具库
+python-dateutil==2.8.2
+pytz==2024.1
+
+# 开发工具
+pytest==7.4.3
+pytest-asyncio==0.23.2
+pytest-cov==4.1.0
+
+# 日志
+python-json-logger==2.0.7
+
+# 代码质量
+black==24.1.1
+flake8==7.0.0
+mypy==1.8.0
+isort==5.13.2
+
+# OpenAPI/Swagger (FastAPI 内置，但显式列出)
+# 无额外依赖
+
+# 环境变量管理
+python-dotenv==1.0.0
+
+# 异步
+httpx==0.25.2
+
+# CORS
+fastapi-cors==0.0.6

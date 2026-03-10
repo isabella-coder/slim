@@ -1,0 +1,60 @@
+{
+  "pages": [
+    "pages/login",
+    "pages/index",
+    "pages/leads",
+    "pages/lead-detail",
+    "pages/profile"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#fff",
+    "navigationBarTitleText": "两店客资中台",
+    "navigationBarTextStyle": "black"
+  },
+  "tabBar": {
+    "color": "#999",
+    "selectedColor": "#409eff",
+    "backgroundColor": "#fff",
+    "borderStyle": "white",
+    "list": [
+      {
+        "pagePath": "pages/index",
+        "text": "首页"
+      },
+      {
+        "pagePath": "pages/leads",
+        "text": "线索"
+      },
+      {
+        "pagePath": "pages/profile",
+        "text": "我的"
+      }
+    ]
+  },
+  "subPackages": [
+    {
+      "root": "subpackages/store",
+      "name": "store",
+      "pages": [
+        "pages/ops-home/index",
+        "pages/order-audit/index",
+        "pages/order-list/index",
+        "pages/order-detail/index"
+      ]
+    }
+  ],
+  "preloadRule": {
+    "pages/index": {
+      "network": "all",
+      "packages": [
+        "store"
+      ]
+    }
+  },
+  "permission": {
+    "scope.userInfo": {
+      "desc": "获取您的昵称、头像等信息"
+    }
+  }
+}

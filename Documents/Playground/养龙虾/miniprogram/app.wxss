@@ -1,0 +1,84 @@
+/**wxss**/
+
+page {
+  background-color: #f5f5f5;
+  color: #333;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+view {
+  box-sizing: border-box;
+}
+
+.container {
+  padding: 20rpx;
+}
+
+.header {
+  background-color: #fff;
+  padding: 20rpx;
+  margin-bottom: 20rpx;
+  border-radius: 8rpx;
+  box-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.1);
+}
+
+.header-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.content {
+  background-color: #fff;
+  padding: 20rpx;
+  border-radius: 8rpx;
+  box-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.1);
+}
+
+.button {
+  background-color: #409eff;
+  color: white;
+  padding: 12rpx 24rpx;
+  border-radius: 4rpx;
+  margin: 10rpx;
+  display: inline-block;
+  text-align: center;
+}
+
+.button:active {
+  background-color: #3c8ce7;
+}
+
+.list-item {
+  padding: 16rpx;
+  border-bottom: 1rpx solid #eee;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.list-item:last-child {
+  border-bottom: none;
+}
+
+.status-badge {
+  padding: 4rpx 12rpx;
+  border-radius: 20rpx;
+  font-size: 12rpx;
+  font-weight: bold;
+}
+
+.status-pending {
+  background-color: #fde6e8;
+  color: #f56c6c;
+}
+
+.status-success {
+  background-color: #e8f5e9;
+  color: #67c23a;
+}
+
+.status-warning {
+  background-color: #fdf1e6;
+  color: #e6a23c;
+}

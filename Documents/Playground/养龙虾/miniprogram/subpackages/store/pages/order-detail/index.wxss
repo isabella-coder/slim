@@ -1,0 +1,136 @@
+.page {
+  min-height: 100vh;
+  padding: 20rpx;
+  background: #f3f6fb;
+  box-sizing: border-box;
+}
+
+.state-box {
+  background: #fff;
+  border-radius: 12rpx;
+  padding: 40rpx 20rpx;
+  text-align: center;
+  color: #7a869c;
+}
+
+.error-box {
+  color: #c53030;
+}
+
+.retry-btn {
+  margin-top: 12rpx;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+
+.header-card {
+  background: linear-gradient(135deg, #1f2a44, #2f4f80);
+  border-radius: 12rpx;
+  color: #fff;
+  padding: 18rpx;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.order-id {
+  font-size: 24rpx;
+}
+
+.status-badge {
+  font-size: 20rpx;
+  padding: 4rpx 12rpx;
+  border-radius: 999rpx;
+}
+
+.status-pending {
+  background: #fef3c7;
+  color: #9c6b10;
+}
+
+.status-done {
+  background: #d9f2e3;
+  color: #1f7a46;
+}
+
+.status-cancel {
+  background: #fee2e2;
+  color: #b83232;
+}
+
+.card {
+  background: #fff;
+  border-radius: 12rpx;
+  padding: 18rpx;
+}
+
+.card-title {
+  display: block;
+  font-size: 28rpx;
+  font-weight: 700;
+  color: #24324a;
+  margin-bottom: 12rpx;
+}
+
+.line {
+  display: flex;
+  justify-content: space-between;
+  gap: 20rpx;
+  margin-bottom: 10rpx;
+  font-size: 24rpx;
+  color: #334155;
+}
+
+.line text:last-child {
+  text-align: right;
+  word-break: break-all;
+}
+
+.form-item {
+  margin-bottom: 12rpx;
+}
+
+.form-label {
+  display: block;
+  font-size: 24rpx;
+  color: #546179;
+  margin-bottom: 8rpx;
+}
+
+.picker-box,
+.remark-input {
+  width: 100%;
+  border: 1rpx solid #d7dfed;
+  border-radius: 10rpx;
+  padding: 12rpx 14rpx;
+  box-sizing: border-box;
+  font-size: 24rpx;
+  color: #334155;
+  background: #fff;
+}
+
+.remark-input {
+  min-height: 130rpx;
+}
+
+.save-btn {
+  margin-top: 8rpx;
+  background: #1f2a44;
+  color: #fff;
+  border-radius: 999rpx;
+}
+
+.readonly-tip {
+  font-size: 24rpx;
+  color: #7a869c;
+}
+
+.copy-btn {
+  background: #1f2a44;
+  color: #fff;
+  border-radius: 999rpx;
+}

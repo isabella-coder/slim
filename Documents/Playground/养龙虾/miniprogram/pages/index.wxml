@@ -1,0 +1,81 @@
+<view class="dashboard">
+  <!-- 头部 -->
+  <view class="dash-header">
+    <view class="greeting">
+      <text class="greeting-text">你好，{{salesName}}</text>
+      <text class="store-tag">{{storeCode === 'BOP' ? 'BOP店' : '龙膜店'}}</text>
+    </view>
+    <text class="date-text">{{todayStats.date || '今日'}}</text>
+  </view>
+
+  <!-- 今日统计卡片 -->
+  <view class="stats-grid">
+    <view class="stat-card stat-total">
+      <text class="stat-value">{{todayStats.lead_count || 0}}</text>
+      <text class="stat-label">今日线索</text>
+    </view>
+    <view class="stat-card stat-pending">
+      <text class="stat-value">{{todayStats.pending_count || 0}}</text>
+      <text class="stat-label">待处理</text>
+    </view>
+    <view class="stat-card stat-reply">
+      <text class="stat-value">{{todayStats.first_reply_count || 0}}</text>
+      <text class="stat-label">已首响</text>
+    </view>
+    <view class="stat-card stat-wechat">
+      <text class="stat-value">{{todayStats.wechat_success_count || 0}}</text>
+      <text class="stat-label">加微成功</text>
+    </view>
+  </view>
+
+  <!-- 经营中心入口 -->
+  <view wx:if="{{canAccessStoreOps}}" class="ops-entry" bindtap="goToStoreOps">
+    <view class="ops-entry-main">
+      <text class="ops-entry-title">{{storeOpsTitle}}</text>
+      <text class="ops-entry-subtitle">{{storeOpsSubtitle}}</text>
+    </view>
+    <view class="ops-entry-side">
+      <text class="ops-role-tag">{{currentRoleLabel}}</text>
+      <text class="ops-entry-arrow">进入 ›</text>
+    </view>
+  </view>
+
+  <!-- 待处理线索 -->
+  <view class="section">
+    <view class="section-header">
+      <text class="section-title">待处理线索</text>
+      <text class="section-more" bindtap="goToLeads">查看全部 ›</text>
+    </view>
+
+    <view wx:if="{{loading}}" class="loading-box">
+      <text>加载中...</text>
+    </view>
+
+    <view wx:elif="{{recentLeads.length === 0}}" class="empty-box">
+      <text class="empty-icon">✅</text>
+      <text class="empty-text">当前无待处理线索</text>
+    </view>
+
+    <view wx:else class="lead-list">
+      <view class="lead-item" wx:for="{{recentLeads}}" wx:key="lead_id"
+        bindtap="goToLeadDetail" data-id="{{item.lead_id}}">
+        <view class="lead-top">
+          <text class="lead-name">{{item.customer_nickname || '未知客户'}}</text>
+          <text class="lead-platform {{item.platform === 'douyin' ? 'tag-dy' : 'tag-xhs'}}">
+            {{item.platform === 'douyin' ? '抖音' : '小红书'}}
+          </text>
+        </view>
+        <view class="lead-info">
+          <text class="lead-car">🚗 {{item.car_model || '-'}}</text>
+          <text class="lead-service">{{item.service_type || '-'}}</text>
+        </view>
+        <view class="lead-bottom">
+          <text class="lead-time">{{item.created_at_display || '刚刚'}}</text>
+          <text class="lead-status status-{{item.status}}">
+            {{item.status === 'assigned' ? '待首响' : item.status === 'first_reply' ? '待加微' : '进行中'}}
+          </text>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>
