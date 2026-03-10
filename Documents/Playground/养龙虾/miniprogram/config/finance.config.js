@@ -1,5 +1,7 @@
 const FINANCE_BASE_URL_STORAGE_KEY = 'financeBaseUrl';
 const FINANCE_API_TOKEN_STORAGE_KEY = 'financeApiToken';
+const STORE_BASE_URL_STORAGE_KEY = 'store_api_base_url';
+const STORE_API_TOKEN_STORAGE_KEY = 'store_internal_api_token';
 
 const ENV_BASE_URL = {
   // 微信开发者工具本机联调。
@@ -38,6 +40,8 @@ function setFinanceBaseUrl(url) {
     return normalized;
   }
   wx.setStorageSync(FINANCE_BASE_URL_STORAGE_KEY, normalized);
+  // Keep one source of truth across merged modules.
+  wx.setStorageSync(STORE_BASE_URL_STORAGE_KEY, normalized);
   return normalized;
 }
 
@@ -47,6 +51,8 @@ function setFinanceApiToken(token) {
     return normalized;
   }
   wx.setStorageSync(FINANCE_API_TOKEN_STORAGE_KEY, normalized);
+  // Keep one source of truth across merged modules.
+  wx.setStorageSync(STORE_API_TOKEN_STORAGE_KEY, normalized);
   return normalized;
 }
 
@@ -54,6 +60,11 @@ function resolveBaseUrl(envVersion) {
   const runtimeUrl = readRuntimeBaseUrl();
   if (runtimeUrl) {
     return runtimeUrl;
+  }
+
+  const storeUrl = readStoreBaseUrl();
+  if (storeUrl) {
+    return storeUrl;
   }
 
   const envUrl = normalizeUrl(ENV_BASE_URL[envVersion]);
@@ -69,6 +80,12 @@ function resolveApiToken() {
   if (runtimeToken) {
     return runtimeToken;
   }
+
+  const storeToken = readStoreApiToken();
+  if (storeToken) {
+    return storeToken;
+  }
+
   return normalizeToken(financeConfig.apiToken);
 }
 
@@ -84,6 +101,20 @@ function readRuntimeApiToken() {
     return '';
   }
   return normalizeToken(wx.getStorageSync(FINANCE_API_TOKEN_STORAGE_KEY));
+}
+
+function readStoreBaseUrl() {
+  if (!canUseWxStorage()) {
+    return '';
+  }
+  return normalizeUrl(wx.getStorageSync(STORE_BASE_URL_STORAGE_KEY));
+}
+
+function readStoreApiToken() {
+  if (!canUseWxStorage()) {
+    return '';
+  }
+  return normalizeToken(wx.getStorageSync(STORE_API_TOKEN_STORAGE_KEY));
 }
 
 function getEnvVersion() {
@@ -123,6 +154,8 @@ function normalizeToken(value) {
 module.exports = {
   FINANCE_BASE_URL_STORAGE_KEY,
   FINANCE_API_TOKEN_STORAGE_KEY,
+  STORE_BASE_URL_STORAGE_KEY,
+  STORE_API_TOKEN_STORAGE_KEY,
   getFinanceConfig,
   setFinanceBaseUrl,
   setFinanceApiToken

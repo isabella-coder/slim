@@ -1,5 +1,5 @@
 const { getFinanceConfig, setFinanceBaseUrl } = require('../config/finance.config');
-const { getAvailableAccounts, setCurrentUserContextById } = require('./user-context');
+const { getAvailableAccounts, getCurrentUserContext, setCurrentUserContextById } = require('./user-context');
 
 const MINI_AUTH_TOKEN_KEY = 'miniAuthSessionToken';
 const MINI_AUTH_USER_KEY = 'miniAuthUser';
@@ -55,6 +55,11 @@ function ensureMiniAuthSession() {
     return Promise.resolve(null);
   }
 
+  // Bridge sessions come from merged global storage, skip /api/me probing.
+  if (session.isBridgeSession) {
+    return Promise.resolve(session);
+  }
+
   const baseUrl = normalizeBaseUrl(getFinanceConfig().baseUrl);
   if (!baseUrl) {
     return Promise.resolve(session);
@@ -106,12 +111,21 @@ function logoutMiniProgram() {
 
 function getMiniAuthSession() {
   if (!canUseWxStorage()) {
-    return { token: '', user: null };
+    return { token: '', user: null, isBridgeSession: false };
   }
   const token = normalizeText(wx.getStorageSync(MINI_AUTH_TOKEN_KEY));
   const rawUser = wx.getStorageSync(MINI_AUTH_USER_KEY);
   const user = rawUser && typeof rawUser === 'object' ? rawUser : null;
-  return { token, user };
+  if (token && user) {
+    return { token, user, isBridgeSession: false };
+  }
+
+  const bridgeSession = getBridgeSession();
+  if (bridgeSession.token && bridgeSession.user) {
+    return bridgeSession;
+  }
+
+  return { token: '', user: null, isBridgeSession: false };
 }
 
 function saveMiniAuthSession(token, user) {
@@ -156,6 +170,33 @@ function bindUserContextFromSessionUser(user) {
     setCurrentUserContextById(matched.accountId);
   }
   return matched;
+}
+
+function getBridgeSession() {
+  if (!canUseWxStorage()) {
+    return { token: '', user: null, isBridgeSession: false };
+  }
+
+  const financeConfig = getFinanceConfig();
+  const token = normalizeText(financeConfig && financeConfig.apiToken);
+  if (!token) {
+    return { token: '', user: null, isBridgeSession: false };
+  }
+
+  const context = getCurrentUserContext() || {};
+  const role = normalizeRole(wx.getStorageSync('user_role') || context.role || 'manager');
+  const username = normalizeText(wx.getStorageSync('sales_id') || context.accountId || 'bridge_user');
+  const name = normalizeText(wx.getStorageSync('sales_name') || context.accountName || '兼容账号');
+
+  return {
+    token,
+    user: {
+      username,
+      name,
+      role: role || 'manager'
+    },
+    isBridgeSession: true
+  };
 }
 
 function getMiniRoleLabel(role) {
