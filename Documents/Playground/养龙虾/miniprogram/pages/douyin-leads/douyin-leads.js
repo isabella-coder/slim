@@ -1,7 +1,7 @@
-const { clearMiniAuthSession, getMiniAuthSession } = require('../../utils/mini-auth');
+const { clearMiniAuthSession } = require('../../utils/mini-auth');
 const { getFinanceConfig } = require('../../config/finance.config');
 const {
-  hasMiniAuthSession,
+  getValidMiniAuthSession,
   navigateToStoreLogin
 } = require('../../utils/page-access');
 const {
@@ -135,7 +135,8 @@ Page({
 
   // ─── 加载线索 ───
   loadLeads() {
-    if (!hasMiniAuthSession()) {
+    const session = getValidMiniAuthSession();
+    if (!session) {
       this.setData({
         needLogin: true,
         loading: false,
@@ -144,8 +145,6 @@ Page({
       });
       return Promise.resolve();
     }
-
-    const session = getMiniAuthSession();
 
     this.setData({ loading: true, needLogin: false });
     const baseUrl = getFinanceConfig().baseUrl.replace(/\/+$/, '');
@@ -220,8 +219,11 @@ Page({
   },
 
   updateLeadStatus(leadId, newStatus, displayIdx) {
-    const session = getMiniAuthSession();
-    if (!session.token) return;
+    const session = getValidMiniAuthSession();
+    if (!session) {
+      this.setData({ needLogin: true });
+      return;
+    }
 
     const baseUrl = getFinanceConfig().baseUrl.replace(/\/+$/, '');
     wx.showLoading({ title: '更新中...' });
@@ -261,11 +263,11 @@ Page({
 
   // ─── 回访到期加载 ───
   loadFollowupDue() {
-    if (!hasMiniAuthSession()) {
-      this.setData({ needLogin: true });
+    const session = getValidMiniAuthSession();
+    if (!session) {
+      this.setData({ needLogin: true, followupDueCount: 0, followupDueItems: [] });
       return;
     }
-    const session = getMiniAuthSession();
     const baseUrl = getFinanceConfig().baseUrl.replace(/\/+$/, '');
     wx.request({
       url: `${baseUrl}/api/leads/followup-due`,

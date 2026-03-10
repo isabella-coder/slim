@@ -1,8 +1,15 @@
 const { getMiniAuthSession } = require('./mini-auth');
 
-function hasMiniAuthSession() {
+function getValidMiniAuthSession() {
   const session = getMiniAuthSession();
-  return Boolean(session && session.token && session.user);
+  if (session && session.token && session.user) {
+    return session;
+  }
+  return null;
+}
+
+function hasMiniAuthSession() {
+  return Boolean(getValidMiniAuthSession());
 }
 
 function navigateToStoreLogin() {
@@ -37,6 +44,7 @@ function ensureMiniSessionOrNavigate() {
 
 module.exports = {
   ensureMiniSessionOrNavigate,
+  getValidMiniAuthSession,
   hasMiniAuthSession,
   navigateToStoreLogin,
   relaunchToStoreLogin

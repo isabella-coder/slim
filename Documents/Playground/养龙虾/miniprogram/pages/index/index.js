@@ -10,12 +10,11 @@ const {
 const {
   bindUserContextFromSessionUser,
   ensureMiniAuthSession,
-  getMiniAuthSession,
   getMiniRoleLabel,
   logoutMiniProgram
 } = require('../../utils/mini-auth');
 const {
-  hasMiniAuthSession,
+  getValidMiniAuthSession,
   navigateToStoreLogin,
   relaunchToStoreLogin
 } = require('../../utils/page-access');
@@ -49,7 +48,8 @@ Page({
   },
 
   _doAuthCheck() {
-    if (!hasMiniAuthSession()) {
+    var session = getValidMiniAuthSession();
+    if (!session) {
       this.setData({
         needLogin: true,
         currentAccountLabel: '未登录',
@@ -65,8 +65,6 @@ Page({
       });
       return;
     }
-
-    var session = getMiniAuthSession();
 
     this.setData({ needLogin: false });
     bindUserContextFromSessionUser(session.user);
