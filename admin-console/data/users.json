@@ -81,42 +81,48 @@
     "password": "",
     "name": "孟傲",
     "role": "sales",
-    "passwordHash": "pbkdf2_sha256$260000$sales_mengao_migrated_20260309$8591483c02cb53a4da9c5a171cf2cf27bb6bcb918b83c015afaeb939d5bdc67f"
+    "passwordHash": "pbkdf2_sha256$260000$fa8b01fbf79d664fa7fb8d8089ec2830$1792acbc98fb62c804688b65cdcc0ad7cc3da6bc426c749f201bdd758ad87bac",
+    "store": "BOP"
   },
   {
     "username": "sales_tianjiajia",
     "password": "",
     "name": "田佳佳",
     "role": "sales",
-    "passwordHash": "pbkdf2_sha256$260000$sales_tianjiajia_migrated_20260309$04121ce24fed9c08c8d81afc68be4477ad701e81188b8badf4aeac1650a0fcf9"
+    "passwordHash": "pbkdf2_sha256$260000$881446240131c65cfd39e73f1d43c1b3$4e1a0bdc47be930cbdfc6ae8cf4a0435595f15b536813f83e1a2ff311335ac4f",
+    "store": "BOP"
   },
   {
     "username": "sales_zhoushilei",
     "password": "",
     "name": "周石磊",
     "role": "sales",
-    "passwordHash": "pbkdf2_sha256$260000$sales_zhoushilei_migrated_20260309$ee0bd7f430aec4553934f81e00a3aa235010c5b485846a7907e97ccd5e15cd65"
+    "passwordHash": "pbkdf2_sha256$260000$cac2b22ef1aa2a5aea0a1b15957fb25a$79fa411853320c794a1062a0a4b31a0d81b6da7347cc61f0162a0fedeb7bca6c",
+    "store": "BOP"
   },
   {
     "username": "sales_cuitingting",
     "password": "",
     "name": "崔庭廷",
     "role": "sales",
-    "passwordHash": "pbkdf2_sha256$260000$sales_cuitingting_migrated_20260309$7c3d8ba0a14f7b5831735834c4c3011bf309f71e5e9ac1cdb5fe21aa83862646"
+    "passwordHash": "pbkdf2_sha256$260000$f7a0910617b33aa7f1d6b7dd686cf29d$4d636332dc596e3365b4d2e735a7117d907c924dbd1b92f6cc0c3530853dea86",
+    "store": "BOP"
   },
   {
     "username": "sales_weipeng",
     "password": "",
     "name": "魏鹏",
     "role": "sales",
-    "passwordHash": "pbkdf2_sha256$260000$sales_weipeng_migrated_20260309$c12bb9c6ada3e8a458aec9a0ad5ac1301b7e4fd0bf5dd20574c78ba36815c0fc"
+    "passwordHash": "pbkdf2_sha256$260000$40ab0cffb035ff6b58aecd535b26ea98$1ea84c7d164c059ec08b6cd745074271718f1318ec6f2bbe36d8cd03323c837e",
+    "store": "LM"
   },
   {
     "username": "sales_libochao",
     "password": "",
     "name": "李博超",
     "role": "sales",
-    "passwordHash": "pbkdf2_sha256$260000$sales_libochao_migrated_20260309$70134a7c6771ac8950eef549a00abbe323f492be5ea3372fd8d01ff8c40fcf7d"
+    "passwordHash": "pbkdf2_sha256$260000$4879af15e7d3bb05087ac6aba3189c8a$0714f38fc461262ff65efbb204235664d240916e6f69d76831b80abb5b0beee1",
+    "store": "LM"
   },
   {
     "username": "finance_huangyanting",
@@ -137,6 +143,6 @@
     "password": "",
     "name": "余帅",
     "role": "manager",
-    "passwordHash": "pbkdf2_sha256$260000$manager_yushuai_migrated_20260309$c32c046c996102cf9713677fc6212957d5fceda28356f52a8a3746302ea0f059"
+    "passwordHash": "pbkdf2_sha256$260000$0fb9622db2fce3783c4c7d8bd96f4475$a8d8dc19c44652e7af8fe08743de5eab2e134d4e40ed034b83b434b36d27e7d2"
   }
 ]

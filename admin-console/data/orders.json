@@ -1,5 +1,470 @@
 [
   {
+    "id": "lead_20260310_170456_1ebdca6c",
+    "serviceType": "FILM",
+    "status": "未完工",
+    "version": 0,
+    "customerName": "李先生",
+    "phone": "13800138000",
+    "carModel": "宝马3系",
+    "plateNumber": "",
+    "sourceChannel": "抖音私信",
+    "store": "龙膜精英店",
+    "salesBrandText": "魏鹏",
+    "packageLabel": "隐形车衣",
+    "packageDesc": "",
+    "appointmentDate": "",
+    "appointmentTime": "",
+    "depositAmount": 0,
+    "remark": "【S级线索】\n评分100分\n有明确车型: 宝马3系 / 高端品牌车型 / 有明确需求: 隐形车衣\n预算: 8000\n\n--- AI对话摘要 ---\n客户: 我叫李先生，宝马3系，想贴隐形车衣，预算8000，电话13800138000\nAI: 李先生您好！👋 宝马3系贴龙膜车衣，8000预算可以考虑入门款或局部防护。龙膜PPF品质优异，具体方案微信发您，加我微信详聊施工细节吧！📱",
+    "priceSummary": {
+      "packagePrice": 0,
+      "addOnFee": 0,
+      "totalPrice": 0,
+      "deposit": 0
+    },
+    "createdAt": "2026-03-10 17:04:56",
+    "updatedAt": "2026-03-10 17:04",
+    "leadSource": "douyin_ai",
+    "leadStatus": "待联系",
+    "leadGrade": "S",
+    "leadGradeScore": 100,
+    "leadGradeReasons": [
+      "有明确车型: 宝马3系",
+      "高端品牌车型",
+      "有明确需求: 隐形车衣",
+      "高价值服务类型",
+      "有预算信息: 8000",
+      "高预算客户",
+      "留了电话"
+    ],
+    "leadBudgetRange": "8000",
+    "leadConversationSummary": "客户: 我叫李先生，宝马3系，想贴隐形车衣，预算8000，电话13800138000\nAI: 李先生您好！👋 宝马3系贴龙膜车衣，8000预算可以考虑入门款或局部防护。龙膜PPF品质优异，具体方案微信发您，加我微信详聊施工细节吧！📱",
+    "leadFollowupPriority": "urgent",
+    "leadSuggestedFollowupDays": [
+      1,
+      3,
+      7,
+      30
+    ],
+    "leadWechat": "",
+    "leadPlatform": "douyin",
+    "leadAccountCode": "DY-LM-001",
+    "followupRecords": [
+      {
+        "type": "D1",
+        "done": false,
+        "doneAt": "",
+        "remark": ""
+      },
+      {
+        "type": "D3",
+        "done": false,
+        "doneAt": "",
+        "remark": ""
+      },
+      {
+        "type": "D7",
+        "done": false,
+        "doneAt": "",
+        "remark": ""
+      },
+      {
+        "type": "D30",
+        "done": false,
+        "doneAt": "",
+        "remark": ""
+      }
+    ],
+    "followupLastUpdatedAt": "2026-03-10 17:04"
+  },
+  {
+    "id": "lead_20260310_143814_28d96845",
+    "serviceType": "FILM",
+    "status": "未完工",
+    "version": 0,
+    "customerName": "张总",
+    "phone": "13700001234",
+    "carModel": "特斯拉Model Y",
+    "plateNumber": "",
+    "sourceChannel": "抖音私信",
+    "store": "龙膜精英店",
+    "salesBrandText": "李博超",
+    "packageLabel": "贴膜",
+    "packageDesc": "",
+    "appointmentDate": "",
+    "appointmentTime": "",
+    "depositAmount": 0,
+    "remark": "【S级线索】\n评分80分\n有明确车型: 特斯拉Model Y / 高端品牌车型 / 有明确需求: 贴膜\n\n--- AI对话摘要 ---\n客户: 你好，我是张总，开特斯拉Model Y，想贴窗膜，电话13700001234，微信ztesla\nAI: 张总您好！🚗 特斯拉Model Y的全景天幕对隔热要求很高，龙膜后羿/畅悦系列很适合，隔热持久且不影响信号。我加您微信 **ztesla** 发具体方案和报价给您，您看方便吗？📱",
+    "priceSummary": {
+      "packagePrice": 0,
+      "addOnFee": 0,
+      "totalPrice": 0,
+      "deposit": 0
+    },
+    "createdAt": "2026-03-10 14:38:14",
+    "updatedAt": "2026-03-10 14:38",
+    "leadSource": "douyin_ai",
+    "leadStatus": "待联系",
+    "leadGrade": "S",
+    "leadGradeScore": 80,
+    "leadGradeReasons": [
+      "有明确车型: 特斯拉Model Y",
+      "高端品牌车型",
+      "有明确需求: 贴膜",
+      "留了电话",
+      "留了微信号"
+    ],
+    "leadBudgetRange": "",
+    "leadConversationSummary": "客户: 你好，我是张总，开特斯拉Model Y，想贴窗膜，电话13700001234，微信ztesla\nAI: 张总您好！🚗 特斯拉Model Y的全景天幕对隔热要求很高，龙膜后羿/畅悦系列很适合，隔热持久且不影响信号。我加您微信 **ztesla** 发具体方案和报价给您，您看方便吗？📱",
+    "leadFollowupPriority": "urgent",
+    "leadSuggestedFollowupDays": [
+      1,
+      3,
+      7,
+      30
+    ],
+    "leadWechat": "ztesla",
+    "leadPlatform": "douyin",
+    "leadAccountCode": "DY-LM-001",
+    "followupRecords": [
+      {
+        "type": "D1",
+        "done": false,
+        "doneAt": "",
+        "remark": ""
+      },
+      {
+        "type": "D3",
+        "done": false,
+        "doneAt": "",
+        "remark": ""
+      },
+      {
+        "type": "D7",
+        "done": false,
+        "doneAt": "",
+        "remark": ""
+      },
+      {
+        "type": "D30",
+        "done": false,
+        "doneAt": "",
+        "remark": ""
+      }
+    ],
+    "followupLastUpdatedAt": "2026-03-10 14:38"
+  },
+  {
+    "id": "lead_20260310_143239_44392bce",
+    "serviceType": "FILM",
+    "status": "未完工",
+    "version": 0,
+    "customerName": "赵女士",
+    "phone": "13800001111",
+    "carModel": "奔驰GLC 300",
+    "plateNumber": "",
+    "sourceChannel": "抖音私信",
+    "store": "BOP保镖上海工厂店",
+    "salesBrandText": "孟傲",
+    "packageLabel": "贴膜",
+    "packageDesc": "",
+    "appointmentDate": "",
+    "appointmentTime": "",
+    "depositAmount": 0,
+    "remark": "【S级线索】\n评分80分\n有明确车型: 奔驰GLC 300 / 高端品牌车型 / 有明确需求: 贴膜\n\n--- AI对话摘要 ---\n客户: 你好我叫赵女士，奔驰GLC 300，想贴车窗膜，电话13800001111，微信zhao_nv\nAI: 嗨赵女士👋 奔驰GLC 300贴车窗膜太合适了！隔热防晒效果拉满🌞 看到您留微信啦，我稍后加您zhao_nv，给您发膜的类型和报价～期待为您服务✨",
+    "priceSummary": {
+      "packagePrice": 0,
+      "addOnFee": 0,
+      "totalPrice": 0,
+      "deposit": 0
+    },
+    "createdAt": "2026-03-10 14:32:39",
+    "updatedAt": "2026-03-10 14:32",
+    "leadSource": "douyin_ai",
+    "leadStatus": "待联系",
+    "leadGrade": "S",
+    "leadGradeScore": 80,
+    "leadGradeReasons": [
+      "有明确车型: 奔驰GLC 300",
+      "高端品牌车型",
+      "有明确需求: 贴膜",
+      "留了电话",
+      "留了微信号"
+    ],
+    "leadBudgetRange": "",
+    "leadConversationSummary": "客户: 你好我叫赵女士，奔驰GLC 300，想贴车窗膜，电话13800001111，微信zhao_nv\nAI: 嗨赵女士👋 奔驰GLC 300贴车窗膜太合适了！隔热防晒效果拉满🌞 看到您留微信啦，我稍后加您zhao_nv，给您发膜的类型和报价～期待为您服务✨",
+    "leadFollowupPriority": "urgent",
+    "leadSuggestedFollowupDays": [
+      1,
+      3,
+      7,
+      30
+    ],
+    "leadWechat": "zhao_nv",
+    "leadPlatform": "douyin",
+    "leadAccountCode": "DY-BOP-001",
+    "followupRecords": [
+      {
+        "type": "D1",
+        "done": false,
+        "doneAt": "",
+        "remark": ""
+      },
+      {
+        "type": "D3",
+        "done": false,
+        "doneAt": "",
+        "remark": ""
+      },
+      {
+        "type": "D7",
+        "done": false,
+        "doneAt": "",
+        "remark": ""
+      },
+      {
+        "type": "D30",
+        "done": false,
+        "doneAt": "",
+        "remark": ""
+      }
+    ],
+    "followupLastUpdatedAt": "2026-03-10 14:32"
+  },
+  {
+    "id": "lead_20260310_142436_13dbbe58",
+    "serviceType": "FILM",
+    "status": "未完工",
+    "version": 0,
+    "customerName": "李先生",
+    "phone": "13912345678",
+    "carModel": "宝马X5",
+    "plateNumber": "",
+    "sourceChannel": "抖音私信",
+    "store": "BOP保镖上海工厂店",
+    "salesBrandText": "崔庭廷",
+    "packageLabel": "隐形车衣",
+    "packageDesc": "",
+    "appointmentDate": "",
+    "appointmentTime": "",
+    "depositAmount": 0,
+    "remark": "【S级线索】\n评分100分\n有明确车型: 宝马X5 / 高端品牌车型 / 有明确需求: 隐形车衣\n预算: 3万\n\n--- AI对话摘要 ---\n客户: 你好，我开宝马X5，想贴隐形车衣，预算大概3万\nAI: 嗨！宝马X5贴车衣超适合的✨ 3万预算可以上顶级TPU了，防护和亮度都很棒！方便怎么称呼您？加我微信发具体方案给您～\n客户: 我叫李先生，手机13912345678，微信号lixiansheng88\nAI: 收到！李先生您的X5贴车衣绝对帅🔥 3万预算能安排进口TPU，自修复+增亮效果拉满！我这就加您微信（lixiansheng88）",
+    "priceSummary": {
+      "packagePrice": 0,
+      "addOnFee": 0,
+      "totalPrice": 0,
+      "deposit": 0
+    },
+    "createdAt": "2026-03-10 14:24:36",
+    "updatedAt": "2026-03-10 14:24",
+    "leadSource": "douyin_ai",
+    "leadStatus": "待联系",
+    "leadGrade": "S",
+    "leadGradeScore": 100,
+    "leadGradeReasons": [
+      "有明确车型: 宝马X5",
+      "高端品牌车型",
+      "有明确需求: 隐形车衣",
+      "高价值服务类型",
+      "有预算信息: 3万",
+      "高预算客户",
+      "留了电话",
+      "留了微信号"
+    ],
+    "leadBudgetRange": "3万",
+    "leadConversationSummary": "客户: 你好，我开宝马X5，想贴隐形车衣，预算大概3万\nAI: 嗨！宝马X5贴车衣超适合的✨ 3万预算可以上顶级TPU了，防护和亮度都很棒！方便怎么称呼您？加我微信发具体方案给您～\n客户: 我叫李先生，手机13912345678，微信号lixiansheng88\nAI: 收到！李先生您的X5贴车衣绝对帅🔥 3万预算能安排进口TPU，自修复+增亮效果拉满！我这就加您微信（lixiansheng88），发详细方案和案例给您看～",
+    "leadFollowupPriority": "urgent",
+    "leadSuggestedFollowupDays": [
+      1,
+      3,
+      7,
+      30
+    ],
+    "leadWechat": "lixiansheng88",
+    "leadPlatform": "douyin",
+    "leadAccountCode": "DY-BOP-001",
+    "followupRecords": [
+      {
+        "type": "D1",
+        "done": false,
+        "doneAt": "",
+        "remark": ""
+      },
+      {
+        "type": "D3",
+        "done": false,
+        "doneAt": "",
+        "remark": ""
+      },
+      {
+        "type": "D7",
+        "done": false,
+        "doneAt": "",
+        "remark": ""
+      },
+      {
+        "type": "D30",
+        "done": false,
+        "doneAt": "",
+        "remark": ""
+      }
+    ],
+    "followupLastUpdatedAt": "2026-03-10 14:24"
+  },
+  {
+    "id": "lead_20260309_193527_7e80a979",
+    "serviceType": "FILM",
+    "status": "未完工",
+    "version": 1,
+    "customerName": "老王",
+    "phone": "",
+    "carModel": "宝马X5",
+    "plateNumber": "",
+    "sourceChannel": "抖音私信",
+    "store": "BOP保镖上海工厂店",
+    "salesBrandText": "张三",
+    "packageLabel": "隐形车衣",
+    "packageDesc": "",
+    "appointmentDate": "",
+    "appointmentTime": "",
+    "depositAmount": 0,
+    "remark": "【S级线索】\n评分95分\n有明确车型: 宝马X5 / 高端品牌车型 / 有明确需求: 隐形车衣\n预算: 1万左右\n\n--- AI对话摘要 ---\n客户: 你好，想了解一下贴膜\nAI: 嗨！欢迎来BOP！我们主打改色膜、隐形车衣和车窗贴膜，都是高端品质~ \n\n方便告诉我您的车型和怎么称呼吗？这样我能给您更精准的建议😎\n客户: 我的车是宝马X5，想贴个隐形车衣\nAI: 哇宝马X5！这车贴车衣绝配，既能防剐蹭又能提亮漆面✨ 还没请教怎么称呼？方便加微信发几张车图，我帮您看看具体贴哪款TPU最合适~\n客户: 大概什么价位啊？\nAI: 宝马X5贴TP",
+    "priceSummary": {
+      "packagePrice": 0,
+      "addOnFee": 0,
+      "totalPrice": 0,
+      "deposit": 0
+    },
+    "createdAt": "2026-03-09 19:35:27",
+    "updatedAt": "2026-03-10 13:52",
+    "leadSource": "douyin_ai",
+    "leadGrade": "S",
+    "leadGradeScore": 95,
+    "leadGradeReasons": [
+      "有明确车型: 宝马X5",
+      "高端品牌车型",
+      "有明确需求: 隐形车衣",
+      "高价值服务类型",
+      "有预算信息: 1万左右",
+      "高预算客户"
+    ],
+    "leadBudgetRange": "1万左右",
+    "leadConversationSummary": "客户: 你好，想了解一下贴膜\nAI: 嗨！欢迎来BOP！我们主打改色膜、隐形车衣和车窗贴膜，都是高端品质~ \n\n方便告诉我您的车型和怎么称呼吗？这样我能给您更精准的建议😎\n客户: 我的车是宝马X5，想贴个隐形车衣\nAI: 哇宝马X5！这车贴车衣绝配，既能防剐蹭又能提亮漆面✨ 还没请教怎么称呼？方便加微信发几张车图，我帮您看看具体贴哪款TPU最合适~\n客户: 大概什么价位啊？\nAI: 宝马X5贴TPU车衣大概在8k-2w+，具体看您选国产还是进口材质~ 还没请教怎么称呼？加微信发您详细方案和价格表😎\n客户: 预算 1 万左右吧，叫我老王就行\nAI: 老王！1万预算能贴到不错的国产高端TPU，性价比很高👍 加我微信发几张车图，我给您报具体方案和施工时间~",
+    "leadFollowupPriority": "urgent",
+    "leadSuggestedFollowupDays": [
+      1,
+      3,
+      7,
+      30
+    ],
+    "leadWechat": "",
+    "leadPlatform": "douyin",
+    "leadAccountCode": "DY-BOP-001",
+    "followupRecords": [
+      {
+        "type": "D1",
+        "done": false,
+        "doneAt": "",
+        "remark": ""
+      },
+      {
+        "type": "D3",
+        "done": false,
+        "doneAt": "",
+        "remark": ""
+      },
+      {
+        "type": "D7",
+        "done": false,
+        "doneAt": "",
+        "remark": ""
+      },
+      {
+        "type": "D30",
+        "done": false,
+        "doneAt": "",
+        "remark": ""
+      }
+    ],
+    "followupLastUpdatedAt": "2026-03-09 19:35",
+    "leadStatus": "已联系"
+  },
+  {
+    "id": "DY20260309191400_test01",
+    "serviceType": "FILM",
+    "status": "未完工",
+    "version": 0,
+    "customerName": "王先生",
+    "phone": "13800138001",
+    "carModel": "宝马X5",
+    "plateNumber": "",
+    "sourceChannel": "抖音私信",
+    "store": "BOP保镖上海工厂店",
+    "salesBrandText": "孟傲",
+    "packageLabel": "隐形车衣",
+    "packageDesc": "",
+    "appointmentDate": "",
+    "appointmentTime": "",
+    "depositAmount": 0,
+    "remark": "【S级线索】\n评分85分\n高端品牌车型 / 有明确需求: 隐形车衣 / 高预算客户\n预算: 1万左右\n\n--- AI对话摘要 ---\n客户: 你好想问下贴膜\nAI: 您好！宝马X5贴隐形车衣很不错...",
+    "priceSummary": {
+      "packagePrice": 0,
+      "addOnFee": 0,
+      "totalPrice": 0,
+      "deposit": 0
+    },
+    "createdAt": "2026-03-09 19:15",
+    "updatedAt": "2026-03-09 19:15",
+    "leadSource": "douyin_ai",
+    "leadGrade": "S",
+    "leadGradeScore": 85,
+    "leadGradeReasons": [
+      "高端品牌车型",
+      "有明确需求: 隐形车衣",
+      "高预算客户"
+    ],
+    "leadBudgetRange": "1万左右",
+    "leadConversationSummary": "客户: 你好想问下贴膜\nAI: 您好！宝马X5贴隐形车衣很不错...",
+    "leadFollowupPriority": "urgent",
+    "leadSuggestedFollowupDays": [
+      1,
+      3,
+      7,
+      30
+    ],
+    "leadWechat": "",
+    "leadPlatform": "douyin",
+    "leadAccountCode": "",
+    "followupRecords": [
+      {
+        "type": "D1",
+        "done": false,
+        "doneAt": "",
+        "remark": ""
+      },
+      {
+        "type": "D3",
+        "done": false,
+        "doneAt": "",
+        "remark": ""
+      },
+      {
+        "type": "D7",
+        "done": false,
+        "doneAt": "",
+        "remark": ""
+      },
+      {
+        "type": "D30",
+        "done": false,
+        "doneAt": "",
+        "remark": ""
+      }
+    ],
+    "followupLastUpdatedAt": "2026-03-09 19:15"
+  },
+  {
     "id": "TEST20260305015",
     "serviceType": "FILM",
     "serviceTypeLabel": "贴膜",
