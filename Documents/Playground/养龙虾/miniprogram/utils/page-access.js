@@ -14,6 +14,19 @@ function navigateToStoreLogin() {
   });
 }
 
+function relaunchToStoreLogin() {
+  if (typeof wx === 'undefined' || !wx) {
+    return;
+  }
+  if (typeof wx.reLaunch === 'function') {
+    wx.reLaunch({
+      url: '/pages/login?scene=store'
+    });
+    return;
+  }
+  navigateToStoreLogin();
+}
+
 function ensureMiniSessionOrNavigate() {
   if (hasMiniAuthSession()) {
     return true;
@@ -25,5 +38,6 @@ function ensureMiniSessionOrNavigate() {
 module.exports = {
   ensureMiniSessionOrNavigate,
   hasMiniAuthSession,
-  navigateToStoreLogin
+  navigateToStoreLogin,
+  relaunchToStoreLogin
 };

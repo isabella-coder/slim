@@ -16,7 +16,8 @@ const {
 } = require('../../utils/mini-auth');
 const {
   hasMiniAuthSession,
-  navigateToStoreLogin
+  navigateToStoreLogin,
+  relaunchToStoreLogin
 } = require('../../utils/page-access');
 
 Page({
@@ -210,9 +211,7 @@ Page({
           return;
         }
         logoutMiniProgram().finally(() => {
-          wx.reLaunch({
-            url: '/pages/login?scene=store'
-          });
+          relaunchToStoreLogin();
         });
       }
     });
