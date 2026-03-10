@@ -1,7 +1,11 @@
 const { getProductCatalog, saveProductCatalog } = require('../../utils/product-catalog');
+const { getMiniAuthSession } = require('../../utils/mini-auth');
+const { getCurrentUserContext, isManagerContext } = require('../../utils/user-context');
 
 Page({
   data: {
+    needLogin: false,
+    noPermission: false,
     products: [],
     newLabel: '',
     newDesc: '',
@@ -10,7 +14,50 @@ Page({
   },
 
   onLoad() {
+    if (!this.ensurePageAccess()) {
+      return;
+    }
     this.loadProducts();
+  },
+
+  onShow() {
+    this.ensurePageAccess();
+  },
+
+  ensurePageAccess() {
+    const session = getMiniAuthSession();
+    if (!session.token || !session.user) {
+      this.setData({
+        needLogin: true,
+        noPermission: false,
+        products: [],
+        dirty: false
+      });
+      return false;
+    }
+
+    const user = getCurrentUserContext();
+    if (!isManagerContext(user)) {
+      this.setData({
+        needLogin: false,
+        noPermission: true,
+        products: [],
+        dirty: false
+      });
+      return false;
+    }
+
+    this.setData({
+      needLogin: false,
+      noPermission: false
+    });
+    return true;
+  },
+
+  goLogin() {
+    wx.navigateTo({
+      url: '/pages/login?scene=store'
+    });
   },
 
   loadProducts() {
@@ -50,6 +97,10 @@ Page({
   },
 
   addProduct() {
+    if (!this.ensurePageAccess()) {
+      return;
+    }
+
     const label = this.data.newLabel.trim();
     const desc = this.data.newDesc.trim();
     const basePrice = Number(this.data.newPrice);
@@ -86,6 +137,10 @@ Page({
   },
 
   removeProduct(event) {
+    if (!this.ensurePageAccess()) {
+      return;
+    }
+
     if (this.data.products.length <= 1) {
       wx.showToast({ title: '至少保留一个产品', icon: 'none' });
       return;
@@ -102,6 +157,10 @@ Page({
   },
 
   saveProducts() {
+    if (!this.ensurePageAccess()) {
+      return false;
+    }
+
     const normalized = [];
 
     for (let i = 0; i < this.data.products.length; i += 1) {
@@ -150,6 +209,10 @@ Page({
   },
 
   saveAndBack() {
+    if (!this.ensurePageAccess()) {
+      return;
+    }
+
     const saved = this.saveProducts();
     if (saved) {
       setTimeout(() => {

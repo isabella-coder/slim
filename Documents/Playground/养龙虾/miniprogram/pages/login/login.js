@@ -1,5 +1,5 @@
 const { getFinanceConfig, setFinanceBaseUrl } = require('../../config/finance.config');
-const { loginMiniProgram } = require('../../utils/mini-auth');
+const { getMiniAuthSession, loginMiniProgram } = require('../../utils/mini-auth');
 
 Page({
   data: {
@@ -12,6 +12,12 @@ Page({
   },
 
   onShow() {
+    const session = getMiniAuthSession();
+    if (session.token && session.user) {
+      this.finishLoginFlow();
+      return;
+    }
+
     const financeConfig = getFinanceConfig();
     this.setData({
       checkingSession: false,
@@ -69,14 +75,7 @@ Page({
           title: '登录成功',
           icon: 'success'
         });
-        var pages = getCurrentPages();
-        if (pages.length > 1) {
-          wx.navigateBack();
-        } else {
-          wx.reLaunch({
-            url: '/pages/index/index'
-          });
-        }
+        this.finishLoginFlow();
       })
       .catch((error) => {
         this.setData({
@@ -88,5 +87,17 @@ Page({
           submitting: false
         });
       });
+  },
+
+  finishLoginFlow() {
+    var pages = getCurrentPages();
+    if (pages.length > 1) {
+      wx.navigateBack();
+      return;
+    }
+
+    wx.reLaunch({
+      url: '/pages/index/index'
+    });
   }
 });

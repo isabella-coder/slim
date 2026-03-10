@@ -1,4 +1,16 @@
 <view class="container">
+  <view wx:if="{{needLogin}}" class="card empty-card">
+    <view class="empty-title">当前未登录</view>
+    <view class="empty-subtitle">请先登录后管理产品配置。</view>
+    <button class="button-secondary" bindtap="goLogin">去登录</button>
+  </view>
+
+  <view wx:elif="{{noPermission}}" class="card empty-card">
+    <view class="empty-title">暂无访问权限</view>
+    <view class="empty-subtitle">仅管理员可修改产品与价格配置。</view>
+  </view>
+
+  <block wx:else>
   <view class="card">
     <view class="section-title">产品与价格管理</view>
     <view class="hint">内部使用：可直接修改品牌型号、施工部位和价格。</view>
@@ -49,4 +61,5 @@
 
   <button class="button-primary" bindtap="saveProducts">保存修改</button>
   <button class="button-secondary" bindtap="saveAndBack">保存并返回</button>
+  </block>
 </view>

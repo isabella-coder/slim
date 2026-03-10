@@ -1,9 +1,14 @@
 const { getOrderById, getOrders, syncOrdersNow, updateOrder } = require('../../utils/order');
 const { syncOrderToFinance } = require('../../utils/finance-sync');
 const { buildFollowupItems, markFollowupDone, summarizeFollowupOrders } = require('../../utils/followup');
+const { getMiniAuthSession } = require('../../utils/mini-auth');
+const { canCreateOrderContext, getCurrentUserContext } = require('../../utils/user-context');
 
 Page({
   data: {
+    needLogin: false,
+    noPermission: false,
+    canMarkDone: true,
     tabs: [
       { label: '全部', value: 'ALL' },
       { label: '待处理', value: 'PENDING' },
@@ -24,10 +29,17 @@ Page({
   },
 
   onShow() {
+    if (!this.ensurePageAccess()) {
+      return;
+    }
     this.reloadWithSync();
   },
 
   onPullDownRefresh() {
+    if (!this.ensurePageAccess()) {
+      wx.stopPullDownRefresh();
+      return;
+    }
     syncOrdersNow()
       .catch(() => {})
       .finally(() => {
@@ -37,11 +49,68 @@ Page({
   },
 
   reloadWithSync() {
+    if (!this.ensurePageAccess()) {
+      return;
+    }
+
     syncOrdersNow()
       .catch(() => {})
       .finally(() => {
         this.loadReminders();
       });
+  },
+
+  ensurePageAccess() {
+    const session = getMiniAuthSession();
+    if (!session.token || !session.user) {
+      this.setData({
+        needLogin: true,
+        noPermission: false,
+        canMarkDone: false,
+        reminderItems: [],
+        filteredItems: [],
+        stats: {
+          total: 0,
+          dueToday: 0,
+          overdue: 0,
+          pending: 0,
+          done: 0
+        }
+      });
+      return false;
+    }
+
+    const user = getCurrentUserContext();
+    if (!canCreateOrderContext(user)) {
+      this.setData({
+        needLogin: false,
+        noPermission: true,
+        canMarkDone: false,
+        reminderItems: [],
+        filteredItems: [],
+        stats: {
+          total: 0,
+          dueToday: 0,
+          overdue: 0,
+          pending: 0,
+          done: 0
+        }
+      });
+      return false;
+    }
+
+    this.setData({
+      needLogin: false,
+      noPermission: false,
+      canMarkDone: true
+    });
+    return true;
+  },
+
+  goLogin() {
+    wx.navigateTo({
+      url: '/pages/login?scene=store'
+    });
   },
 
   loadReminders() {
@@ -100,6 +169,10 @@ Page({
   },
 
   markDone(event) {
+    if (!this.ensurePageAccess() || !this.data.canMarkDone) {
+      return;
+    }
+
     const orderId = event.currentTarget.dataset.id;
     const type = event.currentTarget.dataset.type;
     if (!orderId || !type) {
