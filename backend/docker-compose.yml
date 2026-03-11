@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: lx_postgres
+    environment:
+      POSTGRES_USER: xls_admin
+      POSTGRES_PASSWORD: xls_admin_2024
+      POSTGRES_DB: xls_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    command:
+      - "postgres"
+      - "-c"
+      - "max_connections=200"
+
+volumes:
+  postgres_data:
